@@ -1,0 +1,19 @@
+document_id: GOV-CORE-CONFIGURATION-SCHEMA-001
+version: 0.1.0
+status: ACTIVE_REUSABLE_CONFIGURATION_CONTRACT
+purpose: >-
+  Declares the project-owned values that a reusable core may consume without
+  embedding an adopter's paths or run identities.
+required_configuration_keys:
+  - configuration.correction_example.base_run_id
+  - configuration.correction_example.first_correction_id
+  - configuration.paths.formal_run_prompt_snapshots
+  - configuration.paths.learning_readme
+  - configuration.identity_allocator.namespace
+  - configuration.identity_allocator.state_path
+  - configuration.identity_allocator.ledger_path
+invariants:
+  - Core documents may contain only declared configuration placeholders for these values.
+  - An adopter configuration owns every placeholder value.
+  - Resolving a compatibility binding must preserve the adopter's established semantics.
+  - Identity namespaces and allocator state remain owned by the adopting program.

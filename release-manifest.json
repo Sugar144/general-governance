@@ -1,0 +1,11 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "repository": "Sugar144/general-governance",
+  "framework_version": "0.1.0-rc.1",
+  "release_status": "LOCAL_RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "compatibility": {"framework_contract": "1.0.0", "consumer_lock_schema": "1.0.0"},
+  "content_sha256": "bfaeca71e28b656fe241ac19dbbaef60cd82347e4b498018efeb73d449291bd0",
+  "content_identity_method": "SHA-256 of lexicographically ordered path\\0SHA-256(file-bytes)\\n records for every repository file except release-manifest.json and .git content",
+  "extraction_provenance": "provenance/extraction-manifest.json",
+  "required_framework_surfaces": ["framework/core/project-operating-contract.md", "framework/contracts/configuration-schema.yaml", "framework/core/l6", "contracts/consumer-lock.schema.json", "tools/validate_consumer.py"]
+}
