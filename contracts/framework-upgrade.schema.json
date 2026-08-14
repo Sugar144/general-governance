@@ -3,11 +3,31 @@
   "title": "GOV-GEN controlled framework upgrade",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "previous_lock", "new_lock", "conformance_result"],
+  "required": [
+    "schema_version",
+    "previous_lock",
+    "new_lock",
+    "conformance_result"
+  ],
   "properties": {
-    "schema_version": {"const": "1.0.0"},
-    "previous_lock": {"$ref": "consumer-lock.schema.json"},
-    "new_lock": {"$ref": "consumer-lock.schema.json"},
-    "conformance_result": {"const": "PASS"}
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "previous_lock": {
+      "oneOf": [
+        {
+          "$ref": "consumer-lock-v1.schema.json"
+        },
+        {
+          "$ref": "consumer-lock.schema.json"
+        }
+      ]
+    },
+    "new_lock": {
+      "$ref": "consumer-lock.schema.json"
+    },
+    "conformance_result": {
+      "const": "PASS"
+    }
   }
 }
