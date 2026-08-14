@@ -1,18 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Sugar144/general-governance/contracts/consumer-lock.schema.json",
-  "title": "GOV-GEN immutable consumer lock",
+  "$id": "https://github.com/Sugar144/general-governance/contracts/consumer-lock-v1.schema.json",
+  "title": "GOV-GEN immutable consumer lock legacy schema 1.0.0",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "framework",
-    "consumer",
     "compatibility"
   ],
   "properties": {
     "schema_version": {
-      "const": "2.0.0"
+      "const": "1.0.0"
     },
     "framework": {
       "type": "object",
@@ -41,36 +40,18 @@
         }
       }
     },
-    "consumer": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "configuration_path"
-      ],
-      "properties": {
-        "configuration_path": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
-        }
-      }
-    },
     "compatibility": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "framework_contract",
-        "consumer_lock_schema",
-        "consumer_configuration_schema"
+        "consumer_lock_schema"
       ],
       "properties": {
         "framework_contract": {
-          "const": "2.0.0"
+          "const": "1.0.0"
         },
         "consumer_lock_schema": {
-          "const": "2.0.0"
-        },
-        "consumer_configuration_schema": {
           "const": "1.0.0"
         }
       }

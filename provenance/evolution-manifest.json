@@ -1,0 +1,27 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "correction": "EXTERNAL_CONSUMER_L1_CONFIGURATION_AND_PROMPT_IDENTITY_GAP",
+  "base_framework": {
+    "repository": "Sugar144/general-governance",
+    "version": "0.1.0-rc.1",
+    "commit_sha": "d2f84cdb933f0738003d6de9696f44226c734065",
+    "release_manifest_sha256": "4ff7871bae53502134d2b2f20be8c1a954a75874bf0103ff66634a010e556f9f"
+  },
+  "preserved_extraction_manifest": "provenance/extraction-manifest.json",
+  "evolved_extracted_surfaces": [
+    {
+      "path": "framework/core/project-operating-contract.md",
+      "semantic_layer": "L0",
+      "baseline_sha256": "3d5e461a0cb91ab27fc799aa2bb84d6bee1e2540ea76e8bdf11cbfe2287fc5bb",
+      "candidate_sha256": "43dde99b5b99dd80caeef9563566bc7c8e5acbd530095b2abeef0a58b56481d3",
+      "reason": "replace project-specific material-prompt namespace with adopter-owned configuration semantics"
+    },
+    {
+      "path": "framework/contracts/configuration-schema.yaml",
+      "semantic_layer": "L1",
+      "baseline_sha256": "8f0434f47cac97bbc133550206c8db8cfdbed307745c24a0375e8f709e45b398",
+      "candidate_sha256": "bbc95a96bc782eb3a30d0ac3ef3587fe1a76ee2a4e9b1bc9b46c3cf68c40befe",
+      "reason": "make the consumer configuration instance mandatory and declare material-prompt identity values"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Sugar144/general-governance/contracts/consumer-configuration.schema.json",
+  "title": "GOV-GEN external consumer configuration",
+  "type": "object",
+  "required": [
+    "configuration"
+  ],
+  "properties": {
+    "configuration": {
+      "type": "object",
+      "required": [
+        "correction_example",
+        "paths",
+        "identity_allocator",
+        "prompt_identity"
+      ],
+      "properties": {
+        "correction_example": {
+          "type": "object",
+          "required": [
+            "base_run_id",
+            "first_correction_id"
+          ],
+          "properties": {
+            "base_run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "first_correction_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "paths": {
+          "type": "object",
+          "required": [
+            "formal_run_prompt_snapshots",
+            "learning_readme"
+          ],
+          "properties": {
+            "formal_run_prompt_snapshots": {
+              "type": "string",
+              "minLength": 1
+            },
+            "learning_readme": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "identity_allocator": {
+          "type": "object",
+          "required": [
+            "namespace",
+            "state_path",
+            "ledger_path"
+          ],
+          "properties": {
+            "namespace": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ledger_path": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "prompt_identity": {
+          "type": "object",
+          "required": [
+            "namespace",
+            "sequence_width"
+          ],
+          "properties": {
+            "namespace": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,63}$"
+            },
+            "sequence_width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

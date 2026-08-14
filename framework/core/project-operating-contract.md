@@ -1,6 +1,6 @@
 ---
 document_id: GOV-METHOD-OPERATING-CONTRACT-001
-version: 0.3.0
+version: 0.3.1
 status: IMPLEMENTED_LOCALLY_PENDING_PROJECT_OWNER_REVIEW
 constitutional_authority: NONE
 ---
@@ -87,7 +87,7 @@ A prompt is material when it authorizes material repository modification; define
 
 Qualifying `OWNER_PUBLICATION_AUTHORIZATION` may be preserved through publication evidence, commit metadata, operational records, or a subsequent append-only record. Its custody must not require a new pre-publication repository file that changes the authorized change set. The authorization remains bounded to the identified immutable candidate and named atomic actions; it does not imply authority for any other publication or governance step.
 
-Every material prompt receives a stable `HP-PROMPT-###` identifier and a semantic version. The identifier remains stable across corrections to the same prompt lineage; a correction increments the version and records supersession. Categories identify the prompt function without granting authority. Lifecycle states are `DRAFT`, `APPROVED_NOT_EXECUTED`, `EXECUTED`, `SUPERSEDED`, `ABORTED`, `INVALID_EXECUTION`, and `NOT_PRESERVED`.
+Every material prompt receives a stable identifier in the adopter-owned material-prompt namespace `{{configuration.prompt_identity.namespace}}`. The identifier is `<namespace>-<sequence>`, where `<sequence>` is a positive decimal zero-padded to width `{{configuration.prompt_identity.sequence_width}}`; it also receives a semantic version. The framework does not prescribe a project namespace. The identifier remains stable across corrections to the same prompt lineage; a correction increments the version and records supersession. Categories identify the prompt function without granting authority. Lifecycle states are `DRAFT`, `APPROVED_NOT_EXECUTED`, `EXECUTED`, `SUPERSEDED`, `ABORTED`, `INVALID_EXECUTION`, and `NOT_PRESERVED`.
 
 Preserve the exact prompt text with its authorization scope, forbidden actions, environment, execution status, and links to resulting artifacts, reports, validation evidence, and commit when available. A material prompt must enter repository custody before or as part of the commit containing the work it authorized or defined. Once executed, its file is immutable execution-contract evidence; correction requires a new semantic version and an explicit supersession link. Prompt existence does not establish execution: execution status and evidence remain separate facts.
 
