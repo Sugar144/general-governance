@@ -27,7 +27,31 @@ Provider/runtime adapters are project-owned projections and are not composition 
 5. Composition does not imply compatibility, conformance, authority transfer, acceptance, or release readiness.
 6. An `ACTIVE` stack requires adopter-owned compatibility evidence for the exact bound component set. A `PREPARED` stack may exist before that evidence is complete but grants no implementation authority by itself.
 7. A component's own conformance rules and validator remain authoritative for that component. The composition validator checks only stack identity, role separation, and activation evidence; it does not reinterpret component semantics.
-8. Upgrading one component does not silently upgrade another. Any changed component SHA creates a new stack identity/evaluation context.
+8. Upgrading one component does not silently upgrade another. Any changed component SHA changes `component_set_sha256` and therefore creates a new stack evaluation context.
+
+## Exact component-set identity and activation evidence
+
+`component_set_sha256` is the immutable identity of the exact bound component set for composition evaluation. It is SHA-256 over UTF-8 records sorted lexicographically by repository, one per component:
+
+```text
+<repository>@<40-character-commit-sha>\n
+```
+
+The exact stack evaluation identity is `(stack_id, component_set_sha256)`. `stack_id` is an adopter label and does not replace the component-set digest.
+
+A referenced compatibility-evidence artifact is resolved relative to the directory containing the capability-stack document and must remain inside that directory boundary. The referenced file must exist and its bytes must match the `sha256` recorded by the stack.
+
+The evidence artifact is a JSON object that must contain:
+
+```json
+{
+  "schema_version": "1.0.0",
+  "component_set_sha256": "<exact current component-set digest>",
+  "result": "PASS"
+}
+```
+
+It may contain additional adopter-owned diagnostic material. The composition validator interprets only these three fields. A changed component SHA invalidates old activation evidence even if the adopter retains the same `stack_id` or edits the stack document.
 
 ## Protected implementation boundary
 
@@ -59,9 +83,10 @@ This decision does not:
 ## Minimal adopter flow
 
 1. Pin the exact GG/CWG/AET revisions required by the project.
-2. Record them in one adopter-owned capability-stack document.
-3. Establish one bounded compatibility/conformance result for that exact set.
-4. Mark the stack `ACTIVE` only after that evidence exists.
-5. Execute project work using each component only within its own authority domain.
+2. Record them in one adopter-owned capability-stack document and compute `component_set_sha256`.
+3. Establish one bounded compatibility/conformance result for that exact component-set digest.
+4. Reference the resulting evidence artifact by relative path and exact SHA-256.
+5. Mark the stack `ACTIVE` only after the validator verifies the evidence artifact and its exact-set binding.
+6. Execute project work using each component only within its own authority domain.
 
 No additional composition lifecycle is required.
