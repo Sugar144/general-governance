@@ -24,7 +24,16 @@ jobs:
               Draft202012Validator.check_schema(json.loads(path.read_text()))
               print(f"PASS schema {path}")
           PY
+      - name: Validate capability-stack validator syntax
+        run: python3 -m py_compile tools/validate_capability_stack.py
       - name: Verify prospective extraction evolution
         run: python3 tools/verify_evolution.py
+      - name: Show release content digest
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from tools.validate_consumer import release_content_digest
+          print(f"RELEASE_CONTENT_SHA256={release_content_digest(Path('.').resolve())}")
+          PY
       - name: Run consumer conformance tests
         run: python3 -m unittest -v tests/test_consumer_contract.py

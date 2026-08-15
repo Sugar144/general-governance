@@ -40,18 +40,25 @@ change and is outside framework authority.
 
 ## Compatibility
 
-Version `0.1.0-rc.2` uses framework contract `2.0.0`, consumer-lock schema
-`2.0.0`, and consumer-configuration schema `1.0.0`. This is intentionally
-incompatible with the current-lock shape of `0.1.0-rc.1`: a v2 current lock
-must identify the configuration instance and declare the configuration schema.
+Version `0.1.0-rc.3` uses framework contract `2.0.0`, consumer-lock schema
+`2.0.0`, and consumer-configuration schema `1.0.0`, unchanged from
+`0.1.0-rc.2`. It additionally publishes optional capability-composition
+contract/schema `1.0.0`.
+
+The current `framework-lock.json` remains a General Governance lock only. A
+consumer that composes additional independently governed systems uses the
+separate adopter-owned capability-stack contract. That stack pins exact
+component commits and preserves each component's own authority/conformance
+boundary; General Governance conformance does not imply CWG, AET, or other
+capability conformance.
 
 Schema `contracts/consumer-lock-v1.schema.json` is retained only so a controlled
 upgrade can validate a prior `0.1.0-rc.1` lock. It is not accepted as a current
-lock by the `0.1.0-rc.2` validator.
+lock by the current validator.
 
-Optional modules/adapters must declare their own compatibility and are absent
-unless explicitly locked. A project remains responsible for its own L3/L5
-semantics; framework conformance is not a project semantic review.
+Optional capabilities are absent unless explicitly bound by the adopter. A
+project remains responsible for its own L3/L5 semantics; framework conformance
+is not a project semantic review.
 
 ## Controlled upgrade
 
@@ -64,13 +71,15 @@ unverifiable, or configuration-incomplete transition. Consumers never follow a
 moving branch automatically.
 
 See `docs/upgrades/0.1.0-rc.1-to-0.1.0-rc.2.md` for adopter #1 and adopter #2
-migration requirements.
+migration requirements. Moving from rc.2 to rc.3 requires a new immutable GG
+lock identity but no configuration migration when the existing rc.2
+configuration remains valid.
 
 ## Ownership boundary
 
 Framework-owned surfaces are L0, the L1 configuration contract, selected L2
 modules if separately released, reusable L6 helpers, and generic contracts.
 Consumer-owned surfaces are L3 projections, L5 evidence/history, configuration
-values, project state, and provider-specific runtime bindings. Consumers
-reference framework normative semantics through their lock; they must not copy
-or override them under framework-owned paths.
+values, project state, capability-stack bindings, and provider-specific runtime
+bindings. Consumers reference framework normative semantics through their lock;
+they must not copy or override them under framework-owned paths.
