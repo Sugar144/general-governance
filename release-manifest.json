@@ -1,14 +1,19 @@
 {
-  "manifest_schema_version": "1.1.0",
+  "manifest_schema_version": "1.2.0",
   "repository": "Sugar144/general-governance",
-  "framework_version": "0.1.0-rc.2",
+  "framework_version": "0.1.0-rc.3",
   "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
   "compatibility": {
     "framework_contract": "2.0.0",
     "consumer_lock_schema": "2.0.0",
     "consumer_configuration_schema": "1.0.0"
   },
-  "content_sha256": "6ca0d7f89514c45addcf6046e5e34446c87499918e55cea961cba560076091dc",
+  "capability_composition": {
+    "contract_version": "1.0.0",
+    "stack_schema": "1.0.0",
+    "optional": true
+  },
+  "content_sha256": "fc8ade7c76378330ac2decffbada5ae27d97a66f0d83ba1b1b3443ebf5eaa462",
   "content_identity_method": "SHA-256 of lexicographically ordered records containing each tracked path, a NUL separator, the SHA-256 of that file, and a newline; release-manifest.json and .git content are excluded",
   "extraction_provenance": "provenance/extraction-manifest.json",
   "evolution_provenance": "provenance/evolution-manifest.json",
@@ -20,9 +25,12 @@
     "contracts/consumer-lock-v1.schema.json",
     "contracts/consumer-configuration.schema.json",
     "contracts/framework-upgrade.schema.json",
+    "contracts/capability-stack.schema.json",
+    "docs/architecture/capability-composition.md",
     "provenance/extraction-manifest.json",
     "provenance/evolution-manifest.json",
     "tools/validate_consumer.py",
+    "tools/validate_capability_stack.py",
     "tools/verify_evolution.py"
   ]
 }
