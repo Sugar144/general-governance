@@ -31,7 +31,7 @@ Delegated execution must stop and escalate to the Project Owner, instead of proc
 
 Owner acceptance remains reserved and is never satisfied by a delegated effect: merge is not acceptance, a passing review is not acceptance, and deployment is not acceptance. Once the Owner records ACCEPT or REJECT on an exact result, that decision automatically authorizes the minimum bookkeeping needed to make the decision durable — recording or integrating only that decision record — without a further authorization request limited to that bookkeeping.
 
-`OWNER_PUBLICATION_AUTHORIZATION` remains the narrow, distinct case of a single already-reviewed publication action, as defined under Material prompt custody; it is not enlarged or replaced by bounded operational delegation.
+`OWNER_PUBLICATION_AUTHORIZATION` remains the narrow, distinct case of one or more named atomic publication actions on an already-reviewed immutable change set or candidate, as defined under Material prompt custody; it is not enlarged or replaced by bounded operational delegation.
 
 An adopter may narrow bounded operational delegation further under its own configuration or protocols; it may never widen it beyond what this contract authorizes.
 

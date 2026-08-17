@@ -13,7 +13,7 @@
       "path": "framework/core/project-operating-contract.md",
       "semantic_layer": "L0",
       "baseline_sha256": "3d5e461a0cb91ab27fc799aa2bb84d6bee1e2540ea76e8bdf11cbfe2287fc5bb",
-      "candidate_sha256": "297a085290dfab6f4ce58b2e22493d3639961ff69ae8f160c79c721605f1a1d1",
+      "candidate_sha256": "8ed572601251a62c16081c93456ff132a55079b27504921a2ee1cfffcc0e3d46",
       "reason": "replace project-specific material-prompt namespace with adopter-owned configuration semantics; add bounded operational delegation authority model so a finite Owner grant may prospectively cover a bounded work package's routine effects without a fresh decision per effect, fail-closed with mandatory escalation triggers and reserved Owner acceptance"
     },
     {
