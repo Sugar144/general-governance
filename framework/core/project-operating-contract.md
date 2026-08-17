@@ -1,6 +1,6 @@
 ---
 document_id: GOV-METHOD-OPERATING-CONTRACT-001
-version: 0.3.1
+version: 0.4.0
 status: IMPLEMENTED_LOCALLY_PENDING_PROJECT_OWNER_REVIEW
 constitutional_authority: NONE
 ---
@@ -18,6 +18,22 @@ Applicable authority descends from platform constraints, the Project Owner's exp
 The Project Owner retains authorization, sequencing, acceptance, risk, publication, and ratification authority. Designer, Adversary, future Controller, implementer, and validator authority is bounded by their explicit contracts. No actor inherits another actor's authority, and no prior authorization is reusable outside its stated scope.
 
 For a material change, first identify intended paths, effects, validation, exclusions, and each separately authorized publication step. Perform only the authorized scope. Modification, staging, commit, push, pull request, merge, tag, release, deployment, and publication are distinct actions.
+
+## Bounded operational delegation
+
+A distinct effect does not by itself require a separate Project Owner decision. Modification, commit, push, pull request, merge, review, release, deployment, and acceptance remain semantically distinct actions. An explicit, finite Project Owner authorization of a bounded work package may nonetheless prospectively authorize several of the package's routine effects without a fresh Owner intervention for each one.
+
+A bounded operational delegation is valid only while it remains bounded by its stated scope and authority, fails closed on drift or a failed gate, stays subject to identity and currentness fences, stays compatible with existing validation and review requirements, and is strictly prospective. It authorizes only execution occurring after and within the grant; it never authorizes retroactively and confers no authority over a historical run.
+
+When the authorization declares it, a bounded operational delegation may cover routine mechanics such as implementation, validation, mechanical correction, commit, push, pull request, review, exact-candidate integration, and technical closure, carried out in sequence without requesting a new authorization at each step.
+
+Delegated execution must stop and escalate to the Project Owner, instead of proceeding under the existing grant, on encountering: a change of scope or requirements; a material architectural decision; risk, security, or privacy acceptance; new authority or a material dependency; write-surface drift; a failed or indeterminate gate; candidate or currentness drift; unauthorized deployment or release; or ambiguity that cannot be resolved deterministically.
+
+Owner acceptance remains reserved and is never satisfied by a delegated effect: merge is not acceptance, a passing review is not acceptance, and deployment is not acceptance. Once the Owner records ACCEPT or REJECT on an exact result, that decision automatically authorizes the minimum bookkeeping needed to make the decision durable — recording or integrating only that decision record — without a further authorization request limited to that bookkeeping.
+
+`OWNER_PUBLICATION_AUTHORIZATION` remains the narrow, distinct case of a single already-reviewed publication action defined above; it is not enlarged or replaced by bounded operational delegation.
+
+An adopter may narrow bounded operational delegation further under its own configuration or protocols; it may never widen it beyond what this contract authorizes.
 
 ## Durable truth and status vocabulary
 
