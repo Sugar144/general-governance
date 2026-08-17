@@ -17,7 +17,7 @@ Applicable authority descends from platform constraints, the Project Owner's exp
 
 The Project Owner retains authorization, sequencing, acceptance, risk, publication, and ratification authority. Designer, Adversary, future Controller, implementer, and validator authority is bounded by their explicit contracts. No actor inherits another actor's authority, and no prior authorization is reusable outside its stated scope.
 
-For a material change, first identify intended paths, effects, validation, exclusions, and each separately authorized publication step. Perform only the authorized scope. Modification, staging, commit, push, pull request, merge, tag, release, deployment, and publication are distinct actions.
+For a material change, first identify intended paths, effects, validation, exclusions, and the authority covering each intended effect, whether granted individually or through a bounded operational delegation. Perform only the authorized scope. Modification, staging, commit, push, pull request, merge, tag, release, deployment, and publication remain distinct actions.
 
 ## Bounded operational delegation
 
@@ -31,7 +31,7 @@ Delegated execution must stop and escalate to the Project Owner, instead of proc
 
 Owner acceptance remains reserved and is never satisfied by a delegated effect: merge is not acceptance, a passing review is not acceptance, and deployment is not acceptance. Once the Owner records ACCEPT or REJECT on an exact result, that decision automatically authorizes the minimum bookkeeping needed to make the decision durable — recording or integrating only that decision record — without a further authorization request limited to that bookkeeping.
 
-`OWNER_PUBLICATION_AUTHORIZATION` remains the narrow, distinct case of a single already-reviewed publication action defined above; it is not enlarged or replaced by bounded operational delegation.
+`OWNER_PUBLICATION_AUTHORIZATION` remains the narrow, distinct case of a single already-reviewed publication action, as defined under Material prompt custody; it is not enlarged or replaced by bounded operational delegation.
 
 An adopter may narrow bounded operational delegation further under its own configuration or protocols; it may never widen it beyond what this contract authorizes.
 

@@ -13,7 +13,7 @@
     "stack_schema": "1.0.0",
     "optional": true
   },
-  "content_sha256": "80e37ff296cfb791498b45cf7ce47ec9e7d890a8779beb7b5820c7cf4d8a06ac",
+  "content_sha256": "4a6e38a9503743fda39ab159c8f4906d5258f6cb0fb577199d430d812ead4146",
   "content_identity_method": "SHA-256 of lexicographically ordered records containing each tracked path, a NUL separator, the SHA-256 of that file, and a newline; release-manifest.json and .git content are excluded",
   "extraction_provenance": "provenance/extraction-manifest.json",
   "evolution_provenance": "provenance/evolution-manifest.json",
