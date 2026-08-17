@@ -1,7 +1,7 @@
 {
   "manifest_schema_version": "1.2.0",
   "repository": "Sugar144/general-governance",
-  "framework_version": "0.1.0-rc.3",
+  "framework_version": "0.1.0-rc.4",
   "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
   "compatibility": {
     "framework_contract": "2.0.0",
@@ -13,7 +13,7 @@
     "stack_schema": "1.0.0",
     "optional": true
   },
-  "content_sha256": "1c2ff5df3e6abca766db32b9e09bb72b700e836fa4ed0e86015228f2b257ab1f",
+  "content_sha256": "c23a64ffa6cae9f7d46c193a291bcf7d7e50d780881cca719c699d63e43de663",
   "content_identity_method": "SHA-256 of lexicographically ordered records containing each tracked path, a NUL separator, the SHA-256 of that file, and a newline; release-manifest.json and .git content are excluded",
   "extraction_provenance": "provenance/extraction-manifest.json",
   "evolution_provenance": "provenance/evolution-manifest.json",

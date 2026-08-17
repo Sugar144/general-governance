@@ -40,10 +40,27 @@ change and is outside framework authority.
 
 ## Compatibility
 
-Version `0.1.0-rc.3` uses framework contract `2.0.0`, consumer-lock schema
+Version `0.1.0-rc.4` uses framework contract `2.0.0`, consumer-lock schema
 `2.0.0`, and consumer-configuration schema `1.0.0`, unchanged from
-`0.1.0-rc.2`. It additionally publishes optional capability-composition
-contract/schema `1.0.0`.
+`0.1.0-rc.2`. It publishes the `0.1.0-rc.3` optional capability-composition
+contract/schema `1.0.0` unchanged, and adds a bounded operational delegation
+authority model to the reusable Project Operating Contract: an explicit,
+finite Project Owner grant on a bounded work package may prospectively cover
+several of that package's routine effects (e.g. implementation, validation,
+mechanical correction, commit, push, pull request, review, exact-candidate
+integration, technical closure) without a new Owner intervention for each
+one. The delegation is bounded, fail-closed, identity/currentness-fenced,
+strictly prospective, and must escalate to the Owner on scope change,
+material architectural decisions, risk/security/privacy acceptance, new
+material authority or dependency, write-surface drift, a failed or
+indeterminate gate, candidate/currentness drift, unauthorized
+deployment/release, or non-deterministic ambiguity. Owner acceptance stays
+reserved: merge, review PASS, and deployment are never acceptance by
+themselves. `OWNER_PUBLICATION_AUTHORIZATION` remains the distinct, narrow
+case of a single already-reviewed publication action. This is a normative
+clarification of L0 authority semantics; it introduces no schema or
+configuration contract change, and an adopter may narrow the delegation but
+never widen it.
 
 The current `framework-lock.json` remains a General Governance lock only. A
 consumer that composes additional independently governed systems uses the
@@ -71,9 +88,9 @@ unverifiable, or configuration-incomplete transition. Consumers never follow a
 moving branch automatically.
 
 See `docs/upgrades/0.1.0-rc.1-to-0.1.0-rc.2.md` for adopter #1 and adopter #2
-migration requirements. Moving from rc.2 to rc.3 requires a new immutable GG
-lock identity but no configuration migration when the existing rc.2
-configuration remains valid.
+migration requirements. Moving from rc.2 to rc.3, or from rc.3 to rc.4,
+requires a new immutable GG lock identity but no configuration migration when
+the existing rc.2 configuration remains valid.
 
 ## Ownership boundary
 
