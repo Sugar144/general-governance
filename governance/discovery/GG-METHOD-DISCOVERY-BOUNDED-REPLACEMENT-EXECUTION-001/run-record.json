@@ -1,0 +1,43 @@
+{
+  "anti_recursion": {
+    "additional_execution_authority_created": false,
+    "implicit_replacement_created": false,
+    "note": "RUN-001 is consumed. No RUN-002 exists or is authorized."
+  },
+  "authority_record_id": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001-AUTH-001",
+  "effects": {
+    "deployment": false,
+    "historical_evidence_rewritten": false,
+    "merge": false,
+    "normative_files_modified": false,
+    "owner_acceptance_claimed": false,
+    "release": false,
+    "release_metadata_modified": false,
+    "schemas_modified": false,
+    "tag": false,
+    "tools_modified": false
+  },
+  "execution_boundary": {
+    "allowance_consumed": 1,
+    "branch_head_at_admission": "4d5ee575c779b2e0f256e066d3edd58c1933867f",
+    "crossed": true,
+    "general_governance_main_at_admission": "91fa0727abf730e142a4c43f2da68b1281be1121",
+    "remaining_execution_allowance": 0
+  },
+  "execution_date": "2026-08-19",
+  "execution_id": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "formal_input_package_sha256": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+  "mode": "READ_ONLY_SYNTHESIS",
+  "owner_authorization_comment_id": 5335539678,
+  "preparation_commit": "4d5ee575c779b2e0f256e066d3edd58c1933867f",
+  "protocol": "GG-METHOD-DISCOVERY-PROTOCOL-001",
+  "result": {
+    "path": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/result.md",
+    "primary_disposition": "NORMATIVE_CLARIFICATION_CANDIDATE",
+    "status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW"
+  },
+  "role": "METHOD_DISCOVERY_ANALYST",
+  "schema": "gg.method-discovery-run-record/1.0.0",
+  "status": "EXECUTED_PENDING_VALIDATION",
+  "work_identity": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001"
+}
