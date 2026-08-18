@@ -1,0 +1,115 @@
+{
+  "candidate_commit": "3d174e45aec837d925eb72731257507a0d765714",
+  "checks": [
+    {
+      "id": "VAL-001",
+      "name": "general_governance_main_currentness_at_validation",
+      "expected": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "observed": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-002",
+      "name": "preparation_lineage",
+      "expected": "candidate descends from preparation commit 4d5ee575c779b2e0f256e066d3edd58c1933867f and baseline 91fa0727abf730e142a4c43f2da68b1281be1121",
+      "observed": "candidate is second commit after exact baseline; preparation commit is first parent lineage",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-003",
+      "name": "authorized_write_surface",
+      "expected": "all changes under governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/**",
+      "observed": "7 added files, all under authorized discovery directory; no pre-existing file modified",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-004",
+      "name": "declared_result_identity",
+      "expected_path": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/result.md",
+      "expected_blob": "633fe688ecdb354a139c2b41b635936ecaf0c92b",
+      "observed_blob": "633fe688ecdb354a139c2b41b635936ecaf0c92b",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-005",
+      "name": "required_sections",
+      "expected": 12,
+      "observed": 12,
+      "result": "PASS",
+      "sections": [
+        "Executive disposition",
+        "Bound evidence and evidence limits",
+        "Existing rc.4 coverage",
+        "Lifecycle taxonomy",
+        "Replacement eligibility",
+        "Authority model",
+        "Lineage and anti-recursion",
+        "Execution-strategy boundary",
+        "Representation decision",
+        "Counterexample tests",
+        "What is explicitly not being changed",
+        "Recommended next decision"
+      ]
+    },
+    {
+      "id": "VAL-006",
+      "name": "primary_disposition_cardinality",
+      "expected": "exactly one allowed primary disposition",
+      "observed": "NORMATIVE_CLARIFICATION_CANDIDATE",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-007",
+      "name": "seven_discovery_questions_covered",
+      "expected": 7,
+      "observed": 7,
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-008",
+      "name": "evidence_identity_quality",
+      "expected": "immutable commit/blob identities or durable issue/comment IDs",
+      "observed": "GG baseline/blob IDs and SVP commit/blob IDs plus Issue #4/#5 durable comment IDs are bound",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-009",
+      "name": "forbidden_effects_absent",
+      "expected": "no normative/schema/tool/release/merge/tag/deployment/acceptance effect",
+      "observed": "none occurred",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-010",
+      "name": "formal_input_package_binding",
+      "expected": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+      "observed": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-011",
+      "name": "execution_allowance",
+      "expected": "one execution consumed, zero remaining",
+      "observed": "one execution consumed, zero remaining; no RUN-002 inferred",
+      "result": "PASS"
+    },
+    {
+      "id": "VAL-012",
+      "name": "result_status",
+      "expected": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW",
+      "observed": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW",
+      "result": "PASS"
+    }
+  ],
+  "execution_id": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "formal_input_package_sha256": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+  "note": "Validation records the exact executed candidate. It creates no new execution, replacement, implementation, merge, release, or normative authority.",
+  "preparation_commit": "4d5ee575c779b2e0f256e066d3edd58c1933867f",
+  "primary_disposition": "NORMATIVE_CLARIFICATION_CANDIDATE",
+  "result_blob": "633fe688ecdb354a139c2b41b635936ecaf0c92b",
+  "result_path": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/result.md",
+  "schema": "gg.method-discovery-validation-record/1.0.0",
+  "status": "PASS",
+  "terminal_status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW",
+  "validation_date": "2026-08-19"
+}
