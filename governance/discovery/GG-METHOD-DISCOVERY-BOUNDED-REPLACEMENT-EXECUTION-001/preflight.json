@@ -1,0 +1,93 @@
+{
+  "checked_before_execution": true,
+  "checks": [
+    {
+      "expected": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "id": "PF-001",
+      "name": "general_governance_main_currentness",
+      "observed": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "result": "PASS"
+    },
+    {
+      "expected": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "id": "PF-002",
+      "name": "branch_base_identity",
+      "observed": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "result": "PASS"
+    },
+    {
+      "expected": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+      "id": "PF-003",
+      "name": "operating_contract_blob",
+      "observed": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+      "result": "PASS"
+    },
+    {
+      "expected": "6c1824c9d222530a716c0829a1161470273db397",
+      "id": "PF-004",
+      "name": "svp_harvest_blob",
+      "observed": "6c1824c9d222530a716c0829a1161470273db397",
+      "result": "PASS"
+    },
+    {
+      "expected": "0fbe8ba61c65da3ab233def580b3d7e8ac4f6f31",
+      "id": "PF-005",
+      "name": "svp_lessons_blob",
+      "observed": "0fbe8ba61c65da3ab233def580b3d7e8ac4f6f31",
+      "result": "PASS"
+    },
+    {
+      "expected": "d37d00fe8777a8762772888a23ab740c52bf0d03",
+      "id": "PF-006",
+      "name": "svp_amendment_002_blob",
+      "observed": "d37d00fe8777a8762772888a23ab740c52bf0d03",
+      "result": "PASS"
+    },
+    {
+      "expected": "62e2e2e605eea112ef1c9e5346759730e922070a",
+      "id": "PF-007",
+      "name": "svp_amendment_003_blob",
+      "observed": "62e2e2e605eea112ef1c9e5346759730e922070a",
+      "result": "PASS"
+    },
+    {
+      "expected_comment_id": 5335539678,
+      "id": "PF-008",
+      "name": "owner_execution_authority",
+      "observed_comment_id": 5335539678,
+      "result": "PASS"
+    },
+    {
+      "expected": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+      "id": "PF-009",
+      "name": "formal_input_package_sha256",
+      "observed": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+      "result": "PASS"
+    },
+    {
+      "expected": 1,
+      "id": "PF-010",
+      "name": "permitted_execution_count",
+      "observed": 1,
+      "result": "PASS"
+    },
+    {
+      "expected": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/**",
+      "id": "PF-011",
+      "name": "write_surface",
+      "observed": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/**",
+      "result": "PASS"
+    },
+    {
+      "expected": "ABSENT",
+      "id": "PF-012",
+      "name": "normative_modification_authority",
+      "observed": "ABSENT",
+      "result": "PASS"
+    }
+  ],
+  "execution_id": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "schema": "gg.method-discovery-preflight/1.0.0",
+  "status": "PASS",
+  "terminal_rule": "Any non-PASS check blocks execution; no replacement execution is implied."
+}

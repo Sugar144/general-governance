@@ -1,0 +1,44 @@
+{
+  "canonical_manifest_sha256": "88033d59120ab2a3e9e226fd5f4985d7952a5dc7ecda8601b14c89da8dd7cbe8",
+  "canonicalization": "SHA-256 over UTF-8 JSON of manifest with sort_keys=true,separators=(',',':'),ensure_ascii=false",
+  "manifest": {
+    "general_governance": {
+      "baseline_commit": "91fa0727abf730e142a4c43f2da68b1281be1121",
+      "discovery_issue": 5,
+      "formal_execution_authorization_comment_id": 5335539678,
+      "intake_disposition_comment_id": 5335497863,
+      "intake_issue": 4,
+      "operating_contract": {
+        "blob_sha": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+        "document_id": "GOV-METHOD-OPERATING-CONTRACT-001",
+        "path": "framework/core/project-operating-contract.md",
+        "version": "0.4.0"
+      }
+    },
+    "package_id": "GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001-INPUT-PACKAGE",
+    "svp": {
+      "artifacts": [
+        {
+          "blob_sha": "6c1824c9d222530a716c0829a1161470273db397",
+          "path": "reports/work-packages/SVP-STAGE2A-V1-PACKET-03-CROSS-PROJECT-LEARNING-HARVEST.md"
+        },
+        {
+          "blob_sha": "0fbe8ba61c65da3ab233def580b3d7e8ac4f6f31",
+          "path": "docs/governance/EMPIRICAL_PACKET_PACKET03_LESSONS_LEARNED.md"
+        },
+        {
+          "blob_sha": "d37d00fe8777a8762772888a23ab740c52bf0d03",
+          "path": "docs/planning/stage-2a/STAGE_2A_V1_PACKET_03_AMENDMENT_002.md"
+        },
+        {
+          "blob_sha": "62e2e2e605eea112ef1c9e5346759730e922070a",
+          "path": "docs/planning/stage-2a/STAGE_2A_V1_PACKET_03_AMENDMENT_003.md"
+        }
+      ],
+      "harvest_container_commit": "b82925b5b756f7bde4bc153acf46abb97928c682",
+      "harvest_declared_evidence_baseline": "62af73a5c2006e618cff0be03c33dbb35b2cac91"
+    },
+    "version": "1.0.0"
+  },
+  "schema": "gg.method-discovery-input-package/1.0.0"
+}
