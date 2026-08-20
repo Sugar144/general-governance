@@ -35,10 +35,10 @@ jobs:
           from tools.validate_consumer import release_content_digest
           print(f"RELEASE_CONTENT_SHA256={release_content_digest(Path('.').resolve())}")
           PY
-      - name: Run consumer conformance tests
-        run: python3 -m unittest -v tests/test_consumer_contract.py
       - name: Run WPDC contract regressions
         run: >-
           python3 -m unittest -v
           tests/test_work_packet_contract.py
           tests/test_work_packet_control_declarations.py
+      - name: Run consumer conformance tests
+        run: python3 -m unittest -v tests/test_consumer_contract.py
