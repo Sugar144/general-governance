@@ -1,0 +1,45 @@
+{
+  "anti_recursion": {
+    "additional_execution_authority_created": false,
+    "implicit_replacement_created": false,
+    "note": "RUN-001 is consumed. No RUN-002 exists or is authorized."
+  },
+  "authority_record_id": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001-AUTH-001",
+  "effects": {
+    "deployment": false,
+    "existing_files_modified": false,
+    "merge": false,
+    "normative_files_modified": false,
+    "owner_acceptance_claimed": false,
+    "pull_request_created": false,
+    "release": false,
+    "release_metadata_modified": false,
+    "schemas_modified": false,
+    "tag": false,
+    "tools_modified": false
+  },
+  "execution_boundary": {
+    "allowance_consumed": 1,
+    "branch_head_at_admission": "ae462b2142d3f44cd329309255b7cf2f40fa01cd",
+    "crossed": true,
+    "general_governance_main_at_admission": "91fa0727abf730e142a4c43f2da68b1281be1121",
+    "remaining_execution_allowance": 0
+  },
+  "execution_date": "2026-08-20",
+  "execution_id": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "formal_input_package_sha256": "a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825",
+  "mode": "READ_ONLY_DRAFTING_SYNTHESIS",
+  "owner_authorization_comment_id": 5360001203,
+  "preparation_commit": "ae462b2142d3f44cd329309255b7cf2f40fa01cd",
+  "protocol": "GG-METHOD-NORMATIVE-CLARIFICATION-PROTOCOL-001",
+  "result": {
+    "path": "governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/proposal.md",
+    "blob": "9257e75cc2b0f187c1c068b087b4b2de2ca3e396",
+    "primary_disposition": "NORMATIVE_WORDING_CANDIDATE",
+    "status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW"
+  },
+  "role": "METHOD_NORMATIVE_DRAFTER",
+  "schema": "gg.normative-clarification-run-record/1.0.0",
+  "status": "EXECUTED_PENDING_VALIDATION",
+  "work_identity": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001"
+}
