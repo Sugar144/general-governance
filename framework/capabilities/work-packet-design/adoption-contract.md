@@ -33,7 +33,9 @@ A consumer activates WPDC only when all of the following are true:
 2. the value resolves to exactly one adopter-owned WPDC binding document;
 3. that binding document conforms to a WPDC adoption contract version supported by the selected General Governance framework identity;
 4. the binding selects a WPDC normative capability contract version supported by that framework identity;
-5. the binding is internally coherent and its required adopter-owned mappings resolve sufficiently for the packet being evaluated.
+5. the binding itself satisfies the mandatory identity/version and internal-coherence semantics of this contract.
+
+Packet-specific source sufficiency is evaluated separately. A globally valid adoption does not guarantee that every future packet has enough bounded project context to be designed truthfully.
 
 A framework release merely containing WPDC does not activate it. A binding file that exists but is not selected by the adopter configuration does not activate it. A prose statement that "WPDC applies" does not substitute for the explicit binding.
 
@@ -47,7 +49,7 @@ The adopter owns:
 - the binding document itself;
 - source mappings and source identities declared by the binding;
 - project-specific authority, requirements, architecture, decisions, planning, state, and evidence;
-- the packet projection target/root;
+- any packet projection target/root selected by binding or exact packet context;
 - mutable-state observation/currentness semantics not defined by reusable GG contracts;
 - project-specific interpretation of what the mapped sources mean.
 
@@ -77,11 +79,13 @@ A valid WPDC binding MUST identify, at semantic level:
 - the adopted WPDC adoption-contract version;
 - the adopted WPDC capability-contract version;
 - the adopting project/repository identity or equivalent stable adopter identity;
-- one or more authority-source bindings sufficient to resolve the governing authority relevant to WPDC packet design;
-- zero or more explicitly declared source bindings for other supported source classes;
-- exactly one adopter-owned packet projection target/root;
+- every source binding that the adopter elects to make generically available to WPDC;
 - any adopter-specific state-source/currentness rules required to interpret declared mutable state sources;
 - any explicit bounded source-resolution rules needed to prevent the capability from searching arbitrary undeclared project surfaces.
+
+The binding SHOULD identify the adopter-owned packet projection target/root when the adopter wants one stable generic WPDC projection location.
+
+No source class is made globally mandatory merely by this adoption contract. A particular packet may still require authority, requirements, architecture, state, decision, or planning material to be supplied through a declared binding or another exact authority-bound packet input before that packet can be designed or evaluated truthfully.
 
 The future machine schema may split, normalize, or name these fields differently only if it preserves these semantics.
 
@@ -110,9 +114,11 @@ If a required semantic input cannot be resolved from the declared source binding
 
 The adoption binding MAY identify repository-local paths, externally resolved sources, state-observation mechanisms, or other bounded locators where the later machine contract supports them. This contract does not require all source classes to be repository-local files.
 
-Omission of a non-authority source class does not make adoption globally invalid. It means that class is unavailable through the generic binding unless another applicable exact reference is supplied. If a particular packet cannot be designed truthfully without that missing class, that packet process cannot claim semantic completeness and must block/escalate rather than infer the missing truth.
+Omission of any source class does not make adoption globally invalid. It means that class is unavailable through the generic binding unless another applicable exact reference is supplied to the packet process.
 
-Authority-source binding is mandatory because WPDC must not design a governed packet without a bounded way to resolve applicable authority.
+If a particular packet cannot be designed truthfully without material from an omitted class, that packet process cannot claim semantic completeness and MUST block/escalate unless the missing material is supplied through an exact bounded input.
+
+In particular, WPDC packet design MUST have a bounded way to resolve applicable authority, whether through an authority-source binding or an exact authority-bound packet input. Absence of a generic authority-source binding is not by itself an adoption failure; inability to resolve applicable authority for the packet is a packet-evaluation stop condition.
 
 ## 8. State sources and currentness
 
@@ -128,15 +134,17 @@ When state evidence comes from a separately identified external dependency rathe
 
 The adoption binding does not need to enumerate every external dependency that any future packet might consume.
 
-A packet using `BOUND_EXTERNAL_SATISFIED` must bind the applicable external dependency source/evidence exactly at packet-evaluation level under the normative capability contract and future machine contract.
+A packet using `BOUND_EXTERNAL_SATISFIED` MUST bind the applicable external dependency source/evidence exactly at packet-evaluation level under the normative capability contract and future machine contract.
 
 The adoption binding MAY provide bounded source locations or authority sources from which such external dependencies can be resolved, but it MUST NOT convert externally supplied results into adopter-owned pre-existing facts simply by mapping them into a source class.
 
 ## 10. Packet projection target
 
-The binding MUST declare exactly one adopter-owned packet projection target/root for WPDC-governed packet artifacts.
+The binding SHOULD declare exactly one adopter-owned packet projection target/root when the adopter wants a stable generic location for WPDC-governed packet artifacts.
 
 The projection target is an output/custody location, not a source class. Content written there does not become an authoritative requirements, architecture, state, or authority source merely because WPDC produced it.
+
+If the generic binding omits a projection target, a packet-producing process MUST NOT invent a universal path. It must use an exact adopter-owned projection target supplied by applicable packet/project authority before persisting WPDC packet artifacts.
 
 If an adopter intentionally wants historical packet artifacts to serve as a planning/decision/authority source for later work, it MUST map that source role explicitly under the applicable source class and preserve the governing provenance/authority semantics.
 
@@ -190,10 +198,10 @@ A future WPDC machine validator may verify adoption facts that are explicitly re
 - presence/shape of the discovery key when WPDC use is requested;
 - binding existence and supported version identity;
 - required binding identity/version declarations;
-- required authority-source and projection-target declarations;
-- source-class enum/reference integrity;
+- declared source-class and projection-target reference integrity;
 - binding identity/currentness references represented by a packet manifest;
-- contradictions provable from declared source ownership/identity.
+- contradictions provable from declared source ownership/identity;
+- packet-specific absence of a required bounded authority/source/projection input when the future machine contract makes that requirement representable.
 
 It MUST NOT infer whether mapped requirements or architecture are substantively correct, whether a source truly has authority when that cannot be determined from declared machine-bound evidence, or whether mutable state is semantically fresh enough when the adopter has not encoded a deterministic currentness rule.
 
@@ -201,7 +209,7 @@ Those remain semantic/governance responsibilities.
 
 ## 15. Failure behavior
 
-WPDC adoption MUST fail closed for the packet being evaluated when a required adoption fact is missing, unresolved, contradictory, or unsupported.
+WPDC adoption MUST fail closed for the packet being evaluated when a mandatory adoption fact is missing, unresolved, contradictory, or unsupported.
 
 A failed WPDC adoption MUST NOT silently fall back to "best effort WPDC" while still claiming WPDC conformance.
 
@@ -212,6 +220,8 @@ This distinction is normative:
 - no discovery key -> WPDC absent;
 - discovery key plus valid supported binding -> WPDC adopted;
 - discovery key plus missing/invalid/unsupported binding -> WPDC adoption invalid for governed evaluation.
+
+A valid adoption plus insufficient bounded context for one particular packet is a packet-evaluation problem, not automatic global adoption invalidity.
 
 ## 16. Compatibility and release boundary
 
@@ -225,6 +235,6 @@ Consumers that do not add the optional discovery key MUST NOT acquire WPDC packe
 
 This is WPDC adoption contract version `1.0.0`.
 
-Changes to activation semantics, discovery-key meaning, adopter/framework ownership, mandatory source classes, packet projection ownership, binding currentness, historical re-evaluation, or fail-closed adoption behavior are semantic contract changes and require explicit version/change disposition.
+Changes to activation semantics, discovery-key meaning, adopter/framework ownership, source-class availability semantics, packet projection ownership, binding currentness, historical re-evaluation, or fail-closed adoption behavior are semantic contract changes and require explicit version/change disposition.
 
 The future binding JSON/YAML schema and validator implementation must be derived from this contract and may not narrow or broaden these semantics without a separately governed contract change.
