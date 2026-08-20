@@ -1,0 +1,36 @@
+{
+  "accepted_implementation_head": "95e7dafac6afee54ca1ff6112dcd0cded74d08e8",
+  "accepted_poc": {
+    "document_version": "0.5.0",
+    "git_blob": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+    "path": "framework/core/project-operating-contract.md",
+    "sha256": "5a54eb128b36cffbf12fdaf3070a88cc7c84d9f696333e01c679d31fa5de723b"
+  },
+  "accepted_readiness_head": "5ef26e8adbc167a88bfa6ef64bfeac5a75369b43",
+  "accepted_readiness_result_blob": "6bc62d718451f3680a2a81306366ac33806c975f",
+  "authorized_existing_write_surface": [
+    "RELEASE_VERSION",
+    "README.md",
+    "docs/consumer-contract.md",
+    "provenance/evolution-manifest.json",
+    "release-manifest.json"
+  ],
+  "authorized_new_surface": "governance/releases/GG-RELEASE-PACKAGE-0.1.0-RC.5-001/**",
+  "execution_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001-RUN-001",
+  "main_baseline": "91fa0727abf730e142a4c43f2da68b1281be1121",
+  "manifest_last": true,
+  "owner_authorization_comment": 5360635620,
+  "owner_authorization_issue": 9,
+  "package_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001",
+  "permitted_execution_count": 1,
+  "readiness_validation_blob": "54d0909da759cfeee1c3c6aa8c4770461c81360b",
+  "schema": "gg.release-package-input/1.0.0",
+  "source_blobs": {
+    "README.md": "30bccfdc89403e22bb625138341c5de43b6b0cc9",
+    "RELEASE_VERSION": "9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf",
+    "docs/consumer-contract.md": "ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2",
+    "provenance/evolution-manifest.json": "2b76a961545c87dbedae5b503ea7756faacfbc46",
+    "release-manifest.json": "048a6148e6192cccf6e33916606f2699635620c1"
+  },
+  "target_release": "0.1.0-rc.5"
+}

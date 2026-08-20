@@ -1,0 +1,23 @@
+{
+  "schema": "gg.release-package-preflight/1.0.0",
+  "package_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001",
+  "execution_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001-RUN-001",
+  "formal_input_package_sha256": "652e11827aabc0f3538bb7fbeda634d4af0ef73cd19c3a350286b73cefb9c54c",
+  "status": "PASS",
+  "checks": [
+    {"id":"PF-001","name":"main_currentness","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-002","name":"accepted_readiness_head","expected":"5ef26e8adbc167a88bfa6ef64bfeac5a75369b43","observed":"5ef26e8adbc167a88bfa6ef64bfeac5a75369b43","result":"PASS"},
+    {"id":"PF-003","name":"accepted_poc_blob","expected":"9abe903e6c045fd67c1a061e8dff79fbb076fdd3","observed":"9abe903e6c045fd67c1a061e8dff79fbb076fdd3","result":"PASS"},
+    {"id":"PF-004","name":"accepted_poc_sha256","expected":"5a54eb128b36cffbf12fdaf3070a88cc7c84d9f696333e01c679d31fa5de723b","observed":"5a54eb128b36cffbf12fdaf3070a88cc7c84d9f696333e01c679d31fa5de723b","result":"PASS"},
+    {"id":"PF-005","name":"release_version_source_blob","expected":"9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf","observed":"9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf","result":"PASS"},
+    {"id":"PF-006","name":"readme_source_blob","expected":"30bccfdc89403e22bb625138341c5de43b6b0cc9","observed":"30bccfdc89403e22bb625138341c5de43b6b0cc9","result":"PASS"},
+    {"id":"PF-007","name":"consumer_contract_source_blob","expected":"ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2","observed":"ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2","result":"PASS"},
+    {"id":"PF-008","name":"evolution_manifest_source_blob","expected":"2b76a961545c87dbedae5b503ea7756faacfbc46","observed":"2b76a961545c87dbedae5b503ea7756faacfbc46","result":"PASS"},
+    {"id":"PF-009","name":"release_manifest_source_blob","expected":"048a6148e6192cccf6e33916606f2699635620c1","observed":"048a6148e6192cccf6e33916606f2699635620c1","result":"PASS"},
+    {"id":"PF-010","name":"write_surface","expected":"exact five existing files + package custody","observed":"bound exactly","result":"PASS"},
+    {"id":"PF-011","name":"manifest_last","expected":true,"observed":true,"result":"PASS"},
+    {"id":"PF-012","name":"permitted_execution_count","expected":1,"observed":1,"result":"PASS"},
+    {"id":"PF-013","name":"owner_authorization_comment","expected":5360635620,"observed":5360635620,"result":"PASS"},
+    {"id":"PF-014","name":"forbidden_effects","expected":"no POC/schema/tool/test/L6/config/capability/extraction/PR/merge/tag/release/deploy/publication","observed":"none admitted","result":"PASS"}
+  ]
+}
