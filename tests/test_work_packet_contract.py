@@ -225,21 +225,27 @@ class WorkPacketContractTests(unittest.TestCase):
     def write_framework_lock(
         self, configuration_path: str = "consumer-configuration.yaml"
     ) -> None:
+        release_manifest_path = ROOT / "release-manifest.json"
+        release_manifest = json.loads(release_manifest_path.read_text(encoding="utf-8"))
         lock = {
             "schema_version": "2.0.0",
             "framework": {
                 "repository": "Sugar144/general-governance",
-                "version": "0.1.0-rc.6",
-                "commit_sha": "1" * 40,
-                "release_manifest_sha256": "2" * 64,
+                "version": release_manifest["framework_version"],
+                "commit_sha": run_git(ROOT, "rev-parse", "HEAD"),
+                "release_manifest_sha256": digest(release_manifest_path),
             },
             "consumer": {"configuration_path": configuration_path},
-            "compatibility": {
-                "framework_contract": "2.0.0",
-                "consumer_lock_schema": "2.0.0",
-                "consumer_configuration_schema": "1.0.0",
-            },
+            "compatibility": release_manifest["compatibility"],
         }
+        self.framework_lock_path.write_text(
+            json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
+    def read_framework_lock(self) -> dict:
+        return json.loads(self.framework_lock_path.read_text(encoding="utf-8"))
+
+    def rewrite_framework_lock(self, lock: dict) -> None:
         self.framework_lock_path.write_text(
             json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
@@ -635,6 +641,90 @@ class WorkPacketContractTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
         self.assertIn("framework-lock.json is required", result.stdout)
+
+    def test_cli_rejects_framework_lock_commit_mismatch(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        lock = self.read_framework_lock()
+        lock["framework"]["commit_sha"] = "f" * 40
+        self.rewrite_framework_lock(lock)
+        result = self.run_cli(manifest_path, binding_path)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn("does not equal the immutable commit", result.stdout)
+
+    def test_cli_rejects_framework_lock_manifest_hash_mismatch(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        lock = self.read_framework_lock()
+        lock["framework"]["release_manifest_sha256"] = "0" * 64
+        self.rewrite_framework_lock(lock)
+        result = self.run_cli(manifest_path, binding_path)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn("release manifest hash does not match", result.stdout)
+
+    def test_locked_release_must_advertise_wpdc(self):
+        fake = self.root / "fake-framework"
+        fake.mkdir()
+        subprocess.run(["git", "init", "-q", str(fake)], check=True)
+        subprocess.run(
+            ["git", "-C", str(fake), "config", "user.name", "WPDC Test"],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(fake),
+                "config",
+                "user.email",
+                "wpdc-test@example.invalid",
+            ],
+            check=True,
+        )
+        (fake / "content.txt").write_text("framework content\n", encoding="utf-8")
+        release = {
+            "manifest_schema_version": "1.2.0",
+            "repository": "Sugar144/general-governance",
+            "framework_version": "0.1.0-rc.5",
+            "release_status": "TEST",
+            "compatibility": {
+                "framework_contract": "2.0.0",
+                "consumer_lock_schema": "2.0.0",
+                "consumer_configuration_schema": "1.0.0",
+            },
+            "content_sha256": "0" * 64,
+        }
+        release_path = fake / "release-manifest.json"
+        release_path.write_text(
+            json.dumps(release, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        subprocess.run(
+            ["git", "-C", str(fake), "add", "content.txt", "release-manifest.json"],
+            check=True,
+        )
+        release["content_sha256"] = validator.release_content_digest(fake)
+        release_path.write_text(
+            json.dumps(release, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        subprocess.run(
+            ["git", "-C", str(fake), "add", "release-manifest.json"], check=True
+        )
+        subprocess.run(
+            ["git", "-C", str(fake), "commit", "-qm", "fake release"], check=True
+        )
+        lock = {
+            "framework": {
+                "repository": "Sugar144/general-governance",
+                "version": release["framework_version"],
+                "commit_sha": run_git(fake, "rev-parse", "HEAD"),
+                "release_manifest_sha256": digest(release_path),
+            },
+            "compatibility": release["compatibility"],
+        }
+        with self.assertRaises(validator.ValidationFailure) as caught:
+            validator.verify_locked_framework_identity(lock, fake)
+        self.assertEqual(caught.exception.code, "INVALID_ADOPTION_BINDING")
+        self.assertIn("does not advertise", caught.exception.message)
 
     def test_state_binding_rule_must_match_mapped_source_rule(self):
         manifest, manifest_path, binding, binding_path = self.write_case(
