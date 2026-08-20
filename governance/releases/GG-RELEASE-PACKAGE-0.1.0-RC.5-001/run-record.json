@@ -1,0 +1,22 @@
+{
+  "schema": "gg.release-package-run-record/1.0.0",
+  "package_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001",
+  "execution_id": "GG-RELEASE-PACKAGE-0.1.0-RC.5-001-RUN-001",
+  "preparation_commit": "658970fd8e5df31de9ee12e1ebb3d30d30134bf9",
+  "main_at_admission": "91fa0727abf730e142a4c43f2da68b1281be1121",
+  "accepted_readiness_head": "5ef26e8adbc167a88bfa6ef64bfeac5a75369b43",
+  "accepted_poc_blob": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+  "formal_input_package_sha256": "652e11827aabc0f3538bb7fbeda634d4af0ef73cd19c3a350286b73cefb9c54c",
+  "execution_boundary": "FIRST_RELEASE_FACING_MUTATION",
+  "execution_boundary_crossed": true,
+  "execution_allowance_consumed": 1,
+  "execution_allowance_remaining": 0,
+  "manifest_finalization_required": true,
+  "manifest_must_be_last_tracked_mutation": true,
+  "post_manifest_tracked_mutation_authority": false,
+  "pr_authority": false,
+  "merge_authority": false,
+  "tag_release_publication_authority": false,
+  "owner_acceptance_authority": false,
+  "status": "EXECUTED_PRE_MANIFEST_FINALIZATION"
+}
