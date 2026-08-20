@@ -40,5 +40,6 @@ jobs:
           python3 -m unittest -v
           tests/test_work_packet_contract.py
           tests/test_work_packet_control_declarations.py
+          tests/test_work_packet_evidence_contexts.py
       - name: Run consumer conformance tests
         run: python3 -m unittest -v tests/test_consumer_contract.py
