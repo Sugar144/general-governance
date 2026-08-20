@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -17,8 +18,13 @@ from typing import Any, Iterable
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from framework.core.l6.strict_yaml import StrictYAMLError, load as load_yaml
+
 BINDING_SCHEMA = ROOT / "contracts" / "work-packet-capability-binding.schema.json"
 MANIFEST_SCHEMA = ROOT / "contracts" / "work-packet-manifest.schema.json"
+CONSUMER_CONFIGURATION_SCHEMA = ROOT / "contracts" / "consumer-configuration.schema.json"
 
 
 @dataclass(frozen=True)
@@ -32,6 +38,10 @@ class ValidationFailure(ValueError):
         super().__init__(message)
         self.code = code
         self.message = message
+
+
+class CapabilityAbsent(RuntimeError):
+    """The adopter configuration does not activate optional WPDC."""
 
 
 def fail(code: str, message: str) -> None:
@@ -68,6 +78,96 @@ def validate_schema(document: dict[str, Any], schema_path: Path, label: str) -> 
         fail(
             "SCHEMA_INVALID",
             f"{label} schema validation failed at {where}: {first.message}",
+        )
+
+
+def load_adopter_configuration(path: Path) -> dict[str, Any]:
+    try:
+        value = load_yaml(path)
+    except (OSError, StrictYAMLError) as exc:
+        fail("INVALID_ADOPTION_BINDING", f"invalid adopter configuration {path}: {exc}")
+    if not isinstance(value, dict):
+        fail("INVALID_ADOPTION_BINDING", "adopter configuration must be a mapping")
+    schema = json.loads(CONSUMER_CONFIGURATION_SCHEMA.read_text(encoding="utf-8"))
+    errors = sorted(
+        Draft202012Validator(schema).iter_errors(value),
+        key=lambda error: [str(part) for part in error.path],
+    )
+    if errors:
+        first = errors[0]
+        where = "$" + "".join(f"[{part!r}]" for part in first.path)
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"adopter configuration schema validation failed at {where}: {first.message}",
+        )
+    return value
+
+
+def verify_adoption_selection(
+    configuration_path: Path, binding_path: Path, repository_root: Path
+) -> None:
+    root = repository_root.resolve()
+    config_path = configuration_path.resolve()
+    try:
+        config_path.relative_to(root)
+    except ValueError:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "adopter configuration must be inside the supplied adopter repository",
+        )
+    if not config_path.is_file():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"adopter configuration does not exist: {configuration_path}",
+        )
+
+    document = load_adopter_configuration(config_path)
+    configuration = document.get("configuration")
+    if not isinstance(configuration, dict):
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "adopter configuration lacks the top-level configuration mapping",
+        )
+    capabilities = configuration.get("capabilities")
+    if capabilities is None:
+        raise CapabilityAbsent(
+            "configuration.capabilities.work_packet_design.binding_path is absent"
+        )
+    if not isinstance(capabilities, dict):
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "configuration.capabilities must be a mapping when present",
+        )
+    if "work_packet_design" not in capabilities:
+        raise CapabilityAbsent(
+            "configuration.capabilities.work_packet_design.binding_path is absent"
+        )
+    wpdc = capabilities["work_packet_design"]
+    if not isinstance(wpdc, dict):
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "configuration.capabilities.work_packet_design must be a mapping",
+        )
+    selected = wpdc.get("binding_path")
+    if not isinstance(selected, str) or not selected.strip():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "configuration.capabilities.work_packet_design.binding_path must be a non-empty path",
+        )
+
+    selected_path = Path(selected)
+    if not selected_path.is_absolute():
+        selected_path = root / selected_path
+    selected_path = selected_path.resolve()
+    if not selected_path.is_file():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"configured WPDC binding does not exist: {selected}",
+        )
+    if selected_path != binding_path.resolve():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "supplied WPDC binding is not the binding selected by adopter configuration",
         )
 
 
@@ -201,14 +301,24 @@ def verify_state_contexts(
                 f"state context {context['state_context_id']} uses non-state mapped source {source_id}",
             )
         currentness = context["currentness"]
-        if (
-            currentness["mode"] == "BINDING_RULE"
-            and currentness["rule_ref"] not in rules
-        ):
-            fail(
-                "INVALID_ADOPTION_BINDING",
-                f"state context {context['state_context_id']} references unknown binding currentness rule {currentness['rule_ref']}",
-            )
+        if currentness["mode"] == "BINDING_RULE":
+            rule_ref = currentness["rule_ref"]
+            if rule_ref not in rules:
+                fail(
+                    "INVALID_ADOPTION_BINDING",
+                    f"state context {context['state_context_id']} references unknown binding currentness rule {rule_ref}",
+                )
+            if source is None:
+                fail(
+                    "INVALID_ADOPTION_BINDING",
+                    f"unmapped state context {context['state_context_id']} cannot use BINDING_RULE; use an exact currentness reference",
+                )
+            source_rule = source.get("currentness_rule_ref")
+            if source_rule != rule_ref:
+                fail(
+                    "INVALID_ADOPTION_BINDING",
+                    f"state context {context['state_context_id']} currentness rule {rule_ref} does not match source {source_id} rule {source_rule}",
+                )
     return contexts
 
 
@@ -602,21 +712,24 @@ def evaluate(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate a WPDC work-packet manifest against an exact adopter binding"
+        description="Validate a WPDC work-packet manifest against the exact binding selected by adopter configuration"
     )
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--binding", required=True, type=Path)
+    parser.add_argument("--configuration", required=True, type=Path)
     parser.add_argument(
         "--repository-root",
         required=True,
         type=Path,
-        help="adopter repository root used to resolve exact canonical/current evidence",
+        help="adopter repository root used to resolve configuration, binding, and exact canonical/current evidence",
     )
     args = parser.parse_args()
     manifest_path = args.manifest.resolve()
     binding_path = args.binding.resolve()
+    configuration_path = args.configuration.resolve()
     repository_root = args.repository_root.resolve()
     try:
+        verify_adoption_selection(configuration_path, binding_path, repository_root)
         manifest = load_json(manifest_path, "WPDC manifest")
         binding = load_json(binding_path, "WPDC binding")
         result = evaluate(
@@ -626,6 +739,9 @@ def main() -> int:
             binding_path,
             repository_root,
         )
+    except CapabilityAbsent as exc:
+        print(f"WPDC_ABSENT: {exc}; no WPDC packet disposition is produced")
+        return 2
     except ValidationFailure as exc:
         print(f"PACKET_INVALID: {exc.code}: {exc.message}")
         return 1
