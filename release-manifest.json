@@ -1,7 +1,7 @@
 {
-  "manifest_schema_version": "1.2.0",
+  "manifest_schema_version": "1.3.0",
   "repository": "Sugar144/general-governance",
-  "framework_version": "0.1.0-rc.5",
+  "framework_version": "0.1.0-rc.6",
   "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
   "compatibility": {
     "framework_contract": "2.0.0",
@@ -13,7 +13,14 @@
     "stack_schema": "1.0.0",
     "optional": true
   },
-  "content_sha256": "ea453ca5be4f8abbee9f99aaaf4f30153d7d4fc838dcb0461a26792f526cb7e0",
+  "work_packet_design": {
+    "contract_version": "1.0.0",
+    "adoption_contract_version": "1.0.0",
+    "binding_schema_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "optional": true
+  },
+  "content_sha256": "aa0d9322d5bd1cb3cb51ae9172a3f6dc77c670a5073b65d57451d9a05abe651b",
   "content_identity_method": "SHA-256 of lexicographically ordered records containing each tracked path, a NUL separator, the SHA-256 of that file, and a newline; release-manifest.json and .git content are excluded",
   "extraction_provenance": "provenance/extraction-manifest.json",
   "evolution_provenance": "provenance/evolution-manifest.json",
@@ -21,16 +28,22 @@
     "framework/core/project-operating-contract.md",
     "framework/contracts/configuration-schema.yaml",
     "framework/core/l6",
+    "framework/capabilities/work-packet-design/contract.md",
+    "framework/capabilities/work-packet-design/adoption-contract.md",
     "contracts/consumer-lock.schema.json",
     "contracts/consumer-lock-v1.schema.json",
     "contracts/consumer-configuration.schema.json",
     "contracts/framework-upgrade.schema.json",
     "contracts/capability-stack.schema.json",
+    "contracts/work-packet-capability-binding.schema.json",
+    "contracts/work-packet-manifest.schema.json",
     "docs/architecture/capability-composition.md",
+    "docs/architecture/work-packet-design-dependency-closure.md",
     "provenance/extraction-manifest.json",
     "provenance/evolution-manifest.json",
     "tools/validate_consumer.py",
     "tools/validate_capability_stack.py",
+    "tools/validate_work_packet.py",
     "tools/verify_evolution.py"
   ]
 }
