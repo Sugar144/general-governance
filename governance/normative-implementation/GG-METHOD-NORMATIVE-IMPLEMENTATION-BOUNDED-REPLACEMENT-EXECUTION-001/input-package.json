@@ -1,0 +1,34 @@
+{
+  "accepted_wording": {
+    "owner_acceptance_comment_id": 5360107295,
+    "proposal_blob": "9257e75cc2b0f187c1c068b087b4b2de2ca3e396",
+    "proposal_path": "governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/proposal.md",
+    "validated_drafting_head": "cbf424234f339eea52ab7662560941db5983fd3a"
+  },
+  "branch": "method/normative-implementation-bounded-replacement-execution-001",
+  "execution_contract": {
+    "mode": "BOUNDED_NORMATIVE_MUTATION",
+    "permitted_execution_count": 1,
+    "protocol": "GG-METHOD-NORMATIVE-IMPLEMENTATION-PROTOCOL-001",
+    "role": "NORMATIVE_IMPLEMENTER",
+    "write_surface": [
+      "framework/core/project-operating-contract.md",
+      "governance/normative-implementation/GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001/**"
+    ]
+  },
+  "execution_id": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "general_governance_baseline": "91fa0727abf730e142a4c43f2da68b1281be1121",
+  "owner_authorization_comment_id": 5360129304,
+  "owner_issue": 7,
+  "schema": "gg.normative-implementation-input-package/1.0.0",
+  "target": {
+    "baseline_blob": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+    "document_id": "GOV-METHOD-OPERATING-CONTRACT-001",
+    "from_version": "0.4.0",
+    "insert_after_section": "Formal execution, orchestration, and output contract",
+    "insert_before_section": "Versioned formal-run correction identity",
+    "path": "framework/core/project-operating-contract.md",
+    "to_version": "0.5.0"
+  },
+  "work_identity": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001"
+}

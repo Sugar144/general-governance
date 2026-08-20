@@ -1,0 +1,55 @@
+{
+  "schema": "gg.normative-implementation-run-record/1.0.0",
+  "work_identity": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001",
+  "execution_id": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "execution_date": "2026-08-20",
+  "role": "NORMATIVE_IMPLEMENTER",
+  "mode": "BOUNDED_NORMATIVE_MUTATION",
+  "protocol": "GG-METHOD-NORMATIVE-IMPLEMENTATION-PROTOCOL-001",
+  "authority_record_id": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001-AUTH-001",
+  "owner_authorization_comment_id": 5360129304,
+  "formal_input_package_sha256": "92c14e5d1b71d82f7ea7f4c99c167d0231b31f98073eeeedaf4efb1fe4ed186d",
+  "preparation_commit": "d7336fa79bfa30a1a68149f05cbf87b9c64ee32f",
+  "execution_boundary": {
+    "crossed": true,
+    "general_governance_main_at_admission": "91fa0727abf730e142a4c43f2da68b1281be1121",
+    "branch_head_at_admission": "d7336fa79bfa30a1a68149f05cbf87b9c64ee32f",
+    "allowance_consumed": 1,
+    "remaining_execution_allowance": 0
+  },
+  "mutation": {
+    "target_path": "framework/core/project-operating-contract.md",
+    "baseline_blob": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+    "candidate_blob": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+    "version_from": "0.4.0",
+    "version_to": "0.5.0",
+    "accepted_proposal_blob": "9257e75cc2b0f187c1c068b087b4b2de2ca3e396",
+    "wording_refined": false
+  },
+  "effects": {
+    "normative_target_modified": true,
+    "schemas_modified": false,
+    "tools_modified": false,
+    "tests_modified": false,
+    "l6_modified": false,
+    "configuration_modified": false,
+    "release_metadata_modified": false,
+    "pr_created": false,
+    "merge": false,
+    "tag": false,
+    "release": false,
+    "deployment": false,
+    "owner_acceptance_claimed": false
+  },
+  "anti_recursion": {
+    "additional_execution_authority_created": false,
+    "implicit_replacement_created": false,
+    "note": "RUN-001 is consumed. No RUN-002 exists or is authorized."
+  },
+  "result": {
+    "path": "governance/normative-implementation/GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001/implementation-result.md",
+    "primary_disposition": "NORMATIVE_IMPLEMENTATION_CANDIDATE",
+    "status": "EXECUTED_PENDING_VALIDATION"
+  },
+  "status": "EXECUTED_PENDING_VALIDATION"
+}

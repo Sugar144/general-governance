@@ -1,0 +1,23 @@
+{
+  "schema": "gg.integration-readiness-preflight/1.0.0",
+  "execution_id": "GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "status": "PASS",
+  "checked_before_execution": true,
+  "checks": [
+    {"id":"PF-001","name":"main_currentness","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-002","name":"accepted_implementation_head","expected":"95e7dafac6afee54ca1ff6112dcd0cded74d08e8","observed":"95e7dafac6afee54ca1ff6112dcd0cded74d08e8","result":"PASS"},
+    {"id":"PF-003","name":"accepted_poc_blob","expected":"9abe903e6c045fd67c1a061e8dff79fbb076fdd3","observed":"9abe903e6c045fd67c1a061e8dff79fbb076fdd3","result":"PASS"},
+    {"id":"PF-004","name":"implementation_validation_blob","expected":"9aa898fc4df8e09e083b8c7d7f1e365f20f16949","observed":"9aa898fc4df8e09e083b8c7d7f1e365f20f16949","result":"PASS"},
+    {"id":"PF-005","name":"owner_authority_comment","expected":"5360367828","observed":"5360367828","result":"PASS"},
+    {"id":"PF-006","name":"release_version_blob","expected":"9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf","observed":"9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf","result":"PASS"},
+    {"id":"PF-007","name":"release_manifest_blob","expected":"048a6148e6192cccf6e33916606f2699635620c1","observed":"048a6148e6192cccf6e33916606f2699635620c1","result":"PASS"},
+    {"id":"PF-008","name":"evolution_manifest_blob","expected":"2b76a961545c87dbedae5b503ea7756faacfbc46","observed":"2b76a961545c87dbedae5b503ea7756faacfbc46","result":"PASS"},
+    {"id":"PF-009","name":"consumer_contract_blob","expected":"ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2","observed":"ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2","result":"PASS"},
+    {"id":"PF-010","name":"formal_input_package_sha256","expected":"b9dde57a0d25e8ec21808581595fcbaa6ed7a17d802bca6d6c19ed3fef333d26","observed":"b9dde57a0d25e8ec21808581595fcbaa6ed7a17d802bca6d6c19ed3fef333d26","result":"PASS"},
+    {"id":"PF-011","name":"permitted_execution_count","expected":"1","observed":"1","result":"PASS"},
+    {"id":"PF-012","name":"write_surface","expected":"governance/integration-readiness/GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001/**","observed":"governance/integration-readiness/GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001/**","result":"PASS"},
+    {"id":"PF-013","name":"release_mutation_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"},
+    {"id":"PF-014","name":"pr_merge_release_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"}
+  ],
+  "terminal_rule": "Any non-PASS check blocks execution; no replacement execution is implied."
+}

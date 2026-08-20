@@ -1,6 +1,6 @@
 ---
 document_id: GOV-METHOD-OPERATING-CONTRACT-001
-version: 0.4.0
+version: 0.5.0
 status: IMPLEMENTED_LOCALLY_PENDING_PROJECT_OWNER_REVIEW
 constitutional_authority: NONE
 ---
@@ -70,6 +70,20 @@ The declared output artifact must be materialized at that path, use the declared
 Formal architecture and implementation reports used as durable design,
 review, validation, or implementation evidence must be imported into
 repository custody before the associated change is committed.
+
+## Bounded replacement execution
+
+A terminal failure never creates execution authority. A replacement execution is a distinct formal execution identity causally linked to a prior execution that crossed its authoritative execution boundary and reached a terminal failed state. It does not resume, unconsume, reopen, overwrite, or correct the failed execution; the failed execution and its evidence remain immutable.
+
+A replacement may execute only under explicit finite authority that admits replacement semantics, either through a separately granted post-failure authorization or through a prospective conditional replacement policy bound before execution. A bare `permitted_execution_count > 1` is only a quantity bound and does not by itself classify, permit, or imply causal replacement execution. Prospective conditional replacement authority must define eligible failure classes, maximum replacement allowance, lineage requirements, effect-state safety gates, allowance-consumption boundary, currentness requirements, and stop conditions.
+
+Before replacement execution, the governing gate must establish: the prior execution is terminal and consumed; preserved evidence supports the admitted failure classification; material non-idempotent effects are absent or reconciled to an exact bound state; the bounded work intent and material input scope remain unchanged; currentness gates still pass; and the applicable replacement policy or authorization admits the observed failure class. Provider, transport, HTTP status, model, executor, or harness facts may support that evidence but are not universal replacement criteria unless the applicable protocol explicitly makes them so.
+
+The replacement record or run set must bind the replacement identity, `replacement_of` failed execution identity, replacement authority, failure-evidence reference or digest, bounded work/input lineage, bound role/mode/protocol, and finite replacement allowance or ordinal. Crossing the replacement's authoritative execution boundary consumes its admitted allowance. Failure of a replacement creates zero new authority edges: a later replacement may execute only if an already-bound prospective policy still has unused explicitly admitted allowance or a new competent authorization is granted.
+
+Resume remains continuation of the same execution identity only while the governing protocol treats that execution as resumable; a terminal consumed failure is not reopened by calling it a resume. `R<N>` remains the correction identity for an immutable completed formal-run result and is not replacement execution.
+
+A continuation that changes an authority-bound role, mode, protocol, material input scope, safety or validation control, execution-environment assumption, effect model, or mutation surface requires new execution-strategy authority and must not be relabeled as replacement under prior authority. Selection among prospectively declared interchangeable providers or executors does not by itself require new strategy authority when the bound mode, protocol, controls, scope, and effect model remain unchanged.
 
 ## Versioned formal-run correction identity
 

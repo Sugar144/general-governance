@@ -1,0 +1,23 @@
+{
+  "schema": "gg.normative-implementation-preflight/1.0.0",
+  "execution_id": "GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "checked_before_execution": true,
+  "status": "PASS",
+  "checks": [
+    {"id":"PF-001","name":"general_governance_main_currentness","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-002","name":"branch_base_identity","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-003","name":"target_baseline_blob","expected":"d9ca298b973d9cf91792f77dfd7fd4ff274d0a78","observed":"d9ca298b973d9cf91792f77dfd7fd4ff274d0a78","result":"PASS"},
+    {"id":"PF-004","name":"accepted_proposal_blob","expected":"9257e75cc2b0f187c1c068b087b4b2de2ca3e396","observed":"9257e75cc2b0f187c1c068b087b4b2de2ca3e396","result":"PASS"},
+    {"id":"PF-005","name":"owner_execution_authority","expected_comment_id":5360129304,"observed_comment_id":5360129304,"result":"PASS"},
+    {"id":"PF-006","name":"formal_input_package_sha256","expected":"92c14e5d1b71d82f7ea7f4c99c167d0231b31f98073eeeedaf4efb1fe4ed186d","observed":"92c14e5d1b71d82f7ea7f4c99c167d0231b31f98073eeeedaf4efb1fe4ed186d","result":"PASS"},
+    {"id":"PF-007","name":"permitted_execution_count","expected":1,"observed":1,"result":"PASS"},
+    {"id":"PF-008","name":"target_version","expected":"0.4.0","observed":"0.4.0","result":"PASS"},
+    {"id":"PF-009","name":"insertion_after_boundary","expected":"Formal architecture and implementation reports...associated change is committed.","observed":"present exactly once","result":"PASS"},
+    {"id":"PF-010","name":"insertion_before_boundary","expected":"## Versioned formal-run correction identity","observed":"present exactly once","result":"PASS"},
+    {"id":"PF-011","name":"accepted_wording_refinement_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"},
+    {"id":"PF-012","name":"release_packaging_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"},
+    {"id":"PF-013","name":"authorized_write_surface","expected":["framework/core/project-operating-contract.md","governance/normative-implementation/GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001/**"],"observed":["framework/core/project-operating-contract.md","governance/normative-implementation/GG-METHOD-NORMATIVE-IMPLEMENTATION-BOUNDED-REPLACEMENT-EXECUTION-001/**"],"result":"PASS"},
+    {"id":"PF-014","name":"pr_merge_release_deploy_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"}
+  ],
+  "terminal_rule": "Any non-PASS check blocks execution; no replacement execution is implied."
+}

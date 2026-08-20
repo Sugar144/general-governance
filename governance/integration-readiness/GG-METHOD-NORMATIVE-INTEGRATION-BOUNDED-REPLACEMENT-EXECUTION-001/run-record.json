@@ -1,0 +1,46 @@
+{
+  "schema": "gg.integration-readiness-run-record/1.0.0",
+  "work_identity": "GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001",
+  "execution_id": "GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "role": "INTEGRATION_READINESS_ANALYST",
+  "mode": "READ_ONLY_RELEASE_INTEGRATION_ANALYSIS",
+  "protocol": "GG-METHOD-INTEGRATION-READINESS-PROTOCOL-001",
+  "formal_input_package_sha256": "b9dde57a0d25e8ec21808581595fcbaa6ed7a17d802bca6d6c19ed3fef333d26",
+  "owner_authorization_comment_id": 5360367828,
+  "preparation_commit": "79ae47a8cf4a753f5317a3bedaa5320fa48944f0",
+  "execution_boundary": {
+    "crossed": true,
+    "allowance_consumed": 1,
+    "remaining_execution_allowance": 0,
+    "general_governance_main_at_admission": "91fa0727abf730e142a4c43f2da68b1281be1121",
+    "branch_head_at_admission": "79ae47a8cf4a753f5317a3bedaa5320fa48944f0"
+  },
+  "result": {
+    "path": "governance/integration-readiness/GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001/result.md",
+    "blob": "6bc62d718451f3680a2a81306366ac33806c975f",
+    "primary_disposition": "COMBINED_RELEASE_READY_INTEGRATION_REQUIRED",
+    "status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW"
+  },
+  "effects": {
+    "accepted_poc_modified": false,
+    "release_facing_files_modified": false,
+    "schemas_modified": false,
+    "tools_modified": false,
+    "tests_modified": false,
+    "l6_modified": false,
+    "pr_created": false,
+    "merge": false,
+    "tag": false,
+    "release": false,
+    "deployment": false,
+    "publication": false,
+    "owner_acceptance_claimed": false
+  },
+  "anti_recursion": {
+    "implicit_successor_execution_created": false,
+    "additional_execution_authority_created": false,
+    "note": "RUN-001 is consumed. No RUN-002 is inferred or authorized."
+  },
+  "status": "EXECUTED_PENDING_VALIDATION",
+  "execution_date": "2026-08-20"
+}
