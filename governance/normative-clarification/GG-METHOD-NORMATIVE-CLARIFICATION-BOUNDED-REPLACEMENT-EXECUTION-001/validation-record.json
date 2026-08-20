@@ -1,0 +1,31 @@
+{
+  "candidate_commit": "fe5850661a7cfff137ceca693f44907c1d79dc25",
+  "checks": [
+    {"id":"VAL-001","name":"general_governance_main_currentness_at_validation","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"VAL-002","name":"preparation_lineage","expected":"candidate descends from preparation commit ae462b2142d3f44cd329309255b7cf2f40fa01cd and baseline 91fa0727abf730e142a4c43f2da68b1281be1121","observed":"candidate is second commit after exact baseline; preparation commit is first parent lineage","result":"PASS"},
+    {"id":"VAL-003","name":"authorized_write_surface","expected":"all changes under governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/**","observed":"7 added files, all under authorized clarification directory; no pre-existing file modified","result":"PASS"},
+    {"id":"VAL-004","name":"declared_proposal_identity","expected_path":"governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/proposal.md","expected_blob":"9257e75cc2b0f187c1c068b087b4b2de2ca3e396","observed_blob":"9257e75cc2b0f187c1c068b087b4b2de2ca3e396","result":"PASS"},
+    {"id":"VAL-005","name":"required_sections","expected":13,"observed":13,"result":"PASS"},
+    {"id":"VAL-006","name":"primary_disposition_cardinality","expected":"exactly one allowed primary disposition","observed":"NORMATIVE_WORDING_CANDIDATE","result":"PASS"},
+    {"id":"VAL-007","name":"required_semantic_constraints","expected":11,"observed":11,"result":"PASS"},
+    {"id":"VAL-008","name":"exact_insertion_point","expected":"between Formal execution, orchestration, and output contract and Versioned formal-run correction identity","observed":"proposal names that unique existing rc.4 boundary and requires no deletion or weakening","result":"PASS"},
+    {"id":"VAL-009","name":"provider_neutrality","expected":"provider-specific facts may be evidence but no universal provider/HTTP eligibility rule","observed":"proposed wording explicitly treats provider/transport/HTTP/model/executor/harness facts as non-universal unless adopter protocol binds them","result":"PASS"},
+    {"id":"VAL-010","name":"authority_non_expansion","expected":"failure creates zero authority; bare execution count is insufficient; strategy change requires authority","observed":"all three invariants are explicit and eligibility adds fail-closed constraints","result":"PASS"},
+    {"id":"VAL-011","name":"formal_input_package_binding","expected":"a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825","observed":"a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825","result":"PASS"},
+    {"id":"VAL-012","name":"execution_allowance","expected":"one execution consumed, zero remaining","observed":"one execution consumed, zero remaining; no RUN-002 inferred","result":"PASS"},
+    {"id":"VAL-013","name":"forbidden_effects_absent","expected":"no existing-file edit, normative application, schema/tool/L6 change, PR, merge, release, tag, deployment or Owner acceptance","observed":"none occurred","result":"PASS"},
+    {"id":"VAL-014","name":"version_release_boundary","expected":"document-version implication and framework-release implication are identified but release packaging remains separate authority","observed":"proposal recommends POC 0.4.0 -> 0.5.0 if implemented and prospective GG 0.1.0-rc.5 only under a later release package","result":"PASS"},
+    {"id":"VAL-015","name":"proposal_status","expected":"VALIDATED_PENDING_PROJECT_OWNER_REVIEW","observed":"VALIDATED_PENDING_PROJECT_OWNER_REVIEW","result":"PASS"}
+  ],
+  "execution_id": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "formal_input_package_sha256": "a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825",
+  "note": "Validation records the exact drafting candidate. It creates no normative implementation, PR, merge, release, deployment, replacement execution, or Owner acceptance authority.",
+  "preparation_commit": "ae462b2142d3f44cd329309255b7cf2f40fa01cd",
+  "primary_disposition": "NORMATIVE_WORDING_CANDIDATE",
+  "proposal_blob": "9257e75cc2b0f187c1c068b087b4b2de2ca3e396",
+  "proposal_path": "governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/proposal.md",
+  "schema": "gg.normative-clarification-validation-record/1.0.0",
+  "status": "PASS",
+  "terminal_status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW",
+  "validation_date": "2026-08-20"
+}
