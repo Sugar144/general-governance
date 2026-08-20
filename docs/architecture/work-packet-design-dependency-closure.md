@@ -70,7 +70,15 @@ No additional relation kind is implied by this candidate contract.
 
 ### Canonical base
 
-The `canonical base` is the exact immutable state against which the packet, its dependencies, and any baseline-satisfaction claims were derived. A moving branch, `main`, `latest`, `current`, or another floating alias does not substitute for the immutable base identity.
+The `canonical base` is the exact immutable design/evaluation input against which the packet's intended outcomes, governing authority references, dependency model, and repository-bound claims were derived. A moving branch, `main`, `latest`, `current`, or another floating alias does not substitute for the immutable base identity.
+
+The canonical base does not, by itself, establish mutable runtime or external state. Database rows, queues, service state, external-provider state, mutable files outside the immutable base, and similar conditions require their own evidence/currentness context when they are used to satisfy prerequisites.
+
+### State evaluation context
+
+A `state evaluation context` is the bounded identity and currentness context required to support a prerequisite-satisfaction claim that depends on mutable or external state rather than solely on immutable canonical-base content.
+
+A state evaluation context may need to identify, as applicable, an observation or evidence artifact, the state or target observed, the time or sequence of observation, and a freshness/revalidation boundary. The capability does not prescribe one universal clock-based freshness interval; the applicable authority and semantics determine what makes an observation current enough for the claimed prerequisite.
 
 ### Dependency closure
 
@@ -92,7 +100,7 @@ Execution authority is outside this capability. No packet classification emitted
 
 ## Prerequisite resolution model
 
-Every prerequisite reachable from an included outcome MUST declare exactly one resolution.
+Every prerequisite reachable from an included outcome MUST declare exactly one resolution when the packet is evaluated under an explicitly adopted Work Packet Design & Dependency Closure capability.
 
 ### IN_PACKET
 
@@ -100,15 +108,15 @@ Every prerequisite reachable from an included outcome MUST declare exactly one r
 
 An `IN_PACKET` prerequisite remains subject to transitive dependency closure.
 
-### BASELINE_SATISFIED
+### PREEXISTING_SATISFIED
 
-`BASELINE_SATISFIED` means the prerequisite is already satisfied in the packet's exact canonical base.
+`PREEXISTING_SATISFIED` means the prerequisite is already satisfied outside the work that the current packet must produce.
 
-This resolution requires durable evidence bound to the canonical base strongly enough to support the satisfaction claim. A belief, branch name, unbound historical note, or assumed prior implementation is not sufficient evidence.
+This resolution requires durable evidence bound strongly enough to the identities and state evaluation context applicable to the satisfaction claim. Immutable repository facts may be bound to the canonical base. Mutable or external state claims require evidence/currentness constraints appropriate to that state. A belief, branch name, unbound historical note, assumed prior implementation, or stale observation is not sufficient evidence.
 
 ### BOUND_EXTERNAL_SATISFIED
 
-`BOUND_EXTERNAL_SATISFIED` means the prerequisite is satisfied by an exact external result, artifact, or condition whose identity, evidence, and applicable authority are explicitly bound.
+`BOUND_EXTERNAL_SATISFIED` means the prerequisite is satisfied by an exact external result, artifact, or condition whose identity, evidence, applicable currentness constraints, and authority are explicitly bound.
 
 A prior work-packet result is one valid class of external source, but it is not the only valid class. The capability must not assume that every external prerequisite originates in another work packet.
 
@@ -120,9 +128,11 @@ An unresolved prerequisite does not by itself make the packet structurally inval
 
 ## Candidate normative invariants
 
+Unless a rule explicitly states otherwise, the normative `MUST`, `MUST NOT`, `SHOULD`, and `MAY` statements in this capability apply only to work packets evaluated under an explicitly adopted Work Packet Design & Dependency Closure capability. Publishing this capability in GG does not impose these packet semantics on consumers that have not adopted it.
+
 ### WPDC-001 — Declared outcome
 
-Every governed work packet MUST declare at least one bounded outcome whose completion can be evaluated.
+Every work packet evaluated under this capability MUST declare at least one bounded outcome whose completion can be evaluated.
 
 ### WPDC-002 — Completion conditions
 
@@ -144,7 +154,9 @@ Every prerequisite reachable from an included outcome MUST declare exactly one s
 
 ### WPDC-006 — Evidence-bound satisfaction
 
-`BASELINE_SATISFIED` and `BOUND_EXTERNAL_SATISFIED` MUST be supported by durable evidence bound to identities sufficient to establish the claimed prerequisite satisfaction.
+`PREEXISTING_SATISFIED` and `BOUND_EXTERNAL_SATISFIED` MUST be supported by durable evidence bound to the immutable identities, mutable/external state context, currentness constraints, and applicable authority sufficient to establish the claimed prerequisite satisfaction.
+
+The evidence model MUST NOT treat an immutable repository SHA as proof of mutable runtime or external state merely because the packet was designed against that SHA.
 
 ### WPDC-007 — Honest blocking
 
@@ -158,7 +170,7 @@ In particular:
 
 - `IN_PACKET` plus exclusion of the same required prerequisite is contradictory;
 - `UNRESOLVED` plus exclusion of the same required prerequisite while retaining the dependent outcome is invalid;
-- a prerequisite MAY be outside the execution surface when its valid resolution is `BASELINE_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` and the supporting evidence remains valid.
+- a prerequisite MAY be outside the execution surface when its valid resolution is `PREEXISTING_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` and the supporting evidence/currentness binding remains valid.
 
 ### WPDC-009 — No synthetic authority
 
@@ -170,15 +182,17 @@ Every completion condition MUST have at least one declared validation strategy/r
 
 Deterministic structural coverage does not prove semantic sufficiency. Determining whether a validation method genuinely proves a completion condition remains a semantic review responsibility.
 
-### WPDC-011 — Canonical currentness
+### WPDC-011 — Canonical and state currentness
 
-A packet's canonical-base-bound claims MUST NOT silently transfer to a different repository state. A changed base requires currentness evaluation or re-evaluation appropriate to the changed claims before prior dependency-satisfaction evidence may be reused.
+Canonical-base-bound claims MUST NOT silently transfer to a different immutable repository state. A changed canonical base requires currentness evaluation or re-evaluation appropriate to the changed claims before prior repository-bound evidence may be reused.
+
+Mutable or external state satisfaction claims MUST also remain inside their declared currentness/revalidation boundary. A canonical-base identity that remains unchanged does not preserve a mutable-state satisfaction claim after that claim's evidence/currentness boundary is no longer valid.
 
 ### WPDC-012 — Coherent boundary
 
-A work packet SHOULD represent the smallest coherent result-producing boundary capable of making at least one declared outcome dependency-closed and truthfully completable, without absorbing materially independent outcomes that are not required by the dependency closure or another explicit governing constraint.
+A work packet SHOULD represent the smallest coherent result-producing boundary capable of making the full set of included declared outcomes dependency-closed and truthfully completable, without absorbing materially independent outcomes that are not required by the dependency closure or another explicit governing constraint.
 
-This invariant prevents both under-fragmentation that excludes unsatisfied prerequisites and over-packaging that combines unrelated outcomes merely because they are adjacent in implementation or documentation.
+This invariant prevents both under-fragmentation that excludes unsatisfied prerequisites and over-packaging that combines unrelated outcomes merely because they are adjacent in implementation or documentation. One dependency-closed included outcome does not excuse another included outcome whose dependency model is blocked, contradictory, or incomplete.
 
 ## Packet classification
 
@@ -191,11 +205,11 @@ The packet is invalid when its declared machine/semantic model contains a contra
 Candidate deterministic reasons include:
 
 - malformed or incompatible machine contract;
-- invalid or floating canonical base;
+- invalid or floating canonical base where an immutable base is required;
 - duplicate or unresolved identifiers;
 - dependency cycle;
 - missing prerequisite resolution;
-- missing or mismatched evidence required by a satisfaction resolution;
+- missing or mismatched evidence/currentness binding required by a satisfaction resolution;
 - included/excluded contradiction;
 - unsatisfied required prerequisite excluded while a dependent outcome remains included;
 - missing completion condition;
@@ -210,7 +224,7 @@ The packet is internally coherent under the declared model but at least one prer
 
 ### VALID_DEPENDENCY_CLOSED
 
-All prerequisites reachable from every included outcome have a valid non-pending resolution of `IN_PACKET`, `BASELINE_SATISFIED`, or `BOUND_EXTERNAL_SATISFIED`, and all deterministic structural invariants pass.
+All prerequisites reachable from every included outcome have a valid non-pending resolution of `IN_PACKET`, `PREEXISTING_SATISFIED`, or `BOUND_EXTERNAL_SATISFIED`, and all deterministic structural invariants pass.
 
 `VALID_DEPENDENCY_CLOSED` MUST NOT be interpreted as `AUTHORIZED_TO_EXECUTE`.
 
@@ -228,6 +242,7 @@ A future deterministic validator may validate only declared machine-checkable cl
 
 - schema and capability-version compatibility;
 - canonical identity syntax/binding;
+- state/evidence identity and declared currentness-binding shape;
 - adoption-binding validity;
 - identifier uniqueness and reference integrity;
 - dependency relation/resolution enums;
@@ -250,6 +265,7 @@ The deterministic validator MUST NOT claim to determine:
 - whether product architecture is sufficient;
 - whether two outcomes are materially independent;
 - whether a requirement, architecture decision, or project state is substantively correct;
+- whether mutable/external evidence is semantically fresh enough when that judgment is not deterministically encoded by the applicable contract;
 - whether execution is authorized.
 
 Those require semantic analysis, independent review when proportionate, Owner disposition where applicable, or another authoritative mechanism.
@@ -270,7 +286,7 @@ A future machine manifest SHOULD contain only the minimum claims necessary for d
 - prerequisites;
 - dependency edges;
 - prerequisite resolutions;
-- evidence references;
+- evidence references and applicable state/currentness bindings;
 - write surface;
 - effect surface;
 - exclusions;
@@ -287,17 +303,18 @@ The capability is absent unless explicitly adopted by the consumer.
 
 The existing L1 consumer configuration MAY carry an optional pointer to a capability-specific adopter binding. The exact configuration key and machine schema are implementation details to be fixed only after this architecture is accepted.
 
-The capability-specific binding SHOULD identify adopter-owned source classes and the packet projection location without prescribing universal repository paths. Candidate source classes are:
+The capability-specific binding SHOULD identify adopter-owned source classes without prescribing universal repository paths. Candidate source classes are:
 
 - authority sources;
 - state sources;
 - requirements sources;
 - architecture sources;
 - decision sources;
-- planning sources;
-- packet projection root.
+- planning sources.
 
-These are semantic categories, not mandatory directory names. An adopter may project them differently. General Governance MUST NOT assume that every consumer uses `docs/architecture/**`, `docs/requirements/**`, or any other fixed project structure.
+The binding SHOULD separately identify the adopter-owned packet projection target/root. The projection target is not a source class.
+
+These source classes are semantic categories, not mandatory directory names. An adopter may project them differently. General Governance MUST NOT assume that every consumer uses `docs/architecture/**`, `docs/requirements/**`, or any other fixed project structure.
 
 Capability release by GG does not activate a consumer. Consumer adoption does not retroactively re-evaluate existing packets. Adoption by SVP, re-evaluation of its existing packet, and any resulting implementation authorization are separate later decisions.
 
@@ -328,8 +345,8 @@ Framework regression fixtures MUST be generic and tied to accepted invariants ra
 The first generic regression family should include at least:
 
 - `IN_PACKET` prerequisite with complete transitive closure -> `VALID_DEPENDENCY_CLOSED`;
-- `BASELINE_SATISFIED` prerequisite with correctly bound evidence -> `VALID_DEPENDENCY_CLOSED`;
-- `BOUND_EXTERNAL_SATISFIED` prerequisite with correctly bound evidence -> `VALID_DEPENDENCY_CLOSED`;
+- `PREEXISTING_SATISFIED` prerequisite with correctly bound immutable or state/currentness evidence -> `VALID_DEPENDENCY_CLOSED`;
+- `BOUND_EXTERNAL_SATISFIED` prerequisite with correctly bound evidence/currentness -> `VALID_DEPENDENCY_CLOSED`;
 - honestly declared `UNRESOLVED` prerequisite -> `VALID_BUT_BLOCKED`;
 - reachable `UNRESOLVED` prerequisite also excluded -> `PACKET_INVALID` / `EXCLUDED_REQUIRED_PREREQUISITE`;
 - reachable `IN_PACKET` prerequisite also excluded -> `PACKET_INVALID`;
@@ -337,7 +354,7 @@ The first generic regression family should include at least:
 - unresolved reference -> `PACKET_INVALID`;
 - dependency cycle -> `PACKET_INVALID`;
 - completion condition without validation coverage -> `PACKET_INVALID`;
-- satisfaction evidence bound to a different canonical identity -> `PACKET_INVALID`.
+- satisfaction evidence violating its applicable immutable identity or state/currentness binding -> `PACKET_INVALID`.
 
 No fixture should be added merely because a failure is imaginable. A reusable fixture should correspond to an accepted normative invariant.
 
@@ -371,6 +388,17 @@ The reusable GG regression MUST abstract this to the invariant:
 > A required prerequisite that is unsatisfied may not be excluded while retaining an included dependent outcome.
 
 The SVP-specific failure remains adopter provenance and a future adopter regression. This GG architecture does not resolve, rewrite, authorize, or mutate the SVP packet.
+
+### Non-normative origin provenance
+
+The empirical origin is preserved for traceability only and does not define reusable GG semantics:
+
+- repository: `Sugar144/stakeholder-validation-portal`;
+- capability/slice: `SVP-STAGE2A-GUIDED-ANSWERING-001`;
+- work packet: `SVP-STAGE2A-GUIDED-ANSWERING-PACKET-01`;
+- observed implementation HEAD: `fc2bac8f6f0098f559188d73882b65c8aaa74c87`.
+
+At that observed state, the first valid-card save attempt returned `HTTP 422` with `section-not-entered`, and read-only persistence inspection found no pre-existing journey-progress state sufficient to satisfy the excluded prerequisite chain. These observations are historical provenance, not a machine inference rule for other adopters.
 
 ## Candidate implementation topology
 
