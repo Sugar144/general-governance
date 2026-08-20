@@ -1,0 +1,31 @@
+{
+  "schema": "gg.method-discovery-validation-record/1.0.0",
+  "execution_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001-RUN-001",
+  "preparation_commit": "2311273758c0845fc87dbd5dd530a3487438d583",
+  "candidate_commit": "24599911588bf6089f59ed8b548eeae324595513",
+  "formal_input_package_sha256": "a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e",
+  "result_path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/result.md",
+  "result_blob": "915da53d4138f6d21f1cfd0bc7abcc3510a79ce9",
+  "primary_disposition": "SPLIT_FRAMEWORK_ADOPTER_CONTRACT_CANDIDATE",
+  "status": "PASS",
+  "terminal_status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW",
+  "validation_date": "2026-08-20",
+  "checks": [
+    {"id":"VAL-001","name":"general_governance_main_currentness_at_validation","expected":"640fb33bc96bff75d757b8325ae6290c1a4e0f2f","observed":"640fb33bc96bff75d757b8325ae6290c1a4e0f2f","result":"PASS"},
+    {"id":"VAL-002","name":"preparation_lineage","expected":"candidate descends from exact preparation commit 2311273758c0845fc87dbd5dd530a3487438d583 and baseline 640fb33bc96bff75d757b8325ae6290c1a4e0f2f","observed":"candidate is second commit after exact baseline; preparation commit is direct parent","result":"PASS"},
+    {"id":"VAL-003","name":"authorized_write_surface","expected":"all changes under governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/**","observed":"7 added files, all under authorized discovery directory; no pre-existing file modified","result":"PASS"},
+    {"id":"VAL-004","name":"declared_result_identity","expected_path":"governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/result.md","expected_blob":"915da53d4138f6d21f1cfd0bc7abcc3510a79ce9","observed_blob":"915da53d4138f6d21f1cfd0bc7abcc3510a79ce9","result":"PASS"},
+    {"id":"VAL-005","name":"required_sections","expected":15,"observed":15,"result":"PASS","sections":["Executive disposition","Bound evidence and evidence limits","Current rc.5 coverage","Demonstrated operational gap","Event-time capture contract","Packet/work-package closeout disposition","Vertical/slice cross-project harvest","Classification and target routing","Deterministic versus judgment boundary","Proportionality and anti-bureaucracy controls","Framework/adopter layer placement","Counterexample tests","Minimal pilot for SVP and Dopis","What is explicitly not being changed","Recommended next decision"]},
+    {"id":"VAL-006","name":"primary_disposition_cardinality","expected":"exactly one allowed primary disposition","observed":"SPLIT_FRAMEWORK_ADOPTER_CONTRACT_CANDIDATE","result":"PASS"},
+    {"id":"VAL-007","name":"ten_discovery_questions_covered","expected":10,"observed":10,"result":"PASS"},
+    {"id":"VAL-008","name":"general_governance_evidence_identity","expected":"exact baseline and POC/validator blob identities","observed":"baseline, POC blob and validator blob bound in input/result","result":"PASS"},
+    {"id":"VAL-009","name":"svp_negative_and_positive_evidence","expected":"declared learning path plus exact-baseline absence and packet-local/harvest evidence","observed":"configuration blob bound; learning README returned 404 at bound baseline; Packet 03 lessons/harvest bound","result":"PASS"},
+    {"id":"VAL-010","name":"dopis_positive_learning_surface","expected":"materialized learning surface and concrete causal records","observed":"learning README plus DOPIS-LEARNING-009/010 blobs bound","result":"PASS"},
+    {"id":"VAL-011","name":"formal_input_package_binding","expected":"a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e","observed":"a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e","result":"PASS"},
+    {"id":"VAL-012","name":"forbidden_effects_absent","expected":"no normative/schema/tool/test/adopter/PR/merge/tag/release/deployment/publication/acceptance effect","observed":"none occurred; branch diff is discovery-only","result":"PASS"},
+    {"id":"VAL-013","name":"proportionality_tested","expected":"no rule that every trivial failure creates a durable learning artifact","observed":"result defines material triggers, explicit non-triggers, deduplication and conditional harvest","result":"PASS"},
+    {"id":"VAL-014","name":"authority_separation","expected":"harvest routing creates evidence only, not target-project authority","observed":"result requires separate target-project intake and authority","result":"PASS"},
+    {"id":"VAL-015","name":"execution_allowance_and_anti_recursion","expected":"one execution consumed, zero remaining; no implicit successor","observed":"one execution consumed, zero remaining; no RUN-002/retry/replacement/recovery authorized","result":"PASS"}
+  ],
+  "note": "Validation records the exact executed candidate. It creates no new execution, pilot implementation, normative amendment, adopter mutation, pull request, merge, release, deployment or publication authority."
+}
