@@ -1,0 +1,37 @@
+{
+  "schema": "gg.normative-clarification-input-package/1.0.0",
+  "work_identity": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001",
+  "execution_id": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "general_governance": {
+    "baseline_commit": "91fa0727abf730e142a4c43f2da68b1281be1121",
+    "operating_contract_path": "framework/core/project-operating-contract.md",
+    "operating_contract_blob": "d9ca298b973d9cf91792f77dfd7fd4ff274d0a78",
+    "operating_contract_version": "0.4.0"
+  },
+  "accepted_discovery": {
+    "validated_head": "9be04b980cdaffa0bf61a41687e39700554fecbf",
+    "result_path": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/result.md",
+    "result_blob": "633fe688ecdb354a139c2b41b635936ecaf0c92b",
+    "validation_record_path": "governance/discovery/GG-METHOD-DISCOVERY-BOUNDED-REPLACEMENT-EXECUTION-001/validation-record.json",
+    "validation_record_blob": "8dca0042ef4e0e7f8446606e309b111feba76759",
+    "owner_acceptance_issue": 5,
+    "owner_acceptance_comment_id": 5343199362,
+    "accepted_disposition": "NORMATIVE_CLARIFICATION_CANDIDATE"
+  },
+  "current_work_item": {
+    "issue": 6,
+    "owner_authorization_comment_id": 5360001203,
+    "permitted_execution_count": 1,
+    "branch": "method/normative-clarification-bounded-replacement-execution-001",
+    "allowed_write_surface": "governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/**"
+  },
+  "constraints": [
+    "proposal-only; do not modify existing files",
+    "no framework/schema/tool/L6/release/version/PR/merge/tag/deployment effects",
+    "provider-neutral wording only",
+    "preserve rc.4 bounded operational delegation semantics",
+    "failure creates zero authority",
+    "bare permitted_execution_count > 1 is not replacement authority",
+    "no second/replacement/recovery drafting execution without new Owner authority"
+  ]
+}

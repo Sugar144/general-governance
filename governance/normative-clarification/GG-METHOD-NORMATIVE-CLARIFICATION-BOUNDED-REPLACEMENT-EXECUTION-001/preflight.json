@@ -1,0 +1,22 @@
+{
+  "checked_before_execution": true,
+  "schema": "gg.normative-clarification-preflight/1.0.0",
+  "execution_id": "GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "status": "PASS",
+  "checks": [
+    {"id":"PF-001","name":"general_governance_main_currentness","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-002","name":"branch_base_identity","expected":"91fa0727abf730e142a4c43f2da68b1281be1121","observed":"91fa0727abf730e142a4c43f2da68b1281be1121","result":"PASS"},
+    {"id":"PF-003","name":"operating_contract_blob","expected":"d9ca298b973d9cf91792f77dfd7fd4ff274d0a78","observed":"d9ca298b973d9cf91792f77dfd7fd4ff274d0a78","result":"PASS"},
+    {"id":"PF-004","name":"accepted_discovery_head","expected":"9be04b980cdaffa0bf61a41687e39700554fecbf","observed":"9be04b980cdaffa0bf61a41687e39700554fecbf","result":"PASS"},
+    {"id":"PF-005","name":"accepted_discovery_result_blob","expected":"633fe688ecdb354a139c2b41b635936ecaf0c92b","observed":"633fe688ecdb354a139c2b41b635936ecaf0c92b","result":"PASS"},
+    {"id":"PF-006","name":"accepted_discovery_validation_blob","expected":"8dca0042ef4e0e7f8446606e309b111feba76759","observed":"8dca0042ef4e0e7f8446606e309b111feba76759","result":"PASS"},
+    {"id":"PF-007","name":"owner_discovery_acceptance","expected_comment_id":5343199362,"observed_comment_id":5343199362,"result":"PASS"},
+    {"id":"PF-008","name":"owner_drafting_authority","expected_comment_id":5360001203,"observed_comment_id":5360001203,"result":"PASS"},
+    {"id":"PF-009","name":"formal_input_package_sha256","expected":"a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825","observed":"a3e1b427579579432dff3556f06afdc746c0e0fd67c2ab5a72b423f88c936825","result":"PASS"},
+    {"id":"PF-010","name":"permitted_execution_count","expected":1,"observed":1,"result":"PASS"},
+    {"id":"PF-011","name":"write_surface","expected":"governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/**","observed":"governance/normative-clarification/GG-METHOD-NORMATIVE-CLARIFICATION-BOUNDED-REPLACEMENT-EXECUTION-001/**","result":"PASS"},
+    {"id":"PF-012","name":"existing_file_modification_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"},
+    {"id":"PF-013","name":"normative_application_authority","expected":"ABSENT","observed":"ABSENT","result":"PASS"}
+  ],
+  "terminal_rule": "Any non-PASS check blocks execution; no second/replacement/recovery drafting execution is implied."
+}
