@@ -60,10 +60,15 @@ def validate_schema(document: dict[str, Any], schema_path: Path, label: str) -> 
     if errors:
         first = errors[0]
         where = "$" + "".join(f"[{part!r}]" for part in first.path)
-        fail("SCHEMA_INVALID", f"{label} schema validation failed at {where}: {first.message}")
+        fail(
+            "SCHEMA_INVALID",
+            f"{label} schema validation failed at {where}: {first.message}",
+        )
 
 
-def unique_index(items: Iterable[dict[str, Any]], key: str, label: str) -> dict[str, dict[str, Any]]:
+def unique_index(
+    items: Iterable[dict[str, Any]], key: str, label: str
+) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for item in items:
         identity = item[key]
@@ -76,91 +81,182 @@ def unique_index(items: Iterable[dict[str, Any]], key: str, label: str) -> dict[
 def validate_binding(binding: dict[str, Any]) -> dict[str, Any]:
     validate_schema(binding, BINDING_SCHEMA, "WPDC binding")
     sources = unique_index(binding["source_bindings"], "source_id", "source")
-    rules = unique_index(binding.get("currentness_rules", []), "rule_id", "currentness rule")
+    rules = unique_index(
+        binding.get("currentness_rules", []), "rule_id", "currentness rule"
+    )
     for source in sources.values():
         ref = source.get("currentness_rule_ref")
         if ref is not None and ref not in rules:
-            fail("INVALID_ADOPTION_BINDING", f"source {source['source_id']} references unknown currentness rule {ref}")
+            fail(
+                "INVALID_ADOPTION_BINDING",
+                f"source {source['source_id']} references unknown currentness rule {ref}",
+            )
     return {"sources": sources, "rules": rules}
 
 
-def verify_binding_identity(manifest: dict[str, Any], binding: dict[str, Any], binding_path: Path) -> None:
+def verify_binding_identity(
+    manifest: dict[str, Any], binding: dict[str, Any], binding_path: Path
+) -> None:
     declared = manifest["adoption_binding"]
     if declared["binding_id"] != binding["binding_id"]:
-        fail("INVALID_ADOPTION_BINDING", "manifest adoption binding_id does not match supplied binding")
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "manifest adoption binding_id does not match supplied binding",
+        )
     if declared["sha256"] != sha256(binding_path):
-        fail("ADOPTION_BINDING_DIGEST_MISMATCH", "manifest adoption binding digest does not match supplied binding bytes")
+        fail(
+            "ADOPTION_BINDING_DIGEST_MISMATCH",
+            "manifest adoption binding digest does not match supplied binding bytes",
+        )
     if manifest["capability_contract_version"] != binding["capability_contract_version"]:
-        fail("INVALID_ADOPTION_BINDING", "manifest capability contract version does not match supplied binding")
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "manifest capability contract version does not match supplied binding",
+        )
 
 
-def verify_canonical_base(manifest: dict[str, Any], binding: dict[str, Any]) -> None:
+def verify_canonical_base(
+    manifest: dict[str, Any], binding: dict[str, Any]
+) -> None:
     adopter_repo = binding["adopter"].get("repository")
-    if adopter_repo is not None and manifest["canonical_base"]["repository"] != adopter_repo:
-        fail("INVALID_CANONICAL_BASE", "manifest canonical repository does not match adopter repository bound by WPDC adoption")
+    if (
+        adopter_repo is not None
+        and manifest["canonical_base"]["repository"] != adopter_repo
+    ):
+        fail(
+            "INVALID_CANONICAL_BASE",
+            "manifest canonical repository does not match adopter repository bound by WPDC adoption",
+        )
 
 
-def authority_index(manifest: dict[str, Any], sources: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    authorities = unique_index(manifest["authority_refs"], "authority_ref_id", "authority reference")
+def authority_index(
+    manifest: dict[str, Any], sources: dict[str, dict[str, Any]]
+) -> dict[str, dict[str, Any]]:
+    authorities = unique_index(
+        manifest["authority_refs"], "authority_ref_id", "authority reference"
+    )
     for authority in authorities.values():
         source_id = authority.get("source_id")
         if source_id is None:
             continue
         source = sources.get(source_id)
         if source is None:
-            fail("UNRESOLVED_REFERENCE", f"authority reference {authority['authority_ref_id']} uses unknown source {source_id}")
+            fail(
+                "UNRESOLVED_REFERENCE",
+                f"authority reference {authority['authority_ref_id']} uses unknown source {source_id}",
+            )
         if "AUTHORITY" not in source["classes"]:
-            fail("INVALID_SOURCE_CLASS", f"authority reference {authority['authority_ref_id']} uses non-authority source {source_id}")
+            fail(
+                "INVALID_SOURCE_CLASS",
+                f"authority reference {authority['authority_ref_id']} uses non-authority source {source_id}",
+            )
     for ref in manifest["required_authority_refs"]:
         if ref not in authorities:
-            fail("MISSING_AUTHORITY_DECLARATION", f"required authority reference does not resolve: {ref}")
+            fail(
+                "MISSING_AUTHORITY_DECLARATION",
+                f"required authority reference does not resolve: {ref}",
+            )
     return authorities
 
 
 def verify_state_contexts(
-    manifest: dict[str, Any], sources: dict[str, dict[str, Any]], rules: dict[str, dict[str, Any]]
+    manifest: dict[str, Any],
+    sources: dict[str, dict[str, Any]],
+    rules: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    contexts = unique_index(manifest["state_contexts"], "state_context_id", "state context")
+    contexts = unique_index(
+        manifest["state_contexts"], "state_context_id", "state context"
+    )
     for context in contexts.values():
         source_id = context["source_id"]
         source = sources.get(source_id)
         if source is None:
-            fail("UNRESOLVED_REFERENCE", f"state context {context['state_context_id']} uses unknown source {source_id}")
+            fail(
+                "UNRESOLVED_REFERENCE",
+                f"state context {context['state_context_id']} uses unknown source {source_id}",
+            )
         if "STATE" not in source["classes"]:
-            fail("INVALID_SOURCE_CLASS", f"state context {context['state_context_id']} uses non-state source {source_id}")
+            fail(
+                "INVALID_SOURCE_CLASS",
+                f"state context {context['state_context_id']} uses non-state source {source_id}",
+            )
         currentness = context["currentness"]
-        if currentness["mode"] == "BINDING_RULE" and currentness["rule_ref"] not in rules:
-            fail("INVALID_ADOPTION_BINDING", f"state context {context['state_context_id']} references unknown binding currentness rule {currentness['rule_ref']}")
+        if (
+            currentness["mode"] == "BINDING_RULE"
+            and currentness["rule_ref"] not in rules
+        ):
+            fail(
+                "INVALID_ADOPTION_BINDING",
+                f"state context {context['state_context_id']} references unknown binding currentness rule {currentness['rule_ref']}",
+            )
     return contexts
 
 
 def verify_external_dependencies(
-    manifest: dict[str, Any], authorities: dict[str, dict[str, Any]], rules: dict[str, dict[str, Any]]
+    manifest: dict[str, Any],
+    authorities: dict[str, dict[str, Any]],
+    rules: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    dependencies = unique_index(manifest["external_dependencies"], "external_dependency_id", "external dependency")
+    dependencies = unique_index(
+        manifest["external_dependencies"],
+        "external_dependency_id",
+        "external dependency",
+    )
     for dependency in dependencies.values():
         for ref in dependency["authority_refs"]:
             if ref not in authorities:
-                fail("UNRESOLVED_REFERENCE", f"external dependency {dependency['external_dependency_id']} references unknown authority {ref}")
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"external dependency {dependency['external_dependency_id']} references unknown authority {ref}",
+                )
         currentness = dependency["currentness"]
-        if currentness["mode"] == "BINDING_RULE" and currentness["rule_ref"] not in rules:
-            fail("INVALID_ADOPTION_BINDING", f"external dependency {dependency['external_dependency_id']} references unknown binding currentness rule {currentness['rule_ref']}")
+        if (
+            currentness["mode"] == "BINDING_RULE"
+            and currentness["rule_ref"] not in rules
+        ):
+            fail(
+                "INVALID_ADOPTION_BINDING",
+                f"external dependency {dependency['external_dependency_id']} references unknown binding currentness rule {currentness['rule_ref']}",
+            )
     return dependencies
 
 
-def verify_evidence_files(manifest: dict[str, Any], manifest_path: Path) -> dict[str, dict[str, Any]]:
+def verify_evidence_files(
+    manifest: dict[str, Any], repository_root: Path
+) -> dict[str, dict[str, Any]]:
+    """Verify repository-relative evidence paths without forcing evidence copies.
+
+    Evidence is resolved from an explicitly supplied adopter repository root, not
+    from the packet-manifest directory. This lets a packet bind an existing
+    durable source/evidence artifact elsewhere in the adopter repository while
+    still preventing path escape.
+    """
     evidence = unique_index(manifest["evidence"], "evidence_id", "evidence")
-    packet_dir = manifest_path.resolve().parent
+    root = repository_root.resolve()
+    if not root.is_dir():
+        fail(
+            "INVALID_EVIDENCE_ROOT",
+            f"adopter repository root is not a directory: {repository_root}",
+        )
     for item in evidence.values():
-        path = (packet_dir / item["path"]).resolve()
+        path = (root / item["path"]).resolve()
         try:
-            path.relative_to(packet_dir)
+            path.relative_to(root)
         except ValueError:
-            fail("INVALID_RESOLUTION_EVIDENCE", f"evidence path escapes packet directory: {item['path']}")
+            fail(
+                "INVALID_RESOLUTION_EVIDENCE",
+                f"evidence path escapes adopter repository root: {item['path']}",
+            )
         if not path.is_file():
-            fail("INVALID_RESOLUTION_EVIDENCE", f"evidence file does not exist: {item['path']}")
+            fail(
+                "INVALID_RESOLUTION_EVIDENCE",
+                f"evidence file does not exist: {item['path']}",
+            )
         if sha256(path) != item["sha256"]:
-            fail("EVIDENCE_IDENTITY_MISMATCH", f"evidence digest mismatch: {item['path']}")
+            fail(
+                "EVIDENCE_IDENTITY_MISMATCH",
+                f"evidence digest mismatch: {item['path']}",
+            )
     return evidence
 
 
@@ -171,82 +267,147 @@ def verify_evidence_semantics(
     state_contexts: dict[str, dict[str, Any]],
     external_dependencies: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    prereqs = unique_index(manifest["prerequisites"], "prerequisite_id", "prerequisite")
+    prereqs = unique_index(
+        manifest["prerequisites"], "prerequisite_id", "prerequisite"
+    )
     for prereq in prereqs.values():
         resolution = prereq["resolution"]
         kind = resolution["kind"]
         if kind in {"IN_PACKET", "UNRESOLVED"}:
             continue
+
         refs: list[dict[str, Any]] = []
         for evidence_ref in resolution["evidence_refs"]:
             item = evidence.get(evidence_ref)
             if item is None:
-                fail("UNRESOLVED_REFERENCE", f"prerequisite {prereq['prerequisite_id']} references unknown evidence {evidence_ref}")
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"prerequisite {prereq['prerequisite_id']} references unknown evidence {evidence_ref}",
+                )
             refs.append(item)
 
         if kind == "PREEXISTING_SATISFIED":
             for item in refs:
                 if item["source_scope"] != "ADOPTER_OWNED":
-                    fail("INVALID_RESOLUTION_EVIDENCE", f"prerequisite {prereq['prerequisite_id']} misclassifies externally supplied evidence as PREEXISTING_SATISFIED")
-                if item["source_ref"] not in sources:
-                    fail("UNRESOLVED_REFERENCE", f"preexisting evidence {item['evidence_id']} uses unknown adopter source {item['source_ref']}")
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"prerequisite {prereq['prerequisite_id']} misclassifies externally supplied evidence as PREEXISTING_SATISFIED",
+                    )
                 context = item["context"]
                 if context["kind"] == "EXTERNAL_DEPENDENCY":
-                    fail("INVALID_RESOLUTION_EVIDENCE", f"preexisting evidence {item['evidence_id']} declares external dependency context")
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"preexisting evidence {item['evidence_id']} declares external dependency context",
+                    )
                 if context["kind"] == "CANONICAL_BASE":
                     canonical = manifest["canonical_base"]
-                    if context["repository"] != canonical["repository"] or context["commit_sha"] != canonical["commit_sha"]:
-                        fail("EVIDENCE_IDENTITY_MISMATCH", f"preexisting evidence {item['evidence_id']} is not bound to the packet canonical base")
-                if context["kind"] == "STATE_EVALUATION":
+                    if (
+                        context["repository"] != canonical["repository"]
+                        or context["commit_sha"] != canonical["commit_sha"]
+                    ):
+                        fail(
+                            "EVIDENCE_IDENTITY_MISMATCH",
+                            f"preexisting evidence {item['evidence_id']} is not bound to the packet canonical base",
+                        )
+                    # A canonical-base artifact may be supplied as an exact
+                    # adopter-owned reference even when its source class is not
+                    # pre-mapped in the generic adoption binding.
+                elif context["kind"] == "STATE_EVALUATION":
                     state_ref = context["state_context_ref"]
                     state = state_contexts.get(state_ref)
                     if state is None:
-                        fail("UNRESOLVED_REFERENCE", f"preexisting evidence {item['evidence_id']} references unknown state context {state_ref}")
+                        fail(
+                            "UNRESOLVED_REFERENCE",
+                            f"preexisting evidence {item['evidence_id']} references unknown state context {state_ref}",
+                        )
                     if state["source_id"] != item["source_ref"]:
-                        fail("INVALID_RESOLUTION_EVIDENCE", f"preexisting evidence {item['evidence_id']} source differs from its state context source")
+                        fail(
+                            "INVALID_RESOLUTION_EVIDENCE",
+                            f"preexisting evidence {item['evidence_id']} source differs from its state context source",
+                        )
 
         elif kind == "BOUND_EXTERNAL_SATISFIED":
             external_ref = resolution["external_dependency_ref"]
             if external_ref not in external_dependencies:
-                fail("UNRESOLVED_REFERENCE", f"prerequisite {prereq['prerequisite_id']} references unknown external dependency {external_ref}")
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"prerequisite {prereq['prerequisite_id']} references unknown external dependency {external_ref}",
+                )
             for item in refs:
                 if item["source_scope"] != "EXTERNAL_DEPENDENCY":
-                    fail("INVALID_RESOLUTION_EVIDENCE", f"prerequisite {prereq['prerequisite_id']} requires external evidence but {item['evidence_id']} is adopter-owned")
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"prerequisite {prereq['prerequisite_id']} requires external evidence but {item['evidence_id']} is adopter-owned",
+                    )
                 if item["source_ref"] != external_ref:
-                    fail("INVALID_RESOLUTION_EVIDENCE", f"external evidence {item['evidence_id']} is bound to a different external dependency")
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"external evidence {item['evidence_id']} is bound to a different external dependency",
+                    )
                 context = item["context"]
-                if context["kind"] != "EXTERNAL_DEPENDENCY" or context["external_dependency_ref"] != external_ref:
-                    fail("INVALID_RESOLUTION_EVIDENCE", f"external evidence {item['evidence_id']} lacks matching external dependency context")
+                if (
+                    context["kind"] != "EXTERNAL_DEPENDENCY"
+                    or context["external_dependency_ref"] != external_ref
+                ):
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"external evidence {item['evidence_id']} lacks matching external dependency context",
+                    )
     return prereqs
 
 
 def verify_completion_and_validation_refs(
-    manifest: dict[str, Any]
-) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    manifest: dict[str, Any],
+) -> tuple[
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+]:
     outcomes = unique_index(manifest["outcomes"], "outcome_id", "outcome")
-    conditions = unique_index(manifest["completion_conditions"], "condition_id", "completion condition")
-    validations = unique_index(manifest["validations"], "validation_id", "validation")
+    conditions = unique_index(
+        manifest["completion_conditions"], "condition_id", "completion condition"
+    )
+    validations = unique_index(
+        manifest["validations"], "validation_id", "validation"
+    )
     for outcome in outcomes.values():
         if not outcome["completion_condition_refs"]:
-            fail("MISSING_COMPLETION_CONDITION", f"outcome {outcome['outcome_id']} has no completion conditions")
+            fail(
+                "MISSING_COMPLETION_CONDITION",
+                f"outcome {outcome['outcome_id']} has no completion conditions",
+            )
         for ref in outcome["completion_condition_refs"]:
             if ref not in conditions:
-                fail("UNRESOLVED_REFERENCE", f"outcome {outcome['outcome_id']} references unknown completion condition {ref}")
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"outcome {outcome['outcome_id']} references unknown completion condition {ref}",
+                )
     for condition in conditions.values():
         if not condition["validation_refs"]:
-            fail("MISSING_VALIDATION_COVERAGE", f"completion condition {condition['condition_id']} has no validation coverage")
+            fail(
+                "MISSING_VALIDATION_COVERAGE",
+                f"completion condition {condition['condition_id']} has no validation coverage",
+            )
         for ref in condition["validation_refs"]:
             if ref not in validations:
-                fail("UNRESOLVED_REFERENCE", f"completion condition {condition['condition_id']} references unknown validation {ref}")
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"completion condition {condition['condition_id']} references unknown validation {ref}",
+                )
     return outcomes, conditions, validations
 
 
 def dependency_graph(
-    manifest: dict[str, Any], outcomes: dict[str, dict[str, Any]], prereqs: dict[str, dict[str, Any]]
+    manifest: dict[str, Any],
+    outcomes: dict[str, dict[str, Any]],
+    prereqs: dict[str, dict[str, Any]],
 ) -> dict[str, set[str]]:
     overlap = set(outcomes) & set(prereqs)
     if overlap:
-        fail("DUPLICATE_ID", f"outcome/prerequisite node identity collision: {sorted(overlap)[0]}")
+        fail(
+            "DUPLICATE_ID",
+            f"outcome/prerequisite node identity collision: {sorted(overlap)[0]}",
+        )
     nodes = set(outcomes) | set(prereqs)
     graph: dict[str, set[str]] = {node: set() for node in nodes}
     seen: set[tuple[str, str, str]] = set()
@@ -255,12 +416,21 @@ def dependency_graph(
         prerequisite = edge["prerequisite_ref"]
         relation = edge["relation"]
         if dependent not in nodes:
-            fail("UNRESOLVED_REFERENCE", f"dependency uses unknown dependent node {dependent}")
+            fail(
+                "UNRESOLVED_REFERENCE",
+                f"dependency uses unknown dependent node {dependent}",
+            )
         if prerequisite not in prereqs:
-            fail("UNRESOLVED_REFERENCE", f"dependency prerequisite_ref must resolve to a prerequisite: {prerequisite}")
+            fail(
+                "UNRESOLVED_REFERENCE",
+                f"dependency prerequisite_ref must resolve to a prerequisite: {prerequisite}",
+            )
         identity = (dependent, prerequisite, relation)
         if identity in seen:
-            fail("DUPLICATE_DEPENDENCY", f"duplicate dependency edge: {dependent} -{relation}-> {prerequisite}")
+            fail(
+                "DUPLICATE_DEPENDENCY",
+                f"duplicate dependency edge: {dependent} -{relation}-> {prerequisite}",
+            )
         seen.add(identity)
         graph[dependent].add(prerequisite)
     return graph
@@ -273,7 +443,10 @@ def reject_cycles(graph: dict[str, set[str]]) -> None:
     def visit(node: str, path: list[str]) -> None:
         if node in visiting:
             start = path.index(node) if node in path else 0
-            fail("DEPENDENCY_CYCLE", "dependency cycle detected: " + " -> ".join(path[start:] + [node]))
+            fail(
+                "DEPENDENCY_CYCLE",
+                "dependency cycle detected: " + " -> ".join(path[start:] + [node]),
+            )
         if node in visited:
             return
         visiting.add(node)
@@ -288,7 +461,9 @@ def reject_cycles(graph: dict[str, set[str]]) -> None:
         visit(node, [])
 
 
-def reachable_prerequisites(outcomes: dict[str, dict[str, Any]], graph: dict[str, set[str]]) -> set[str]:
+def reachable_prerequisites(
+    outcomes: dict[str, dict[str, Any]], graph: dict[str, set[str]]
+) -> set[str]:
     reachable: set[str] = set()
     stack = list(outcomes)
     visited: set[str] = set()
@@ -314,26 +489,44 @@ def verify_exclusions(
         if node not in known:
             fail("UNRESOLVED_REFERENCE", f"excluded node does not resolve: {node}")
         if node in outcomes:
-            fail("INCLUDED_EXCLUDED_CONTRADICTION", f"included outcome is also excluded: {node}")
+            fail(
+                "INCLUDED_EXCLUDED_CONTRADICTION",
+                f"included outcome is also excluded: {node}",
+            )
         if node in reachable:
             kind = prereqs[node]["resolution"]["kind"]
             if kind in {"IN_PACKET", "UNRESOLVED"}:
-                fail("EXCLUDED_REQUIRED_PREREQUISITE", f"required prerequisite {node} is {kind} but excluded while its dependent outcome remains included")
+                fail(
+                    "EXCLUDED_REQUIRED_PREREQUISITE",
+                    f"required prerequisite {node} is {kind} but excluded while its dependent outcome remains included",
+                )
 
 
 def evaluate(
-    manifest: dict[str, Any], manifest_path: Path, binding: dict[str, Any], binding_path: Path
+    manifest: dict[str, Any],
+    manifest_path: Path,
+    binding: dict[str, Any],
+    binding_path: Path,
+    repository_root: Path,
 ) -> PacketEvaluation:
     validate_schema(manifest, MANIFEST_SCHEMA, "WPDC manifest")
     binding_state = validate_binding(binding)
     verify_binding_identity(manifest, binding, binding_path)
     verify_canonical_base(manifest, binding)
     authorities = authority_index(manifest, binding_state["sources"])
-    state_contexts = verify_state_contexts(manifest, binding_state["sources"], binding_state["rules"])
-    external_dependencies = verify_external_dependencies(manifest, authorities, binding_state["rules"])
-    evidence = verify_evidence_files(manifest, manifest_path)
+    state_contexts = verify_state_contexts(
+        manifest, binding_state["sources"], binding_state["rules"]
+    )
+    external_dependencies = verify_external_dependencies(
+        manifest, authorities, binding_state["rules"]
+    )
+    evidence = verify_evidence_files(manifest, repository_root)
     prereqs = verify_evidence_semantics(
-        manifest, evidence, binding_state["sources"], state_contexts, external_dependencies
+        manifest,
+        evidence,
+        binding_state["sources"],
+        state_contexts,
+        external_dependencies,
     )
     outcomes, _, _ = verify_completion_and_validation_refs(manifest)
     graph = dependency_graph(manifest, outcomes, prereqs)
@@ -358,13 +551,26 @@ def main() -> int:
     )
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--binding", required=True, type=Path)
+    parser.add_argument(
+        "--repository-root",
+        required=True,
+        type=Path,
+        help="adopter repository root used to resolve repository-relative evidence paths",
+    )
     args = parser.parse_args()
     manifest_path = args.manifest.resolve()
     binding_path = args.binding.resolve()
+    repository_root = args.repository_root.resolve()
     try:
         manifest = load_json(manifest_path, "WPDC manifest")
         binding = load_json(binding_path, "WPDC binding")
-        result = evaluate(manifest, manifest_path, binding, binding_path)
+        result = evaluate(
+            manifest,
+            manifest_path,
+            binding,
+            binding_path,
+            repository_root,
+        )
     except ValidationFailure as exc:
         print(f"PACKET_INVALID: {exc.code}: {exc.message}")
         return 1
