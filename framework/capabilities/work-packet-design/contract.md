@@ -332,7 +332,13 @@ A project may require a dependency-closed packet before execution, but the autho
 
 A consumer is governed by this contract only after explicit WPDC adoption under `framework/capabilities/work-packet-design/adoption-contract.md`.
 
-A General Governance release may contain this contract without activating it for any consumer. Absence of a valid adopter binding means WPDC is absent for that consumer.
+A General Governance release may contain this contract without activating it for any consumer.
+
+The adoption states are distinct:
+
+- if the optional WPDC discovery key is absent, WPDC is absent for that consumer;
+- if the discovery key is present and resolves to a valid supported binding, WPDC is adopted;
+- if the discovery key is present but the binding is missing, invalid, ambiguous, or unsupported, WPDC adoption is invalid for governed evaluation and MUST NOT be treated as either successful adoption or simple absence.
 
 Adoption does not retroactively re-evaluate historical packets unless a separately authorized process performs that evaluation.
 
