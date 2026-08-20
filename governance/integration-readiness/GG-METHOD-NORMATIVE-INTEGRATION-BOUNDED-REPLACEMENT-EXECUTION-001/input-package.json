@@ -1,0 +1,25 @@
+{
+  "accepted_candidate_commit": "ef10fb6baca3844d156abd9f5c79517b404889f2",
+  "accepted_implementation_head": "95e7dafac6afee54ca1ff6112dcd0cded74d08e8",
+  "accepted_poc_blob": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+  "execution_id": "GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001-RUN-001",
+  "general_governance_main_baseline": "91fa0727abf730e142a4c43f2da68b1281be1121",
+  "historical_release_pattern": {
+    "rc4_materialization_commit": "e84e733730ce14f128653b4f9060c283ba6060bf"
+  },
+  "implementation_validation_blob": "9aa898fc4df8e09e083b8c7d7f1e365f20f16949",
+  "owner_authorization_comment_id": 5360367828,
+  "permitted_execution_count": 1,
+  "read_only_release_evidence": {
+    ".github/workflows/conformance-ci.yml": "1aba88d0a6b6d118c11b351ffda3b068eec591dc",
+    "README.md": "30bccfdc89403e22bb625138341c5de43b6b0cc9",
+    "RELEASE_VERSION": "9ad3f36aa010e24aa5c6abfb54a3ccc221617fdf",
+    "docs/consumer-contract.md": "ccaafcd63b5f874efb6bad25ecb9d21e243dc8c2",
+    "provenance/evolution-manifest.json": "2b76a961545c87dbedae5b503ea7756faacfbc46",
+    "release-manifest.json": "048a6148e6192cccf6e33916606f2699635620c1",
+    "tools/validate_consumer.py": "816a94685726bd6aa1d265da18bf7b26cf24754c",
+    "tools/verify_evolution.py": "406d223a501d984feae53069b3b108553200e733"
+  },
+  "schema": "gg.integration-readiness-input/1.0.0",
+  "work_identity": "GG-METHOD-NORMATIVE-INTEGRATION-BOUNDED-REPLACEMENT-EXECUTION-001"
+}
