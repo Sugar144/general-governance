@@ -1,31 +1,45 @@
 {
   "schema": "gg.method-discovery-run-record/1.0.0",
-  "work_package_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
+  "work_identity": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
   "execution_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001-RUN-001",
+  "execution_date": "2026-08-20",
   "role": "METHOD_DISCOVERY_ANALYST",
   "mode": "READ_ONLY_SYNTHESIS",
-  "protocol_id": "GG-METHOD-DISCOVERY-PROTOCOL-001",
-  "protocol_version": "1.0.0",
-  "material_prompt_id": "GG-MP-0005",
-  "material_prompt_version": "1.0.0",
+  "protocol": "GG-METHOD-DISCOVERY-PROTOCOL-001",
   "formal_input_package_sha256": "a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e",
-  "authorization_comment_id": 5361498381,
-  "permitted_execution_count": 1,
-  "execution_boundary_crossed": false,
-  "allowance_consumed": false,
-  "status": "PREPARED",
-  "result_path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/result.md",
-  "validation_record_path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/validation-record.json",
-  "forbidden_effects": [
-    "normative framework mutation",
-    "schema/tool/test mutation",
-    "SVP or Dopis mutation",
-    "pull request",
-    "merge",
-    "tag",
-    "release",
-    "deployment",
-    "publication",
-    "second execution"
-  ]
+  "owner_authorization_comment_id": 5361498381,
+  "preparation_commit": "2311273758c0845fc87dbd5dd530a3487438d583",
+  "execution_boundary": {
+    "crossed": true,
+    "branch_head_at_admission": "2311273758c0845fc87dbd5dd530a3487438d583",
+    "general_governance_main_at_admission": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+    "allowance_consumed": 1,
+    "remaining_execution_allowance": 0
+  },
+  "result": {
+    "path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/result.md",
+    "primary_disposition": "SPLIT_FRAMEWORK_ADOPTER_CONTRACT_CANDIDATE",
+    "status": "VALIDATED_PENDING_PROJECT_OWNER_REVIEW"
+  },
+  "status": "EXECUTED_PENDING_VALIDATION",
+  "effects": {
+    "normative_files_modified": false,
+    "schemas_modified": false,
+    "tools_modified": false,
+    "tests_modified": false,
+    "svp_modified": false,
+    "dopis_modified": false,
+    "pull_request": false,
+    "merge": false,
+    "tag": false,
+    "release": false,
+    "deployment": false,
+    "publication": false,
+    "owner_acceptance_claimed": false
+  },
+  "anti_recursion": {
+    "additional_execution_authority_created": false,
+    "implicit_replacement_created": false,
+    "note": "RUN-001 consumed the single execution allowance. No RUN-002, retry, replacement or recovery is authorized."
+  }
 }
