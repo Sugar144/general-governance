@@ -1,0 +1,31 @@
+{
+  "schema": "gg.method-discovery-run-record/1.0.0",
+  "work_package_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
+  "execution_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001-RUN-001",
+  "role": "METHOD_DISCOVERY_ANALYST",
+  "mode": "READ_ONLY_SYNTHESIS",
+  "protocol_id": "GG-METHOD-DISCOVERY-PROTOCOL-001",
+  "protocol_version": "1.0.0",
+  "material_prompt_id": "GG-MP-0005",
+  "material_prompt_version": "1.0.0",
+  "formal_input_package_sha256": "a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e",
+  "authorization_comment_id": 5361498381,
+  "permitted_execution_count": 1,
+  "execution_boundary_crossed": false,
+  "allowance_consumed": false,
+  "status": "PREPARED",
+  "result_path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/result.md",
+  "validation_record_path": "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/validation-record.json",
+  "forbidden_effects": [
+    "normative framework mutation",
+    "schema/tool/test mutation",
+    "SVP or Dopis mutation",
+    "pull request",
+    "merge",
+    "tag",
+    "release",
+    "deployment",
+    "publication",
+    "second execution"
+  ]
+}

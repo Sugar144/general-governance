@@ -1,0 +1,45 @@
+{
+  "schema": "gg.method-discovery-input-package/1.0.0",
+  "canonicalization": "SHA-256 over UTF-8 JSON of manifest with sort_keys=true,separators=(',',':'),ensure_ascii=false",
+  "canonical_manifest_sha256": "a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e",
+  "manifest": {
+    "general_governance": {
+      "baseline_commit": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+      "discovery_issue": 11,
+      "formal_execution_authorization_comment_id": 5361498381,
+      "operating_contract": {
+        "path": "framework/core/project-operating-contract.md",
+        "blob_sha": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+        "document_id": "GOV-METHOD-OPERATING-CONTRACT-001",
+        "version": "0.5.0"
+      },
+      "consumer_validator": {
+        "path": "tools/validate_consumer.py",
+        "blob_sha": "816a94685726bd6aa1d265da18bf7b26cf24754c"
+      }
+    },
+    "svp": {
+      "baseline_commit": "39302e21e4aac26da387d5d3dcd9c00be71c8f1d",
+      "artifacts": [
+        {"path": "docs/governance/configuration.yaml", "blob_sha": "985f17b131d90b1290ee06a3a0d5c4fdbf5c7974"},
+        {"path": "docs/governance/learning/README.md", "observation": "ABSENT_AT_BOUND_BASELINE"},
+        {"path": "AGENTS.md", "blob_sha": "a2c5b25b765ab38ad6db8774943cc02f464f1a78"},
+        {"path": "coordination/active-work/leases/SVP-STAGE2A-V1-PACKET-03.json", "observation": "PACKET03_WRITE_SURFACE_INCLUDED_LESSONS_LEARNED"},
+        {"path": "docs/governance/EMPIRICAL_PACKET_PACKET03_LESSONS_LEARNED.md"},
+        {"path": "reports/work-packages/SVP-STAGE2A-V1-PACKET-03-CROSS-PROJECT-LEARNING-HARVEST.md"}
+      ]
+    },
+    "dopis": {
+      "baseline_commit": "d8e18eec269924ff89162e6bfcc5b6849cf8e292",
+      "artifacts": [
+        {"path": "docs/governance/configuration.yaml", "blob_sha": "3ce402649655c63ea2002dce92d869e40bf0380e"},
+        {"path": "docs/governance/learning/README.md", "blob_sha": "35deb69efefd8d72004fc2b5dada5908a3375972"},
+        {"path": "docs/governance/learning/DOPIS-LEARNING-009-vertical-slice-boundaries-and-dependencies.md", "blob_sha": "1b54ae5a620f6030e2e30a8e47490c7d9a5cec04"},
+        {"path": "docs/governance/learning/DOPIS-LEARNING-010-validator-vocabulary-alignment.md", "blob_sha": "6cd6893d9a688e6bae8b03729b344b40e2fced6c"},
+        {"path": "AGENTS.md", "blob_sha": "0a96dcd565583413c91770490751dccae28b1ae3"}
+      ]
+    },
+    "package_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001-INPUT-PACKAGE",
+    "version": "1.0.0"
+  }
+}

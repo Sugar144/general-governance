@@ -1,0 +1,39 @@
+{
+  "schema": "gg.method-discovery-preflight/1.0.0",
+  "work_package_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
+  "execution_id": "GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001-RUN-001",
+  "status": "PASS",
+  "checked_at": "2026-08-20",
+  "general_governance": {
+    "expected_main": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+    "observed_main": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+    "branch": "method/discovery-cross-project-learning-lifecycle-001",
+    "branch_base": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+    "main_protected": true,
+    "required_check": "consumer-contract"
+  },
+  "authority": {
+    "issue": 11,
+    "authorization_comment_id": 5361498381,
+    "permitted_execution_count": 1,
+    "remaining_before_execution": 1
+  },
+  "input_package": {
+    "canonical_manifest_sha256": "a57300daf086814204f41bfc1c649525728309b1bd9b30842a606fe32165c71e",
+    "status": "BOUND"
+  },
+  "evidence_checks": {
+    "svp_configuration_learning_readme_declared": true,
+    "svp_learning_readme_absent_at_bound_baseline": true,
+    "svp_packet03_local_lessons_present": true,
+    "svp_packet03_cross_project_harvest_present": true,
+    "dopis_learning_readme_declared_and_present": true,
+    "dopis_material_learning_records_present": true,
+    "gg_rc5_learning_semantics_present": true,
+    "gg_consumer_validator_only_checks_nonempty_learning_readme_value": true
+  },
+  "write_surface": [
+    "governance/discovery/GG-METHOD-DISCOVERY-CROSS-PROJECT-LEARNING-LIFECYCLE-001/"
+  ],
+  "forbidden_surface_mutation": "NONE_OBSERVED"
+}
