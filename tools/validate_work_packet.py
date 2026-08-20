@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -49,6 +50,10 @@ def load_json(path: Path, label: str) -> dict[str, Any]:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def bytes_sha256(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
 
 
 def validate_schema(document: dict[str, Any], schema_path: Path, label: str) -> None:
@@ -116,7 +121,7 @@ def verify_binding_identity(
 
 
 def verify_canonical_base(
-    manifest: dict[str, Any], binding: dict[str, Any]
+    manifest: dict[str, Any], binding: dict[str, Any], repository_root: Path
 ) -> None:
     adopter_repo = binding["adopter"].get("repository")
     if (
@@ -126,6 +131,26 @@ def verify_canonical_base(
         fail(
             "INVALID_CANONICAL_BASE",
             "manifest canonical repository does not match adopter repository bound by WPDC adoption",
+        )
+
+    root = repository_root.resolve()
+    if not root.is_dir():
+        fail(
+            "INVALID_CANONICAL_BASE",
+            f"adopter repository root is not a directory: {repository_root}",
+        )
+    commit_sha = manifest["canonical_base"]["commit_sha"]
+    try:
+        subprocess.run(
+            ["git", "-C", str(root), "cat-file", "-e", f"{commit_sha}^{{commit}}"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        fail(
+            "INVALID_CANONICAL_BASE",
+            f"canonical commit is not resolvable in supplied adopter repository: {commit_sha}",
         )
 
 
@@ -170,15 +195,10 @@ def verify_state_contexts(
     for context in contexts.values():
         source_id = context["source_id"]
         source = sources.get(source_id)
-        if source is None:
-            fail(
-                "UNRESOLVED_REFERENCE",
-                f"state context {context['state_context_id']} uses unknown source {source_id}",
-            )
-        if "STATE" not in source["classes"]:
+        if source is not None and "STATE" not in source["classes"]:
             fail(
                 "INVALID_SOURCE_CLASS",
-                f"state context {context['state_context_id']} uses non-state source {source_id}",
+                f"state context {context['state_context_id']} uses non-state mapped source {source_id}",
             )
         currentness = context["currentness"]
         if (
@@ -221,16 +241,35 @@ def verify_external_dependencies(
     return dependencies
 
 
+def repository_path(root: Path, relative: str) -> Path:
+    path = (root / relative).resolve()
+    try:
+        path.relative_to(root)
+    except ValueError:
+        fail(
+            "INVALID_RESOLUTION_EVIDENCE",
+            f"evidence path escapes adopter repository root: {relative}",
+        )
+    return path
+
+
+def git_file_bytes(repository_root: Path, commit_sha: str, relative: str) -> bytes:
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(repository_root), "show", f"{commit_sha}:{relative}"],
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        fail(
+            "INVALID_RESOLUTION_EVIDENCE",
+            f"canonical evidence path is not available at {commit_sha}: {relative}",
+        )
+
+
 def verify_evidence_files(
     manifest: dict[str, Any], repository_root: Path
 ) -> dict[str, dict[str, Any]]:
-    """Verify repository-relative evidence paths without forcing evidence copies.
-
-    Evidence is resolved from an explicitly supplied adopter repository root, not
-    from the packet-manifest directory. This lets a packet bind an existing
-    durable source/evidence artifact elsewhere in the adopter repository while
-    still preventing path escape.
-    """
+    """Verify exact evidence bytes in their declared evaluation context."""
     evidence = unique_index(manifest["evidence"], "evidence_id", "evidence")
     root = repository_root.resolve()
     if not root.is_dir():
@@ -238,24 +277,38 @@ def verify_evidence_files(
             "INVALID_EVIDENCE_ROOT",
             f"adopter repository root is not a directory: {repository_root}",
         )
+    canonical = manifest["canonical_base"]
+
     for item in evidence.values():
-        path = (root / item["path"]).resolve()
-        try:
-            path.relative_to(root)
-        except ValueError:
-            fail(
-                "INVALID_RESOLUTION_EVIDENCE",
-                f"evidence path escapes adopter repository root: {item['path']}",
+        relative = item["path"]
+        repository_path(root, relative)
+        context = item["context"]
+
+        if context["kind"] == "CANONICAL_BASE":
+            if (
+                context["repository"] != canonical["repository"]
+                or context["commit_sha"] != canonical["commit_sha"]
+            ):
+                fail(
+                    "EVIDENCE_IDENTITY_MISMATCH",
+                    f"canonical evidence {item['evidence_id']} is not bound to the packet canonical base",
+                )
+            actual_digest = bytes_sha256(
+                git_file_bytes(root, canonical["commit_sha"], relative)
             )
-        if not path.is_file():
-            fail(
-                "INVALID_RESOLUTION_EVIDENCE",
-                f"evidence file does not exist: {item['path']}",
-            )
-        if sha256(path) != item["sha256"]:
+        else:
+            path = repository_path(root, relative)
+            if not path.is_file():
+                fail(
+                    "INVALID_RESOLUTION_EVIDENCE",
+                    f"evidence file does not exist: {relative}",
+                )
+            actual_digest = sha256(path)
+
+        if actual_digest != item["sha256"]:
             fail(
                 "EVIDENCE_IDENTITY_MISMATCH",
-                f"evidence digest mismatch: {item['path']}",
+                f"evidence digest mismatch: {relative}",
             )
     return evidence
 
@@ -293,6 +346,11 @@ def verify_evidence_semantics(
                         "INVALID_RESOLUTION_EVIDENCE",
                         f"prerequisite {prereq['prerequisite_id']} misclassifies externally supplied evidence as PREEXISTING_SATISFIED",
                     )
+                if item["source_ref"] in external_dependencies:
+                    fail(
+                        "INVALID_RESOLUTION_EVIDENCE",
+                        f"preexisting evidence {item['evidence_id']} source_ref identifies a separately declared external dependency",
+                    )
                 context = item["context"]
                 if context["kind"] == "EXTERNAL_DEPENDENCY":
                     fail(
@@ -309,9 +367,6 @@ def verify_evidence_semantics(
                             "EVIDENCE_IDENTITY_MISMATCH",
                             f"preexisting evidence {item['evidence_id']} is not bound to the packet canonical base",
                         )
-                    # A canonical-base artifact may be supplied as an exact
-                    # adopter-owned reference even when its source class is not
-                    # pre-mapped in the generic adoption binding.
                 elif context["kind"] == "STATE_EVALUATION":
                     state_ref = context["state_context_ref"]
                     state = state_contexts.get(state_ref)
@@ -512,7 +567,7 @@ def evaluate(
     validate_schema(manifest, MANIFEST_SCHEMA, "WPDC manifest")
     binding_state = validate_binding(binding)
     verify_binding_identity(manifest, binding, binding_path)
-    verify_canonical_base(manifest, binding)
+    verify_canonical_base(manifest, binding, repository_root)
     authorities = authority_index(manifest, binding_state["sources"])
     state_contexts = verify_state_contexts(
         manifest, binding_state["sources"], binding_state["rules"]
@@ -555,7 +610,7 @@ def main() -> int:
         "--repository-root",
         required=True,
         type=Path,
-        help="adopter repository root used to resolve repository-relative evidence paths",
+        help="adopter repository root used to resolve exact canonical/current evidence",
     )
     args = parser.parse_args()
     manifest_path = args.manifest.resolve()
