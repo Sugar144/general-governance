@@ -185,9 +185,40 @@ class WorkPacketContractTests(unittest.TestCase):
             check=True,
         )
         self.canonical_sha = run_git(self.root, "rev-parse", "HEAD")
+        self.configuration_path = self.root / "consumer-configuration.yaml"
+        self.write_configuration()
 
     def tearDown(self) -> None:
         self.temp.cleanup()
+
+    def write_configuration(
+        self, binding_path: str = "binding.json", *, activate_wpdc: bool = True
+    ) -> None:
+        configuration = {
+            "correction_example": {
+                "base_run_id": "RUN-001",
+                "first_correction_id": "CORR-001",
+            },
+            "paths": {
+                "formal_run_prompt_snapshots": "prompts",
+                "learning_readme": "README.md",
+            },
+            "identity_allocator": {
+                "namespace": "ACME",
+                "state_path": "state.json",
+                "ledger_path": "ledger.json",
+            },
+            "prompt_identity": {"namespace": "ACME", "sequence_width": 4},
+        }
+        if activate_wpdc:
+            configuration["capabilities"] = {
+                "work_packet_design": {"binding_path": binding_path}
+            }
+        self.configuration_path.write_text(
+            json.dumps({"configuration": configuration}, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
 
     def restore_evidence_worktree(self) -> None:
         subprocess.run(
@@ -205,6 +236,7 @@ class WorkPacketContractTests(unittest.TestCase):
 
     def write_case(self, case_id: str) -> tuple[dict, Path, dict, Path]:
         self.restore_evidence_worktree()
+        self.write_configuration()
         binding = base_binding()
         manifest = base_manifest(self.canonical_sha)
         adopter_evidence = self.root / "evidence/adopter.json"
@@ -444,6 +476,39 @@ class WorkPacketContractTests(unittest.TestCase):
         )
         return manifest, manifest_path, binding, binding_path
 
+    def run_cli(self, manifest_path: Path, binding_path: Path) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [
+                "python3",
+                str(VALIDATOR_PATH),
+                "--manifest",
+                str(manifest_path),
+                "--binding",
+                str(binding_path),
+                "--configuration",
+                str(self.configuration_path),
+                "--repository-root",
+                str(self.root),
+            ],
+            text=True,
+            capture_output=True,
+        )
+
+    def rewrite_case_documents(
+        self,
+        manifest: dict,
+        manifest_path: Path,
+        binding: dict,
+        binding_path: Path,
+    ) -> None:
+        binding_path.write_text(
+            json.dumps(binding, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        manifest["adoption_binding"]["sha256"] = digest(binding_path)
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
     def test_schemas_are_draft_2020_12_valid(self):
         for path in (
             ROOT / "contracts/work-packet-capability-binding.schema.json",
@@ -479,20 +544,7 @@ class WorkPacketContractTests(unittest.TestCase):
 
     def test_cli_blocked_is_valid_but_not_closed(self):
         _, manifest_path, _, binding_path = self.write_case("unresolved_blocked")
-        result = subprocess.run(
-            [
-                "python3",
-                str(VALIDATOR_PATH),
-                "--manifest",
-                str(manifest_path),
-                "--binding",
-                str(binding_path),
-                "--repository-root",
-                str(self.root),
-            ],
-            text=True,
-            capture_output=True,
-        )
+        result = self.run_cli(manifest_path, binding_path)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("VALID_BUT_BLOCKED", result.stdout)
         self.assertIn("no execution authority is implied", result.stdout)
@@ -501,24 +553,80 @@ class WorkPacketContractTests(unittest.TestCase):
         _, manifest_path, _, binding_path = self.write_case(
             "in_packet_excluded_invalid"
         )
-        result = subprocess.run(
-            [
-                "python3",
-                str(VALIDATOR_PATH),
-                "--manifest",
-                str(manifest_path),
-                "--binding",
-                str(binding_path),
-                "--repository-root",
-                str(self.root),
-            ],
-            text=True,
-            capture_output=True,
-        )
+        result = self.run_cli(manifest_path, binding_path)
         self.assertEqual(result.returncode, 1)
         self.assertIn(
             "PACKET_INVALID: EXCLUDED_REQUIRED_PREREQUISITE", result.stdout
         )
+
+    def test_cli_without_discovery_key_reports_wpdc_absent(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        self.write_configuration(activate_wpdc=False)
+        result = self.run_cli(manifest_path, binding_path)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("WPDC_ABSENT", result.stdout)
+        self.assertNotIn("VALID_DEPENDENCY_CLOSED", result.stdout)
+        self.assertNotIn("VALID_BUT_BLOCKED", result.stdout)
+
+    def test_cli_rejects_binding_not_selected_by_configuration(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        other_binding = self.root / "other-binding.json"
+        other_binding.write_bytes(binding_path.read_bytes())
+        result = self.run_cli(manifest_path, other_binding)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn("not the binding selected", result.stdout)
+
+    def test_cli_rejects_missing_configured_binding(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        self.write_configuration(binding_path="missing-binding.json")
+        result = self.run_cli(manifest_path, binding_path)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn("configured WPDC binding does not exist", result.stdout)
+
+    def test_state_binding_rule_must_match_mapped_source_rule(self):
+        manifest, manifest_path, binding, binding_path = self.write_case(
+            "preexisting_state_closed"
+        )
+        binding["currentness_rules"].append(
+            {
+                "rule_id": "OTHER-CURRENTNESS",
+                "mode": "REFERENCE_BOUND",
+                "reference": "ACME-OTHER-CURRENTNESS-POLICY-001",
+            }
+        )
+        manifest["state_contexts"][0]["currentness"] = {
+            "mode": "BINDING_RULE",
+            "rule_ref": "OTHER-CURRENTNESS",
+        }
+        self.rewrite_case_documents(
+            manifest, manifest_path, binding, binding_path
+        )
+        with self.assertRaises(validator.ValidationFailure) as caught:
+            validator.evaluate(
+                manifest, manifest_path, binding, binding_path, self.root
+            )
+        self.assertEqual(caught.exception.code, "INVALID_ADOPTION_BINDING")
+        self.assertIn("does not match source", caught.exception.message)
+
+    def test_unmapped_state_source_cannot_use_binding_rule(self):
+        manifest, manifest_path, binding, binding_path = self.write_case(
+            "preexisting_state_without_binding_source_closed"
+        )
+        manifest["state_contexts"][0]["currentness"] = {
+            "mode": "BINDING_RULE",
+            "rule_ref": "STATE-CURRENT",
+        }
+        self.rewrite_case_documents(
+            manifest, manifest_path, binding, binding_path
+        )
+        with self.assertRaises(validator.ValidationFailure) as caught:
+            validator.evaluate(
+                manifest, manifest_path, binding, binding_path, self.root
+            )
+        self.assertEqual(caught.exception.code, "INVALID_ADOPTION_BINDING")
+        self.assertIn("cannot use BINDING_RULE", caught.exception.message)
 
 
 if __name__ == "__main__":
