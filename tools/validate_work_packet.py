@@ -543,6 +543,71 @@ def verify_evidence_files(
     return evidence
 
 
+def verify_declared_evidence_contexts(
+    evidence: dict[str, dict[str, Any]],
+    state_contexts: dict[str, dict[str, Any]],
+    external_dependencies: dict[str, dict[str, Any]],
+) -> None:
+    """Validate context references and source/scope coherence for every evidence item."""
+    for item in evidence.values():
+        evidence_id = item["evidence_id"]
+        scope = item["source_scope"]
+        source_ref = item["source_ref"]
+        context = item["context"]
+        kind = context["kind"]
+
+        if scope == "ADOPTER_OWNED" and source_ref in external_dependencies:
+            fail(
+                "INVALID_RESOLUTION_EVIDENCE",
+                f"adopter-owned evidence {evidence_id} source_ref identifies a separately declared external dependency",
+            )
+
+        if kind == "CANONICAL_BASE":
+            if scope != "ADOPTER_OWNED":
+                fail(
+                    "INVALID_RESOLUTION_EVIDENCE",
+                    f"canonical-base evidence {evidence_id} must be adopter-owned",
+                )
+            continue
+
+        if kind == "STATE_EVALUATION":
+            if scope != "ADOPTER_OWNED":
+                fail(
+                    "INVALID_RESOLUTION_EVIDENCE",
+                    f"state-evaluation evidence {evidence_id} must be adopter-owned",
+                )
+            state_ref = context["state_context_ref"]
+            state = state_contexts.get(state_ref)
+            if state is None:
+                fail(
+                    "UNRESOLVED_REFERENCE",
+                    f"evidence {evidence_id} references unknown state context {state_ref}",
+                )
+            if state["source_id"] != source_ref:
+                fail(
+                    "INVALID_RESOLUTION_EVIDENCE",
+                    f"evidence {evidence_id} source differs from its state context source",
+                )
+            continue
+
+        if scope != "EXTERNAL_DEPENDENCY":
+            fail(
+                "INVALID_RESOLUTION_EVIDENCE",
+                f"external-dependency evidence {evidence_id} must use external dependency scope",
+            )
+        external_ref = context["external_dependency_ref"]
+        if external_ref not in external_dependencies:
+            fail(
+                "UNRESOLVED_REFERENCE",
+                f"evidence {evidence_id} references unknown external dependency {external_ref}",
+            )
+        if source_ref != external_ref:
+            fail(
+                "INVALID_RESOLUTION_EVIDENCE",
+                f"evidence {evidence_id} source differs from its external dependency context",
+            )
+
+
 def verify_evidence_semantics(
     manifest: dict[str, Any],
     evidence: dict[str, dict[str, Any]],
@@ -806,6 +871,9 @@ def evaluate(
         manifest, authorities, binding_state["rules"]
     )
     evidence = verify_evidence_files(manifest, repository_root)
+    verify_declared_evidence_contexts(
+        evidence, state_contexts, external_dependencies
+    )
     prereqs = verify_evidence_semantics(
         manifest,
         evidence,
