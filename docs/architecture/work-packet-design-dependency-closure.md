@@ -110,13 +110,17 @@ An `IN_PACKET` prerequisite remains subject to transitive dependency closure.
 
 ### PREEXISTING_SATISFIED
 
-`PREEXISTING_SATISFIED` means the prerequisite is already satisfied outside the work that the current packet must produce.
+`PREEXISTING_SATISFIED` means the prerequisite is already satisfied directly by the adopter's own canonical-base facts and/or adopter-owned state evaluation context, without relying on a separately identified external dependency as the source of satisfaction.
 
-This resolution requires durable evidence bound strongly enough to the identities and state evaluation context applicable to the satisfaction claim. Immutable repository facts may be bound to the canonical base. Mutable or external state claims require evidence/currentness constraints appropriate to that state. A belief, branch name, unbound historical note, assumed prior implementation, or stale observation is not sufficient evidence.
+This resolution requires durable evidence bound strongly enough to the identities and state evaluation context applicable to the satisfaction claim. Immutable repository facts may be bound to the canonical base. Mutable adopter-owned state claims require evidence/currentness constraints appropriate to that state. A belief, branch name, unbound historical note, assumed prior implementation, or stale observation is not sufficient evidence.
+
+If satisfying the prerequisite depends on a result, artifact, or condition supplied through a separately identified external dependency boundary, `PREEXISTING_SATISFIED` MUST NOT be used; the prerequisite must use `BOUND_EXTERNAL_SATISFIED`.
 
 ### BOUND_EXTERNAL_SATISFIED
 
-`BOUND_EXTERNAL_SATISFIED` means the prerequisite is satisfied by an exact external result, artifact, or condition whose identity, evidence, applicable currentness constraints, and authority are explicitly bound.
+`BOUND_EXTERNAL_SATISFIED` means the prerequisite is satisfied through a separately identified external dependency that provides an exact result, artifact, or condition whose source identity, evidence, applicable currentness constraints, and authority are explicitly bound.
+
+The external dependency may already have produced its result before the current packet is designed; temporal pre-existence alone does not convert externally supplied satisfaction into `PREEXISTING_SATISFIED`.
 
 A prior work-packet result is one valid class of external source, but it is not the only valid class. The capability must not assume that every external prerequisite originates in another work packet.
 
@@ -155,6 +159,8 @@ Every prerequisite reachable from an included outcome MUST declare exactly one s
 ### WPDC-006 — Evidence-bound satisfaction
 
 `PREEXISTING_SATISFIED` and `BOUND_EXTERNAL_SATISFIED` MUST be supported by durable evidence bound to the immutable identities, mutable/external state context, currentness constraints, and applicable authority sufficient to establish the claimed prerequisite satisfaction.
+
+`PREEXISTING_SATISFIED` MUST be used only for satisfaction demonstrated directly from adopter-owned canonical-base facts or adopter-owned state context. `BOUND_EXTERNAL_SATISFIED` MUST be used when the satisfaction claim depends on a separately identified external dependency source. The two resolutions are mutually exclusive for a given prerequisite claim.
 
 The evidence model MUST NOT treat an immutable repository SHA as proof of mutable runtime or external state merely because the packet was designed against that SHA.
 
@@ -250,6 +256,7 @@ A future deterministic validator may validate only declared machine-checkable cl
 - cycle detection;
 - mandatory resolution for reachable prerequisites;
 - evidence-reference presence and binding constraints;
+- deterministic separation of adopter-owned direct satisfaction from separately bound external-dependency satisfaction where the manifest declares the applicable source class;
 - direct inclusion/exclusion contradictions;
 - unresolved/excluded required prerequisite contradictions;
 - structural completion-condition validation coverage;
@@ -266,6 +273,7 @@ The deterministic validator MUST NOT claim to determine:
 - whether two outcomes are materially independent;
 - whether a requirement, architecture decision, or project state is substantively correct;
 - whether mutable/external evidence is semantically fresh enough when that judgment is not deterministically encoded by the applicable contract;
+- whether an asserted adopter-owned versus external source classification is semantically truthful when that distinction cannot be established from declared machine-bound identities;
 - whether execution is authorized.
 
 Those require semantic analysis, independent review when proportionate, Owner disposition where applicable, or another authoritative mechanism.
@@ -345,8 +353,9 @@ Framework regression fixtures MUST be generic and tied to accepted invariants ra
 The first generic regression family should include at least:
 
 - `IN_PACKET` prerequisite with complete transitive closure -> `VALID_DEPENDENCY_CLOSED`;
-- `PREEXISTING_SATISFIED` prerequisite with correctly bound immutable or state/currentness evidence -> `VALID_DEPENDENCY_CLOSED`;
-- `BOUND_EXTERNAL_SATISFIED` prerequisite with correctly bound evidence/currentness -> `VALID_DEPENDENCY_CLOSED`;
+- `PREEXISTING_SATISFIED` prerequisite with correctly bound adopter-owned immutable or state/currentness evidence -> `VALID_DEPENDENCY_CLOSED`;
+- `BOUND_EXTERNAL_SATISFIED` prerequisite with correctly bound external-dependency identity, evidence/currentness, and authority -> `VALID_DEPENDENCY_CLOSED`;
+- externally supplied prerequisite misclassified as `PREEXISTING_SATISFIED` where the declared source identity proves a separate external dependency -> `PACKET_INVALID`;
 - honestly declared `UNRESOLVED` prerequisite -> `VALID_BUT_BLOCKED`;
 - reachable `UNRESOLVED` prerequisite also excluded -> `PACKET_INVALID` / `EXCLUDED_REQUIRED_PREREQUISITE`;
 - reachable `IN_PACKET` prerequisite also excluded -> `PACKET_INVALID`;
