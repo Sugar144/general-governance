@@ -25,6 +25,7 @@ from framework.core.l6.strict_yaml import StrictYAMLError, load as load_yaml
 BINDING_SCHEMA = ROOT / "contracts" / "work-packet-capability-binding.schema.json"
 MANIFEST_SCHEMA = ROOT / "contracts" / "work-packet-manifest.schema.json"
 CONSUMER_CONFIGURATION_SCHEMA = ROOT / "contracts" / "consumer-configuration.schema.json"
+CONSUMER_LOCK_SCHEMA = ROOT / "contracts" / "consumer-lock.schema.json"
 
 
 @dataclass(frozen=True)
@@ -101,6 +102,51 @@ def load_adopter_configuration(path: Path) -> dict[str, Any]:
             f"adopter configuration schema validation failed at {where}: {first.message}",
         )
     return value
+
+
+def verify_configuration_selected_by_consumer_lock(
+    configuration_path: Path, repository_root: Path
+) -> None:
+    root = repository_root.resolve()
+    lock_path = root / "framework-lock.json"
+    if not lock_path.is_file():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "consumer framework-lock.json is required to resolve the governing adopter configuration",
+        )
+    lock = load_json(lock_path, "consumer framework lock")
+    schema = json.loads(CONSUMER_LOCK_SCHEMA.read_text(encoding="utf-8"))
+    errors = sorted(
+        Draft202012Validator(schema).iter_errors(lock),
+        key=lambda error: [str(part) for part in error.path],
+    )
+    if errors:
+        first = errors[0]
+        where = "$" + "".join(f"[{part!r}]" for part in first.path)
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"consumer framework lock schema validation failed at {where}: {first.message}",
+        )
+
+    selected = lock["consumer"]["configuration_path"]
+    selected_path = (root / selected).resolve()
+    try:
+        selected_path.relative_to(root)
+    except ValueError:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "consumer framework lock configuration_path escapes the adopter repository",
+        )
+    if not selected_path.is_file():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"framework-lock.json selected adopter configuration does not exist: {selected}",
+        )
+    if selected_path != configuration_path.resolve():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "supplied adopter configuration is not the configuration selected by framework-lock.json",
+        )
 
 
 def verify_adoption_selection(
@@ -712,7 +758,7 @@ def evaluate(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate a WPDC work-packet manifest against the exact binding selected by adopter configuration"
+        description="Validate a WPDC work-packet manifest against the exact binding selected by the lock-selected adopter configuration"
     )
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--binding", required=True, type=Path)
@@ -721,7 +767,7 @@ def main() -> int:
         "--repository-root",
         required=True,
         type=Path,
-        help="adopter repository root used to resolve configuration, binding, and exact canonical/current evidence",
+        help="adopter repository root containing framework-lock.json and the exact canonical/current evidence",
     )
     args = parser.parse_args()
     manifest_path = args.manifest.resolve()
@@ -729,6 +775,7 @@ def main() -> int:
     configuration_path = args.configuration.resolve()
     repository_root = args.repository_root.resolve()
     try:
+        verify_configuration_selected_by_consumer_lock(configuration_path, repository_root)
         verify_adoption_selection(configuration_path, binding_path, repository_root)
         manifest = load_json(manifest_path, "WPDC manifest")
         binding = load_json(binding_path, "WPDC binding")
