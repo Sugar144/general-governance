@@ -26,6 +26,12 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def run_git(root: Path, *args: str) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(root), *args], text=True
+    ).strip()
+
+
 def base_binding() -> dict:
     return {
         "schema_version": "1.0.0",
@@ -72,7 +78,7 @@ def base_binding() -> dict:
     }
 
 
-def base_manifest() -> dict:
+def base_manifest(canonical_sha: str) -> dict:
     return {
         "schema_version": "1.0.0",
         "packet_id": "PACKET-001",
@@ -83,7 +89,7 @@ def base_manifest() -> dict:
         },
         "canonical_base": {
             "repository": "acme/example",
-            "commit_sha": "1" * 40,
+            "commit_sha": canonical_sha,
         },
         "authority_refs": [
             {
@@ -155,13 +161,52 @@ class WorkPacketContractTests(unittest.TestCase):
             json.dumps({"result": "PASS", "kind": "external"}, sort_keys=True),
             encoding="utf-8",
         )
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.root), "config", "user.name", "WPDC Test"],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "config",
+                "user.email",
+                "wpdc-test@example.invalid",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.root), "add", "evidence"], check=True
+        )
+        subprocess.run(
+            ["git", "-C", str(self.root), "commit", "-qm", "canonical base"],
+            check=True,
+        )
+        self.canonical_sha = run_git(self.root, "rev-parse", "HEAD")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def restore_evidence_worktree(self) -> None:
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "checkout",
+                "--",
+                "evidence/adopter.json",
+                "evidence/external.json",
+            ],
+            check=True,
+        )
+
     def write_case(self, case_id: str) -> tuple[dict, Path, dict, Path]:
+        self.restore_evidence_worktree()
         binding = base_binding()
-        manifest = base_manifest()
+        manifest = base_manifest(self.canonical_sha)
         adopter_evidence = self.root / "evidence/adopter.json"
         external_evidence = self.root / "evidence/external.json"
 
@@ -177,7 +222,7 @@ class WorkPacketContractTests(unittest.TestCase):
                 else {
                     "kind": "CANONICAL_BASE",
                     "repository": "acme/example",
-                    "commit_sha": "1" * 40,
+                    "commit_sha": self.canonical_sha,
                 }
             )
             return {
@@ -237,6 +282,15 @@ class WorkPacketContractTests(unittest.TestCase):
             manifest["evidence"] = [
                 adopter_evidence_record("DIRECT-ADOPTER-FACT-001")
             ]
+        elif case_id == "canonical_worktree_drift_closed":
+            manifest["prerequisites"][0]["resolution"] = {
+                "kind": "PREEXISTING_SATISFIED",
+                "evidence_refs": ["EVID-001"],
+            }
+            manifest["evidence"] = [adopter_evidence_record()]
+            adopter_evidence.write_text(
+                json.dumps({"result": "CHANGED-WORKTREE"}), encoding="utf-8"
+            )
         elif case_id == "preexisting_state_closed":
             manifest["prerequisites"][0]["resolution"] = {
                 "kind": "PREEXISTING_SATISFIED",
@@ -255,6 +309,30 @@ class WorkPacketContractTests(unittest.TestCase):
             ]
             manifest["evidence"] = [
                 adopter_evidence_record("STATE-001", state=True)
+            ]
+        elif case_id == "preexisting_state_without_binding_source_closed":
+            binding["source_bindings"] = [
+                source
+                for source in binding["source_bindings"]
+                if source["source_id"] != "STATE-001"
+            ]
+            manifest["prerequisites"][0]["resolution"] = {
+                "kind": "PREEXISTING_SATISFIED",
+                "evidence_refs": ["EVID-001"],
+            }
+            manifest["state_contexts"] = [
+                {
+                    "state_context_id": "STATE-CTX-001",
+                    "source_id": "DIRECT-STATE-001",
+                    "target_identity": "database:journey-progress",
+                    "currentness": {
+                        "mode": "EXACT_REFERENCE",
+                        "reference": "observation:STATE-001@sequence:42",
+                    },
+                }
+            ]
+            manifest["evidence"] = [
+                adopter_evidence_record("DIRECT-STATE-001", state=True)
             ]
         elif case_id == "external_satisfied_closed":
             manifest["prerequisites"][0]["resolution"] = {
@@ -317,6 +395,13 @@ class WorkPacketContractTests(unittest.TestCase):
             }
             manifest["external_dependencies"] = [external_dependency()]
             manifest["evidence"] = [external_evidence_record()]
+        elif case_id == "external_identity_misclassified_preexisting_invalid":
+            manifest["prerequisites"][0]["resolution"] = {
+                "kind": "PREEXISTING_SATISFIED",
+                "evidence_refs": ["EVID-001"],
+            }
+            manifest["external_dependencies"] = [external_dependency()]
+            manifest["evidence"] = [adopter_evidence_record("EXT-001")]
         elif case_id == "evidence_digest_mismatch_invalid":
             manifest["prerequisites"][0]["resolution"] = {
                 "kind": "PREEXISTING_SATISFIED",
@@ -329,6 +414,8 @@ class WorkPacketContractTests(unittest.TestCase):
             pass
         elif case_id == "canonical_repository_mismatch_invalid":
             manifest["canonical_base"]["repository"] = "other/example"
+        elif case_id == "canonical_commit_missing_invalid":
+            manifest["canonical_base"]["commit_sha"] = "f" * 40
         elif case_id == "missing_binding_currentness_rule_invalid":
             binding["source_bindings"][2]["currentness_rule_ref"] = "MISSING-RULE"
         elif case_id == "canonical_evidence_mismatch_invalid":
@@ -350,9 +437,7 @@ class WorkPacketContractTests(unittest.TestCase):
         )
         if case_id != "binding_digest_mismatch_invalid":
             manifest["adoption_binding"]["sha256"] = digest(binding_path)
-        # Deliberately keep the manifest below a packet directory while
-        # evidence remains elsewhere in the adopter repository. This proves
-        # evidence paths are repository-root-relative rather than packet-local.
+        # Manifest custody is deliberately separate from evidence custody.
         manifest_path = self.root / "packets/manifest.json"
         manifest_path.write_text(
             json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
