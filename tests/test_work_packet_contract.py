@@ -186,7 +186,9 @@ class WorkPacketContractTests(unittest.TestCase):
         )
         self.canonical_sha = run_git(self.root, "rev-parse", "HEAD")
         self.configuration_path = self.root / "consumer-configuration.yaml"
+        self.framework_lock_path = self.root / "framework-lock.json"
         self.write_configuration()
+        self.write_framework_lock()
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -220,6 +222,28 @@ class WorkPacketContractTests(unittest.TestCase):
             encoding="utf-8",
         )
 
+    def write_framework_lock(
+        self, configuration_path: str = "consumer-configuration.yaml"
+    ) -> None:
+        lock = {
+            "schema_version": "2.0.0",
+            "framework": {
+                "repository": "Sugar144/general-governance",
+                "version": "0.1.0-rc.6",
+                "commit_sha": "1" * 40,
+                "release_manifest_sha256": "2" * 64,
+            },
+            "consumer": {"configuration_path": configuration_path},
+            "compatibility": {
+                "framework_contract": "2.0.0",
+                "consumer_lock_schema": "2.0.0",
+                "consumer_configuration_schema": "1.0.0",
+            },
+        }
+        self.framework_lock_path.write_text(
+            json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
     def restore_evidence_worktree(self) -> None:
         subprocess.run(
             [
@@ -237,6 +261,7 @@ class WorkPacketContractTests(unittest.TestCase):
     def write_case(self, case_id: str) -> tuple[dict, Path, dict, Path]:
         self.restore_evidence_worktree()
         self.write_configuration()
+        self.write_framework_lock()
         binding = base_binding()
         manifest = base_manifest(self.canonical_sha)
         adopter_evidence = self.root / "evidence/adopter.json"
@@ -476,7 +501,12 @@ class WorkPacketContractTests(unittest.TestCase):
         )
         return manifest, manifest_path, binding, binding_path
 
-    def run_cli(self, manifest_path: Path, binding_path: Path) -> subprocess.CompletedProcess:
+    def run_cli(
+        self,
+        manifest_path: Path,
+        binding_path: Path,
+        configuration_path: Path | None = None,
+    ) -> subprocess.CompletedProcess:
         return subprocess.run(
             [
                 "python3",
@@ -486,7 +516,7 @@ class WorkPacketContractTests(unittest.TestCase):
                 "--binding",
                 str(binding_path),
                 "--configuration",
-                str(self.configuration_path),
+                str(configuration_path or self.configuration_path),
                 "--repository-root",
                 str(self.root),
             ],
@@ -584,6 +614,27 @@ class WorkPacketContractTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
         self.assertIn("configured WPDC binding does not exist", result.stdout)
+
+    def test_cli_rejects_configuration_not_selected_by_framework_lock(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        alternate = self.root / "alternate-configuration.yaml"
+        alternate.write_bytes(self.configuration_path.read_bytes())
+        result = self.run_cli(
+            manifest_path, binding_path, configuration_path=alternate
+        )
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn(
+            "not the configuration selected by framework-lock.json", result.stdout
+        )
+
+    def test_cli_requires_consumer_framework_lock(self):
+        _, manifest_path, _, binding_path = self.write_case("in_packet_closed")
+        self.framework_lock_path.unlink()
+        result = self.run_cli(manifest_path, binding_path)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("PACKET_INVALID: INVALID_ADOPTION_BINDING", result.stdout)
+        self.assertIn("framework-lock.json is required", result.stdout)
 
     def test_state_binding_rule_must_match_mapped_source_rule(self):
         manifest, manifest_path, binding, binding_path = self.write_case(
