@@ -1,94 +1,26 @@
 [
-  {
-    "case_id": "in_packet_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "exact_authority_without_binding_source_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "preexisting_immutable_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "preexisting_immutable_without_binding_source_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "preexisting_state_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "external_satisfied_closed",
-    "expected": "VALID_DEPENDENCY_CLOSED"
-  },
-  {
-    "case_id": "unresolved_blocked",
-    "expected": "VALID_BUT_BLOCKED"
-  },
-  {
-    "case_id": "unresolved_excluded_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "EXCLUDED_REQUIRED_PREREQUISITE"
-  },
-  {
-    "case_id": "in_packet_excluded_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "EXCLUDED_REQUIRED_PREREQUISITE"
-  },
-  {
-    "case_id": "transitive_unresolved_blocked",
-    "expected": "VALID_BUT_BLOCKED"
-  },
-  {
-    "case_id": "unresolved_reference_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "UNRESOLVED_REFERENCE"
-  },
-  {
-    "case_id": "dependency_cycle_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "DEPENDENCY_CYCLE"
-  },
-  {
-    "case_id": "missing_validation_coverage_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "MISSING_VALIDATION_COVERAGE"
-  },
-  {
-    "case_id": "external_misclassified_preexisting_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "INVALID_RESOLUTION_EVIDENCE"
-  },
-  {
-    "case_id": "evidence_digest_mismatch_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "EVIDENCE_IDENTITY_MISMATCH"
-  },
-  {
-    "case_id": "binding_digest_mismatch_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "ADOPTION_BINDING_DIGEST_MISMATCH"
-  },
-  {
-    "case_id": "canonical_repository_mismatch_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "INVALID_CANONICAL_BASE"
-  },
-  {
-    "case_id": "missing_binding_currentness_rule_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "INVALID_ADOPTION_BINDING"
-  },
-  {
-    "case_id": "canonical_evidence_mismatch_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "EVIDENCE_IDENTITY_MISMATCH"
-  },
-  {
-    "case_id": "authority_source_class_mismatch_invalid",
-    "expected": "PACKET_INVALID",
-    "code": "INVALID_SOURCE_CLASS"
-  }
+  {"case_id": "in_packet_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "exact_authority_without_binding_source_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "preexisting_immutable_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "preexisting_immutable_without_binding_source_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "canonical_worktree_drift_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "preexisting_state_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "preexisting_state_without_binding_source_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "external_satisfied_closed", "expected": "VALID_DEPENDENCY_CLOSED"},
+  {"case_id": "unresolved_blocked", "expected": "VALID_BUT_BLOCKED"},
+  {"case_id": "unresolved_excluded_invalid", "expected": "PACKET_INVALID", "code": "EXCLUDED_REQUIRED_PREREQUISITE"},
+  {"case_id": "in_packet_excluded_invalid", "expected": "PACKET_INVALID", "code": "EXCLUDED_REQUIRED_PREREQUISITE"},
+  {"case_id": "transitive_unresolved_blocked", "expected": "VALID_BUT_BLOCKED"},
+  {"case_id": "unresolved_reference_invalid", "expected": "PACKET_INVALID", "code": "UNRESOLVED_REFERENCE"},
+  {"case_id": "dependency_cycle_invalid", "expected": "PACKET_INVALID", "code": "DEPENDENCY_CYCLE"},
+  {"case_id": "missing_validation_coverage_invalid", "expected": "PACKET_INVALID", "code": "MISSING_VALIDATION_COVERAGE"},
+  {"case_id": "external_misclassified_preexisting_invalid", "expected": "PACKET_INVALID", "code": "INVALID_RESOLUTION_EVIDENCE"},
+  {"case_id": "external_identity_misclassified_preexisting_invalid", "expected": "PACKET_INVALID", "code": "INVALID_RESOLUTION_EVIDENCE"},
+  {"case_id": "evidence_digest_mismatch_invalid", "expected": "PACKET_INVALID", "code": "EVIDENCE_IDENTITY_MISMATCH"},
+  {"case_id": "binding_digest_mismatch_invalid", "expected": "PACKET_INVALID", "code": "ADOPTION_BINDING_DIGEST_MISMATCH"},
+  {"case_id": "canonical_repository_mismatch_invalid", "expected": "PACKET_INVALID", "code": "INVALID_CANONICAL_BASE"},
+  {"case_id": "canonical_commit_missing_invalid", "expected": "PACKET_INVALID", "code": "INVALID_CANONICAL_BASE"},
+  {"case_id": "missing_binding_currentness_rule_invalid", "expected": "PACKET_INVALID", "code": "INVALID_ADOPTION_BINDING"},
+  {"case_id": "canonical_evidence_mismatch_invalid", "expected": "PACKET_INVALID", "code": "EVIDENCE_IDENTITY_MISMATCH"},
+  {"case_id": "authority_source_class_mismatch_invalid", "expected": "PACKET_INVALID", "code": "INVALID_SOURCE_CLASS"}
 ]
