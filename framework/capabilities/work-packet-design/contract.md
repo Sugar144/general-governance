@@ -238,7 +238,7 @@ A lower-precedence successful condition MUST NOT mask a higher-precedence invali
 
 A packet is invalid when an applicable validation layer establishes a mandatory contract violation or contradiction.
 
-Examples include invalid/floating canonical identity where an immutable base is required, unresolved references, dependency cycles, missing prerequisite resolution, invalid evidence/currentness binding, included/excluded contradiction, required unsatisfied prerequisite excluded while the dependent outcome remains included, missing completion conditions, or missing structural validation coverage.
+Examples include invalid/floating canonical identity where an immutable base is required, unresolved references, dependency cycles, missing prerequisite resolution, invalid evidence/currentness binding, included/excluded contradiction, required unsatisfied prerequisite excluded while the dependent outcome remains included, missing completion conditions, missing structural validation coverage, missing required authority declarations, or missing required stop/terminal boundary declarations.
 
 A semantic review may also establish invalidity by finding a required undeclared dependency or semantically insufficient completion/validation model. Deterministic tooling is not required to infer those facts.
 
@@ -269,7 +269,7 @@ A semantic packet-design/review process is responsible, as applicable, for:
 - judging semantic validation sufficiency;
 - detecting materially independent outcomes or hidden scope expansion.
 
-Future deterministic tooling may verify only claims that are represented in its machine contract, including graph/reference integrity, declared resolution shape, transitive traversal, cycles, evidence/currentness bindings that are machine-represented, direct inclusion/exclusion contradictions, and structural validation coverage.
+Future deterministic tooling may verify only claims that are represented in its machine contract, including graph/reference integrity, declared resolution shape, transitive traversal, cycles, evidence/currentness bindings that are machine-represented, direct inclusion/exclusion contradictions, structural validation coverage, required authority declarations, and terminal/stop-boundary shape.
 
 Deterministic tooling MUST NOT claim to determine an undeclared semantic prerequisite, semantic freshness that is not encoded by an applicable contract, substantive architectural correctness, or execution authority.
 
@@ -300,6 +300,16 @@ A governed packet MUST delimit the work/effect surface required to produce its i
 An exclusion MUST NOT contradict the transitive prerequisite closure. The packet may explicitly exclude work already satisfied by valid `PREEXISTING_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` evidence, because those resolutions demonstrate that the packet is not responsible for producing that prerequisite.
 
 An exclusion does not transform an unsatisfied prerequisite into a satisfied one and does not remove a prerequisite edge from the semantic graph.
+
+### 10.1 Required packet control declarations
+
+Every work packet evaluated under WPDC MUST declare governing authority references sufficient to identify the authority sources applicable to the packet and MUST identify the authority references required for its represented evaluation. Missing or unresolved required authority declarations make the represented packet invalid.
+
+Every work packet evaluated under WPDC MUST declare one or more explicit stop conditions that identify circumstances in which packet work or evaluation must stop rather than silently continue across authority, scope, dependency, currentness, or other governed-boundary drift.
+
+Every work packet evaluated under WPDC MUST declare a terminal boundary that identifies the condition under which the packet's represented work may be considered complete for WPDC purposes.
+
+These control declarations are structural governance inputs. They MUST NOT be interpreted as self-granting execution, mutation, publication, merge, release, or acceptance authority. Deterministic tooling MAY validate their required presence, reference integrity, and machine-represented shape; semantic sufficiency remains subject to the applicable project authority and review process.
 
 ## 11. Human and machine artifact relationship
 
