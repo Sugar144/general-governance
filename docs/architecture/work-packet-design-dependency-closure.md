@@ -1,0 +1,398 @@
+# Work Packet Design & Dependency Closure Architecture
+
+Status: CANDIDATE_FOR_OWNER_REVIEW
+
+Candidate contract version: 1.0.0
+
+## Purpose
+
+`Work Packet Design & Dependency Closure` is an optional reusable General Governance L2 capability. It defines how a bounded work packet derives, represents, and validates the prerequisite closure required to reach, validate, and truthfully complete its declared outcomes.
+
+The capability distinguishes semantic packet validity, unresolved dependency blocking, dependency closure, and execution authority. It does not infer product requirements, grant execution authority, replace project architecture, or redefine adopter-owned state.
+
+This architecture is generic and technology-neutral. Its first empirical trigger was a packet-boundary failure observed in `Sugar144/stakeholder-validation-portal`, but the reusable semantics defined here are not SVP-specific and must not encode SVP routes, events, schemas, paths, or story identifiers.
+
+## Ownership and layering
+
+The capability is owned by General Governance as a reusable optional L2 surface.
+
+- L0 remains the Project Operating Contract and existing reusable constitutional semantics.
+- L1 remains the adopter-owned General Governance configuration contract.
+- L2 owns reusable Work Packet Design & Dependency Closure semantics and its machine contracts when separately released.
+- L3 remains adopter/project projection and project-specific interpretation.
+- L5 remains adopter evidence/history/state.
+- L6 may host generic deterministic helpers that implement accepted L2 rules without becoming a second normative source.
+
+The capability is not a `capability-stack` component. The capability-stack contract composes independently governed repositories/systems. Work Packet Design & Dependency Closure is an internal optional General Governance capability and acquires no independent repository or authority chain.
+
+Capability availability in a GG release does not imply adopter activation. Capability activation does not imply packet validity. Packet validity does not imply dependency closure. Dependency closure does not imply execution, publication, acceptance, or release authority.
+
+## Non-goals
+
+This capability does not own or redefine:
+
+- product requirements;
+- product architecture;
+- story decomposition as a whole;
+- Project Owner authority;
+- execution admission or mutation authority;
+- generic code review;
+- provider/runtime selection;
+- CWG semantics;
+- AET semantics;
+- release acceptance;
+- project/product acceptance;
+- deterministic inference of undeclared semantic dependencies.
+
+## Normative vocabulary
+
+### Declared outcome
+
+A `declared outcome` is a bounded claim that the packet intends to make true when the packet completes.
+
+### Completion condition
+
+A `completion condition` is an observable or demonstrable condition whose satisfaction is necessary to assert honestly that a declared outcome is complete.
+
+### Prerequisite
+
+A `prerequisite` is a condition required to reach, validate, or truthfully complete a declared outcome or another prerequisite in that outcome's dependency closure.
+
+### Dependency relation
+
+A dependency edge is directed from a dependent node to a prerequisite node and declares exactly one relation:
+
+- `REACH`: the prerequisite is necessary for the dependent result to be reachable or producible;
+- `VALIDATE`: the prerequisite is necessary to demonstrate the dependent result correctly;
+- `COMPLETE`: the prerequisite is necessary for the completion claim to be truthful rather than partial or misleading.
+
+No additional relation kind is implied by this candidate contract.
+
+### Canonical base
+
+The `canonical base` is the exact immutable state against which the packet, its dependencies, and any baseline-satisfaction claims were derived. A moving branch, `main`, `latest`, `current`, or another floating alias does not substitute for the immutable base identity.
+
+### Dependency closure
+
+The dependency closure of a declared outcome is the transitive set of prerequisites reachable through dependency edges from that outcome.
+
+Dependency closure is transitive. Marking a prerequisite `IN_PACKET` does not terminate dependency analysis; the prerequisites of that included prerequisite remain part of the closure.
+
+### Exclusion
+
+An `exclusion` describes a work/effect surface or node that the packet will not produce, modify, or execute. Exclusion is a scope statement only. Exclusion never proves that a prerequisite is satisfied.
+
+### Dependency-closed
+
+A packet is `dependency-closed` only when every prerequisite reachable from every included declared outcome has a valid non-pending resolution under this contract.
+
+### Execution authority
+
+Execution authority is outside this capability. No packet classification emitted by this capability creates Owner authority, execution authority, publication authority, acceptance, or release readiness.
+
+## Prerequisite resolution model
+
+Every prerequisite reachable from an included outcome MUST declare exactly one resolution.
+
+### IN_PACKET
+
+`IN_PACKET` means the prerequisite is not relied upon as pre-existing satisfaction; the current packet will produce or establish it as part of the coherent result boundary.
+
+An `IN_PACKET` prerequisite remains subject to transitive dependency closure.
+
+### BASELINE_SATISFIED
+
+`BASELINE_SATISFIED` means the prerequisite is already satisfied in the packet's exact canonical base.
+
+This resolution requires durable evidence bound to the canonical base strongly enough to support the satisfaction claim. A belief, branch name, unbound historical note, or assumed prior implementation is not sufficient evidence.
+
+### BOUND_EXTERNAL_SATISFIED
+
+`BOUND_EXTERNAL_SATISFIED` means the prerequisite is satisfied by an exact external result, artifact, or condition whose identity, evidence, and applicable authority are explicitly bound.
+
+A prior work-packet result is one valid class of external source, but it is not the only valid class. The capability must not assume that every external prerequisite originates in another work packet.
+
+### UNRESOLVED
+
+`UNRESOLVED` means a real prerequisite has been discovered and represented honestly but is not yet satisfied and is not included for production by the current packet.
+
+An unresolved prerequisite does not by itself make the packet structurally invalid. It blocks dependency closure and therefore prevents the capability from classifying the packet as dependency-closed.
+
+## Candidate normative invariants
+
+### WPDC-001 — Declared outcome
+
+Every governed work packet MUST declare at least one bounded outcome whose completion can be evaluated.
+
+### WPDC-002 — Completion conditions
+
+Every declared outcome MUST reference one or more completion conditions sufficient to define what must be true before that outcome may be claimed complete.
+
+### WPDC-003 — Dependency discovery
+
+Every prerequisite known to be required for `REACH`, `VALIDATE`, or `COMPLETE` MUST be represented explicitly in the packet's semantic dependency model.
+
+The deterministic validator may verify the declared model but MUST NOT claim to infer undeclared semantic dependencies from product requirements, architecture, code, or project state.
+
+### WPDC-004 — Transitive closure
+
+Dependency closure MUST be evaluated transitively from every included declared outcome. An `IN_PACKET` prerequisite does not terminate dependency traversal.
+
+### WPDC-005 — Explicit resolution
+
+Every prerequisite reachable from an included outcome MUST declare exactly one supported resolution.
+
+### WPDC-006 — Evidence-bound satisfaction
+
+`BASELINE_SATISFIED` and `BOUND_EXTERNAL_SATISFIED` MUST be supported by durable evidence bound to identities sufficient to establish the claimed prerequisite satisfaction.
+
+### WPDC-007 — Honest blocking
+
+A prerequisite declared `UNRESOLVED` MAY exist in a semantically coherent packet. Its presence prevents dependency closure. The packet MUST NOT represent the prerequisite as satisfied and MUST NOT derive execution readiness from this capability while the prerequisite remains unresolved.
+
+### WPDC-008 — Exclusion safety
+
+A required prerequisite that is not satisfied MUST NOT be excluded while an outcome that depends on it remains included.
+
+In particular:
+
+- `IN_PACKET` plus exclusion of the same required prerequisite is contradictory;
+- `UNRESOLVED` plus exclusion of the same required prerequisite while retaining the dependent outcome is invalid;
+- a prerequisite MAY be outside the execution surface when its valid resolution is `BASELINE_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` and the supporting evidence remains valid.
+
+### WPDC-009 — No synthetic authority
+
+`PACKET_INVALID`, `VALID_BUT_BLOCKED`, and `VALID_DEPENDENCY_CLOSED` are semantic/conformance classifications only. None creates execution, publication, acceptance, release, or Owner authority.
+
+### WPDC-010 — Validation coverage
+
+Every completion condition MUST have at least one declared validation strategy/reference intended to cover it.
+
+Deterministic structural coverage does not prove semantic sufficiency. Determining whether a validation method genuinely proves a completion condition remains a semantic review responsibility.
+
+### WPDC-011 — Canonical currentness
+
+A packet's canonical-base-bound claims MUST NOT silently transfer to a different repository state. A changed base requires currentness evaluation or re-evaluation appropriate to the changed claims before prior dependency-satisfaction evidence may be reused.
+
+### WPDC-012 — Coherent boundary
+
+A work packet SHOULD represent the smallest coherent result-producing boundary capable of making at least one declared outcome dependency-closed and truthfully completable, without absorbing materially independent outcomes that are not required by the dependency closure or another explicit governing constraint.
+
+This invariant prevents both under-fragmentation that excludes unsatisfied prerequisites and over-packaging that combines unrelated outcomes merely because they are adjacent in implementation or documentation.
+
+## Packet classification
+
+The capability derives one of three semantic classifications. These classifications are not a replacement lifecycle and do not supersede existing GG execution/authority states.
+
+### PACKET_INVALID
+
+The packet is invalid when its declared machine/semantic model contains a contradiction or fails a mandatory invariant that can be established at the applicable validation layer.
+
+Candidate deterministic reasons include:
+
+- malformed or incompatible machine contract;
+- invalid or floating canonical base;
+- duplicate or unresolved identifiers;
+- dependency cycle;
+- missing prerequisite resolution;
+- missing or mismatched evidence required by a satisfaction resolution;
+- included/excluded contradiction;
+- unsatisfied required prerequisite excluded while a dependent outcome remains included;
+- missing completion condition;
+- missing structural validation coverage;
+- missing required boundary/authority declarations.
+
+### VALID_BUT_BLOCKED
+
+The packet is internally coherent under the declared model but at least one prerequisite reachable from an included outcome has resolution `UNRESOLVED`.
+
+`VALID_BUT_BLOCKED` means the packet may be correctly designed for a future dependency state, but dependency closure has not been achieved. This classification creates zero execution authority and zero execution readiness from this capability.
+
+### VALID_DEPENDENCY_CLOSED
+
+All prerequisites reachable from every included outcome have a valid non-pending resolution of `IN_PACKET`, `BASELINE_SATISFIED`, or `BOUND_EXTERNAL_SATISFIED`, and all deterministic structural invariants pass.
+
+`VALID_DEPENDENCY_CLOSED` MUST NOT be interpreted as `AUTHORIZED_TO_EXECUTE`.
+
+Execution admission remains subject to the Project Operating Contract, Owner authority, currentness, effect-state, isolation, publication, and any other applicable governance gates.
+
+## Cycles
+
+A dependency cycle is invalid. If nodes A and B must be established jointly, their relationship SHOULD be represented beneath a coherent higher-level outcome rather than asserting that each is a prerequisite that must already be established by the other.
+
+The machine validator may reject declared cycles deterministically. It must not infer semantic cyclicity from undeclared project behavior.
+
+## Validation boundary
+
+A future deterministic validator may validate only declared machine-checkable claims. Its responsibility is expected to include:
+
+- schema and capability-version compatibility;
+- canonical identity syntax/binding;
+- adoption-binding validity;
+- identifier uniqueness and reference integrity;
+- dependency relation/resolution enums;
+- transitive graph traversal;
+- cycle detection;
+- mandatory resolution for reachable prerequisites;
+- evidence-reference presence and binding constraints;
+- direct inclusion/exclusion contradictions;
+- unresolved/excluded required prerequisite contradictions;
+- structural completion-condition validation coverage;
+- required work/effect boundary declarations;
+- required authority declarations;
+- terminal/stop-boundary shape;
+- derivation of `PACKET_INVALID`, `VALID_BUT_BLOCKED`, or `VALID_DEPENDENCY_CLOSED` from the declared model.
+
+The deterministic validator MUST NOT claim to determine:
+
+- whether an undeclared semantic prerequisite exists;
+- whether a declared validation method genuinely proves its completion condition;
+- whether product architecture is sufficient;
+- whether two outcomes are materially independent;
+- whether a requirement, architecture decision, or project state is substantively correct;
+- whether execution is authorized.
+
+Those require semantic analysis, independent review when proportionate, Owner disposition where applicable, or another authoritative mechanism.
+
+## Human and machine artifact model
+
+The human-readable work packet remains the semantic execution/output contract. This capability does not replace `work-package.md`-style artifacts with a machine-only format.
+
+A future machine manifest SHOULD contain only the minimum claims necessary for deterministic conformance, including conceptually:
+
+- packet identity;
+- capability contract version;
+- canonical base;
+- adoption binding identity;
+- governing authority references;
+- declared outcomes;
+- completion-condition references;
+- prerequisites;
+- dependency edges;
+- prerequisite resolutions;
+- evidence references;
+- write surface;
+- effect surface;
+- exclusions;
+- required validation references;
+- required authority references;
+- stop conditions;
+- terminal boundary.
+
+The machine manifest MUST NOT become a second canonical requirements or architecture store. Full requirements text, architecture prose, generic implementation instructions, agent chain-of-thought, product state, or synthetic authorization booleans do not belong in the machine contract merely for convenience.
+
+## Adoption boundary
+
+The capability is absent unless explicitly adopted by the consumer.
+
+The existing L1 consumer configuration MAY carry an optional pointer to a capability-specific adopter binding. The exact configuration key and machine schema are implementation details to be fixed only after this architecture is accepted.
+
+The capability-specific binding SHOULD identify adopter-owned source classes and the packet projection location without prescribing universal repository paths. Candidate source classes are:
+
+- authority sources;
+- state sources;
+- requirements sources;
+- architecture sources;
+- decision sources;
+- planning sources;
+- packet projection root.
+
+These are semantic categories, not mandatory directory names. An adopter may project them differently. General Governance MUST NOT assume that every consumer uses `docs/architecture/**`, `docs/requirements/**`, or any other fixed project structure.
+
+Capability release by GG does not activate a consumer. Consumer adoption does not retroactively re-evaluate existing packets. Adoption by SVP, re-evaluation of its existing packet, and any resulting implementation authorization are separate later decisions.
+
+## Agent / deterministic split
+
+A future Packet Designer agent may perform semantic tasks such as:
+
+1. resolve durable governing authority and exact source identities;
+2. derive intended outcomes;
+3. derive completion conditions;
+4. discover semantic prerequisite relationships;
+5. construct the prerequisite graph;
+6. determine prerequisite resolution candidates;
+7. compute the required unresolved closure semantically;
+8. derive the smallest coherent work/effect boundary;
+9. derive validation and exclusion surfaces;
+10. perform a semantic closure cross-check;
+11. produce the human packet and minimal machine claims.
+
+A future independent Packet Reviewer, when proportional assurance requires one, may review dependency completeness, reachability, scope, authority leakage, excluded prerequisites, validation sufficiency, and accidental multi-outcome packaging.
+
+Detailed agent/skill design is intentionally outside this architecture candidate. The skill is not the canonical contract. A future specialist handoff should be derived only after the normative capability and machine contract are stable enough to constrain it.
+
+## Regression model
+
+Framework regression fixtures MUST be generic and tied to accepted invariants rather than copying adopter-specific domain vocabulary.
+
+The first generic regression family should include at least:
+
+- `IN_PACKET` prerequisite with complete transitive closure -> `VALID_DEPENDENCY_CLOSED`;
+- `BASELINE_SATISFIED` prerequisite with correctly bound evidence -> `VALID_DEPENDENCY_CLOSED`;
+- `BOUND_EXTERNAL_SATISFIED` prerequisite with correctly bound evidence -> `VALID_DEPENDENCY_CLOSED`;
+- honestly declared `UNRESOLVED` prerequisite -> `VALID_BUT_BLOCKED`;
+- reachable `UNRESOLVED` prerequisite also excluded -> `PACKET_INVALID` / `EXCLUDED_REQUIRED_PREREQUISITE`;
+- reachable `IN_PACKET` prerequisite also excluded -> `PACKET_INVALID`;
+- transitive unresolved prerequisite -> `VALID_BUT_BLOCKED`;
+- unresolved reference -> `PACKET_INVALID`;
+- dependency cycle -> `PACKET_INVALID`;
+- completion condition without validation coverage -> `PACKET_INVALID`;
+- satisfaction evidence bound to a different canonical identity -> `PACKET_INVALID`.
+
+No fixture should be added merely because a failure is imaginable. A reusable fixture should correspond to an accepted normative invariant.
+
+## Expected machine-contract boundary
+
+After Owner acceptance of this architecture, the smallest coherent implementation is expected to define, without duplicating product truth:
+
+1. one capability-specific adoption binding contract/schema;
+2. one minimal work-packet manifest contract/schema;
+3. one dedicated deterministic validator;
+4. one generic regression suite;
+5. bounded CI/release integration;
+6. release documentation identifying the capability as optional.
+
+The exact filenames, schema field names, configuration key, diagnostic vocabulary, and release version are deliberately not frozen by this architecture document.
+
+## Release and compatibility boundary
+
+Adding this optional capability SHOULD NOT silently modify the meaning of an already locked consumer that does not adopt it.
+
+The current framework contract, consumer-lock schema, consumer-configuration schema, and capability-composition contract MUST NOT be declared compatible or unchanged merely by assumption. Release packaging must validate whether the final accepted implementation preserves their compatibility before publication.
+
+A future release manifest may publish Work Packet Design & Dependency Closure as an optional capability with its own contract/schema versions. The final release identifier and compatibility disposition belong to the release flow, not this architecture candidate.
+
+## First empirical trigger and preservation rule
+
+The first empirical trigger was a Stakeholder Validation Portal work packet that retained a first target operation while excluding an unsatisfied prerequisite journey-state chain required to reach that operation. Empirical execution reached the backend guard and failed; read-only persistence inspection showed that the prerequisite state was not pre-satisfied.
+
+The reusable GG regression MUST abstract this to the invariant:
+
+> A required prerequisite that is unsatisfied may not be excluded while retaining an included dependent outcome.
+
+The SVP-specific failure remains adopter provenance and a future adopter regression. This GG architecture does not resolve, rewrite, authorize, or mutate the SVP packet.
+
+## Candidate implementation topology
+
+If this architecture is accepted, implementation should remain sequential and dependency-ordered:
+
+1. **Normative capability and adoption contract** — materialize accepted L2 semantics and adopter binding semantics without implementing the future agent skill.
+2. **Machine contract, validator, and generic regressions** — implement only deterministic rules justified by accepted invariants.
+3. **Framework release integration** — integrate CI, release manifest/surfaces, compatibility evidence, and release packaging.
+4. **Skill-specialist handoff** — derive a bounded handoff for the Packet Designer/Reviewer skill from accepted repository-bound contracts.
+5. **Consumer adoption** — evaluate SVP or another adopter separately; capability acceptance does not authorize adoption or packet re-evaluation.
+
+## Authority and stop boundary
+
+This document is a candidate architecture only. It does not authorize:
+
+- implementation of schemas or validators;
+- modification of L0 semantics;
+- final adoption-key/schema naming;
+- implementation of the Packet Designer or Reviewer skill;
+- release publication;
+- SVP adoption or mutation;
+- reclassification/rewrite of the existing SVP packet;
+- product implementation dependent on this capability.
+
+The next material step after this candidate is repository-bound review and Owner disposition on the architecture/contract boundary. If changes are required, they should amend this candidate before implementation is authorized.
