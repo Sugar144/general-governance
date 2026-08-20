@@ -21,11 +21,23 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from framework.core.l6.strict_yaml import StrictYAMLError, load as load_yaml
+from tools.validate_consumer import (
+    digest as framework_file_digest,
+    git_head as framework_git_head,
+    release_content_digest,
+)
 
 BINDING_SCHEMA = ROOT / "contracts" / "work-packet-capability-binding.schema.json"
 MANIFEST_SCHEMA = ROOT / "contracts" / "work-packet-manifest.schema.json"
 CONSUMER_CONFIGURATION_SCHEMA = ROOT / "contracts" / "consumer-configuration.schema.json"
 CONSUMER_LOCK_SCHEMA = ROOT / "contracts" / "consumer-lock.schema.json"
+EXPECTED_WPDC_RELEASE = {
+    "contract_version": "1.0.0",
+    "adoption_contract_version": "1.0.0",
+    "binding_schema_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "optional": True,
+}
 
 
 @dataclass(frozen=True)
@@ -104,6 +116,66 @@ def load_adopter_configuration(path: Path) -> dict[str, Any]:
     return value
 
 
+def verify_locked_framework_identity(
+    lock: dict[str, Any], framework_root: Path = ROOT
+) -> None:
+    """Bind WPDC use to the exact locked GG release that advertises WPDC."""
+    framework = framework_root.resolve()
+    identity = lock["framework"]
+    try:
+        actual_head = framework_git_head(framework)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"cannot resolve running General Governance checkout identity: {exc}",
+        )
+    if actual_head != identity["commit_sha"]:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "running General Governance checkout does not equal the immutable commit selected by framework-lock.json",
+        )
+
+    release_manifest_path = framework / "release-manifest.json"
+    if not release_manifest_path.is_file():
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "locked General Governance checkout lacks release-manifest.json",
+        )
+    if framework_file_digest(release_manifest_path) != identity["release_manifest_sha256"]:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "framework-lock.json release manifest hash does not match the running General Governance checkout",
+        )
+    release_manifest = load_json(release_manifest_path, "General Governance release manifest")
+    if release_manifest.get("framework_version") != identity["version"]:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "framework-lock.json version does not match the running General Governance release manifest",
+        )
+    if release_manifest.get("compatibility") != lock["compatibility"]:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "framework-lock.json compatibility is not supported by the running General Governance release",
+        )
+    try:
+        reproduced = release_content_digest(framework)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            f"cannot reproduce General Governance release content identity: {exc}",
+        )
+    if release_manifest.get("content_sha256") != reproduced:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "running General Governance release content identity does not reproduce release-manifest.json",
+        )
+    if release_manifest.get("work_packet_design") != EXPECTED_WPDC_RELEASE:
+        fail(
+            "INVALID_ADOPTION_BINDING",
+            "locked General Governance release does not advertise the supported WPDC contract and machine versions",
+        )
+
+
 def verify_configuration_selected_by_consumer_lock(
     configuration_path: Path, repository_root: Path
 ) -> None:
@@ -127,6 +199,8 @@ def verify_configuration_selected_by_consumer_lock(
             "INVALID_ADOPTION_BINDING",
             f"consumer framework lock schema validation failed at {where}: {first.message}",
         )
+
+    verify_locked_framework_identity(lock)
 
     selected = lock["consumer"]["configuration_path"]
     selected_path = (root / selected).resolve()
@@ -758,7 +832,7 @@ def evaluate(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate a WPDC work-packet manifest against the exact binding selected by the lock-selected adopter configuration"
+        description="Validate a WPDC work-packet manifest against the exact binding selected by the exact locked General Governance release and adopter configuration"
     )
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--binding", required=True, type=Path)
