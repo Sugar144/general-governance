@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Sugar144/general-governance/contracts/work-packet-manifest.schema.json",
+  "title": "GOV-GEN WPDC work packet manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "capability_contract_version",
+    "adoption_binding",
+    "canonical_base",
+    "authority_refs",
+    "required_authority_refs",
+    "outcomes",
+    "completion_conditions",
+    "prerequisites",
+    "dependencies",
+    "validations",
+    "evidence",
+    "state_contexts",
+    "external_dependencies",
+    "execution_boundary",
+    "stop_conditions",
+    "terminal_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "packet_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+    "capability_contract_version": {"const": "1.0.0"},
+    "adoption_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_id", "sha256"],
+      "properties": {
+        "binding_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "canonical_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "authority_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["authority_ref_id", "identity"],
+        "properties": {
+          "authority_ref_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "identity": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "source_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+        }
+      }
+    },
+    "required_authority_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+    },
+    "outcomes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["outcome_id", "completion_condition_refs"],
+        "properties": {
+          "outcome_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "completion_condition_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+          }
+        }
+      }
+    },
+    "completion_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["condition_id", "validation_refs"],
+        "properties": {
+          "condition_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "validation_refs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+          }
+        }
+      }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prerequisite_id", "resolution"],
+        "properties": {
+          "prerequisite_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "resolution": {
+            "oneOf": [
+              {"type": "object", "additionalProperties": false, "required": ["kind"], "properties": {"kind": {"const": "IN_PACKET"}}},
+              {"type": "object", "additionalProperties": false, "required": ["kind"], "properties": {"kind": {"const": "UNRESOLVED"}}},
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "evidence_refs"],
+                "properties": {
+                  "kind": {"const": "PREEXISTING_SATISFIED"},
+                  "evidence_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "external_dependency_ref", "evidence_refs"],
+                "properties": {
+                  "kind": {"const": "BOUND_EXTERNAL_SATISFIED"},
+                  "external_dependency_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+                  "evidence_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dependent_ref", "prerequisite_ref", "relation"],
+        "properties": {
+          "dependent_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "prerequisite_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "relation": {"enum": ["REACH", "VALIDATE", "COMPLETE"]}
+        }
+      }
+    },
+    "validations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["validation_id", "method_identity"],
+        "properties": {
+          "validation_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "method_identity": {"type": "string", "minLength": 1, "maxLength": 2048}
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "path", "sha256", "source_scope", "source_ref", "context"],
+        "properties": {
+          "evidence_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "source_scope": {"enum": ["ADOPTER_OWNED", "EXTERNAL_DEPENDENCY"]},
+          "source_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "context": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "repository", "commit_sha"],
+                "properties": {
+                  "kind": {"const": "CANONICAL_BASE"},
+                  "repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+                  "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "state_context_ref"],
+                "properties": {
+                  "kind": {"const": "STATE_EVALUATION"},
+                  "state_context_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "external_dependency_ref"],
+                "properties": {
+                  "kind": {"const": "EXTERNAL_DEPENDENCY"},
+                  "external_dependency_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "state_contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state_context_id", "source_id", "target_identity", "currentness"],
+        "properties": {
+          "state_context_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "source_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "target_identity": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "currentness": {
+            "oneOf": [
+              {"type": "object", "additionalProperties": false, "required": ["mode", "rule_ref"], "properties": {"mode": {"const": "BINDING_RULE"}, "rule_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}}},
+              {"type": "object", "additionalProperties": false, "required": ["mode", "reference"], "properties": {"mode": {"const": "EXACT_REFERENCE"}, "reference": {"type": "string", "minLength": 1, "maxLength": 2048}}}
+            ]
+          }
+        }
+      }
+    },
+    "external_dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["external_dependency_id", "source_identity", "authority_refs", "currentness"],
+        "properties": {
+          "external_dependency_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "source_identity": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "authority_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}
+          },
+          "currentness": {
+            "oneOf": [
+              {"type": "object", "additionalProperties": false, "required": ["mode"], "properties": {"mode": {"const": "IMMUTABLE"}}},
+              {"type": "object", "additionalProperties": false, "required": ["mode", "rule_ref"], "properties": {"mode": {"const": "BINDING_RULE"}, "rule_ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}}},
+              {"type": "object", "additionalProperties": false, "required": ["mode", "reference"], "properties": {"mode": {"const": "EXACT_REFERENCE"}, "reference": {"type": "string", "minLength": 1, "maxLength": 2048}}}
+            ]
+          }
+        }
+      }
+    },
+    "execution_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["write_surface", "effect_surface", "excluded_nodes", "excluded_surfaces"],
+      "properties": {
+        "write_surface": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 2048}},
+        "effect_surface": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 2048}},
+        "excluded_nodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"}},
+        "excluded_surfaces": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 2048}}
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stop_condition_id", "condition_identity"],
+        "properties": {
+          "stop_condition_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+          "condition_identity": {"type": "string", "minLength": 1, "maxLength": 2048}
+        }
+      }
+    },
+    "terminal_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completion_identity"],
+      "properties": {
+        "completion_identity": {"type": "string", "minLength": 1, "maxLength": 2048}
+      }
+    }
+  }
+}
