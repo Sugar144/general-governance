@@ -546,6 +546,7 @@ def verify_evidence_files(
 def verify_declared_evidence_contexts(
     evidence: dict[str, dict[str, Any]],
     sources: dict[str, dict[str, Any]],
+    rules: dict[str, dict[str, Any]],
     state_contexts: dict[str, dict[str, Any]],
     external_dependencies: dict[str, dict[str, Any]],
 ) -> None:
@@ -555,6 +556,8 @@ def verify_declared_evidence_contexts(
         scope = item["source_scope"]
         source_ref = item["source_ref"]
         source = sources.get(source_ref)
+        rule_ref = source.get("currentness_rule_ref") if source is not None else None
+        source_rule = rules.get(rule_ref) if rule_ref is not None else None
         context = item["context"]
         kind = context["kind"]
 
@@ -574,7 +577,7 @@ def verify_declared_evidence_contexts(
                 "STATE" in source["classes"]
                 or source["locator"]["kind"] == "STATE_OBSERVER"
                 or source["locator"]["kind"] == "EXTERNAL_REFERENCE"
-                or source.get("currentness_rule_ref") is not None
+                or (source_rule is not None and source_rule["mode"] != "IMMUTABLE")
             ):
                 fail(
                     "INVALID_RESOLUTION_EVIDENCE",
@@ -886,6 +889,7 @@ def evaluate(
     verify_declared_evidence_contexts(
         evidence,
         binding_state["sources"],
+        binding_state["rules"],
         state_contexts,
         external_dependencies,
     )
