@@ -136,6 +136,60 @@ class WorkPacketEvidenceContextTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "INVALID_RESOLUTION_EVIDENCE")
         self.assertIn("separately declared external dependency", caught.exception.message)
 
+    def test_canonical_evidence_rejects_mapped_state_source(self):
+        manifest, manifest_path, binding, binding_path = self.helper.write_case(
+            "in_packet_closed"
+        )
+        evidence_path = self.helper.root / "evidence/adopter.json"
+        manifest["evidence"] = [
+            {
+                "evidence_id": "EVID-CANONICAL-STATE",
+                "path": "evidence/adopter.json",
+                "sha256": contract_cases.digest(evidence_path),
+                "source_scope": "ADOPTER_OWNED",
+                "source_ref": "STATE-001",
+                "context": {
+                    "kind": "CANONICAL_BASE",
+                    "repository": "acme/example",
+                    "commit_sha": self.helper.canonical_sha,
+                },
+            }
+        ]
+        with self.assertRaises(contract_cases.validator.ValidationFailure) as caught:
+            self.evaluate_case(manifest, manifest_path, binding, binding_path)
+        self.assertEqual(caught.exception.code, "INVALID_RESOLUTION_EVIDENCE")
+        self.assertIn("use STATE_EVALUATION", caught.exception.message)
+
+    def test_canonical_evidence_rejects_currentness_bound_mapped_source(self):
+        manifest, manifest_path, binding, binding_path = self.helper.write_case(
+            "in_packet_closed"
+        )
+        evidence_path = self.helper.root / "evidence/adopter.json"
+        architecture_source = next(
+            source
+            for source in binding["source_bindings"]
+            if source["source_id"] == "ARCH-001"
+        )
+        architecture_source["currentness_rule_ref"] = "STATE-CURRENT"
+        manifest["evidence"] = [
+            {
+                "evidence_id": "EVID-CANONICAL-CURRENTNESS",
+                "path": "evidence/adopter.json",
+                "sha256": contract_cases.digest(evidence_path),
+                "source_scope": "ADOPTER_OWNED",
+                "source_ref": "ARCH-001",
+                "context": {
+                    "kind": "CANONICAL_BASE",
+                    "repository": "acme/example",
+                    "commit_sha": self.helper.canonical_sha,
+                },
+            }
+        ]
+        with self.assertRaises(contract_cases.validator.ValidationFailure) as caught:
+            self.evaluate_case(manifest, manifest_path, binding, binding_path)
+        self.assertEqual(caught.exception.code, "INVALID_RESOLUTION_EVIDENCE")
+        self.assertIn("mutable/currentness-bound source", caught.exception.message)
+
 
 if __name__ == "__main__":
     unittest.main()
