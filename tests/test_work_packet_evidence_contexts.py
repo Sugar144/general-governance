@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 
 from tests import test_work_packet_contract as contract_cases
@@ -222,6 +223,45 @@ class WorkPacketEvidenceContextTests(unittest.TestCase):
             self.evaluate_case(manifest, manifest_path, binding, binding_path)
         self.assertEqual(caught.exception.code, "INVALID_RESOLUTION_EVIDENCE")
         self.assertIn("external/mutable/currentness-bound source", caught.exception.message)
+
+    def test_canonical_evidence_allows_immutable_rule_on_repository_source(self):
+        manifest, manifest_path, binding, binding_path = self.helper.write_case(
+            "in_packet_closed"
+        )
+        evidence_path = self.helper.root / "evidence/adopter.json"
+        architecture_source = next(
+            source
+            for source in binding["source_bindings"]
+            if source["source_id"] == "ARCH-001"
+        )
+        architecture_source["currentness_rule_ref"] = "ARCH-IMMUTABLE"
+        binding["currentness_rules"].append(
+            {"rule_id": "ARCH-IMMUTABLE", "mode": "IMMUTABLE"}
+        )
+        binding_path.write_text(
+            json.dumps(binding, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        manifest["adoption_binding"]["sha256"] = contract_cases.digest(binding_path)
+        manifest["prerequisites"][0]["resolution"] = {
+            "kind": "PREEXISTING_SATISFIED",
+            "evidence_refs": ["EVID-IMMUTABLE-RULE"],
+        }
+        manifest["evidence"] = [
+            {
+                "evidence_id": "EVID-IMMUTABLE-RULE",
+                "path": "evidence/adopter.json",
+                "sha256": contract_cases.digest(evidence_path),
+                "source_scope": "ADOPTER_OWNED",
+                "source_ref": "ARCH-001",
+                "context": {
+                    "kind": "CANONICAL_BASE",
+                    "repository": "acme/example",
+                    "commit_sha": self.helper.canonical_sha,
+                },
+            }
+        ]
+        result = self.evaluate_case(manifest, manifest_path, binding, binding_path)
+        self.assertEqual(result.disposition, "VALID_DEPENDENCY_CLOSED")
 
 
 if __name__ == "__main__":
