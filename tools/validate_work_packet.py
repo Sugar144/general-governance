@@ -545,6 +545,7 @@ def verify_evidence_files(
 
 def verify_declared_evidence_contexts(
     evidence: dict[str, dict[str, Any]],
+    sources: dict[str, dict[str, Any]],
     state_contexts: dict[str, dict[str, Any]],
     external_dependencies: dict[str, dict[str, Any]],
 ) -> None:
@@ -553,6 +554,7 @@ def verify_declared_evidence_contexts(
         evidence_id = item["evidence_id"]
         scope = item["source_scope"]
         source_ref = item["source_ref"]
+        source = sources.get(source_ref)
         context = item["context"]
         kind = context["kind"]
 
@@ -567,6 +569,15 @@ def verify_declared_evidence_contexts(
                 fail(
                     "INVALID_RESOLUTION_EVIDENCE",
                     f"canonical-base evidence {evidence_id} must be adopter-owned",
+                )
+            if source is not None and (
+                "STATE" in source["classes"]
+                or source["locator"]["kind"] == "STATE_OBSERVER"
+                or source.get("currentness_rule_ref") is not None
+            ):
+                fail(
+                    "INVALID_RESOLUTION_EVIDENCE",
+                    f"canonical-base evidence {evidence_id} cannot use mutable/currentness-bound source {source_ref}; use STATE_EVALUATION",
                 )
             continue
 
@@ -872,7 +883,10 @@ def evaluate(
     )
     evidence = verify_evidence_files(manifest, repository_root)
     verify_declared_evidence_contexts(
-        evidence, state_contexts, external_dependencies
+        evidence,
+        binding_state["sources"],
+        state_contexts,
+        external_dependencies,
     )
     prereqs = verify_evidence_semantics(
         manifest,
