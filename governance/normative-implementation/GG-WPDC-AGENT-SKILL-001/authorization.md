@@ -94,9 +94,9 @@ Routine corrections that make this packet's content conform more precisely to th
 
 ## Release consequence acknowledgment
 
-Tracked General Governance content changes the release `content_sha256` identity computed by `tools/validate_work_packet.py` / `tools/validate_consumer.py`. This design packet's three governance-only files are outside `required_framework_surfaces` and outside the release content-identity input set as currently defined, so they do not by themselves change that digest.
+`tools/validate_consumer.py`'s `release_content_digest()` computes the release `content_sha256` identity by hashing every git-tracked path in the framework repository except `release-manifest.json` itself; `required_framework_surfaces` is an unrelated list used elsewhere and does not scope the digest input set. This design packet's three governance-only files are tracked repository content, so once integrated (merged to `main`) they affect that digest exactly like any other tracked file — they are not exempt.
 
-The follow-on implementation packet, once it adds tracked content under `framework/capabilities/work-packet-design/agent/**`, WILL change the General Governance tracked-content digest. Consistent with the precedent established by Blocks 1–3 (`GG-WPDC-NORMATIVE-CAPABILITY-ADOPTION-001`, `GG-WPDC-MACHINE-CONTRACT-VALIDATOR-001`, `GG-RELEASE-PACKAGE-0.1.0-RC.6-001`), that later content therefore requires a new release identity rather than a modification of the immutable `0.1.0-rc.6` candidate. This authorization records that consequence prospectively; it does not select or modify the final release manifest, and no release action is authorized by this record.
+Because these three files change the tracked-content digest once integrated, any release incorporating them requires a separately governed new release identity rather than a rewrite of the immutable `0.1.0-rc.6` candidate, consistent with the precedent established by Blocks 1–3 (`GG-WPDC-NORMATIVE-CAPABILITY-ADOPTION-001`, `GG-WPDC-MACHINE-CONTRACT-VALIDATOR-001`, `GG-RELEASE-PACKAGE-0.1.0-RC.6-001`). This authorization records that consequence prospectively; it does not itself select, create, or modify that future release identity, and no release action is authorized by this record.
 
 ## Merge authority boundary
 
