@@ -573,11 +573,12 @@ def verify_declared_evidence_contexts(
             if source is not None and (
                 "STATE" in source["classes"]
                 or source["locator"]["kind"] == "STATE_OBSERVER"
+                or source["locator"]["kind"] == "EXTERNAL_REFERENCE"
                 or source.get("currentness_rule_ref") is not None
             ):
                 fail(
                     "INVALID_RESOLUTION_EVIDENCE",
-                    f"canonical-base evidence {evidence_id} cannot use mutable/currentness-bound source {source_ref}; use STATE_EVALUATION",
+                    f"canonical-base evidence {evidence_id} cannot use external/mutable/currentness-bound source {source_ref}; use matching state or external-dependency context",
                 )
             continue
 
