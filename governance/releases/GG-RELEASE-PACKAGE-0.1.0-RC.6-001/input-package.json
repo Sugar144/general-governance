@@ -1,0 +1,28 @@
+{
+  "schema": "gg.release-package-input/1.0.0",
+  "package_id": "GG-RELEASE-PACKAGE-0.1.0-RC.6-001",
+  "block_id": "GG-WPDC-FRAMEWORK-RELEASE-INTEGRATION-001",
+  "target_release": "0.1.0-rc.6",
+  "main_baseline": "640fb33bc96bff75d757b8325ae6290c1a4e0f2f",
+  "integration_branch": "method/wpdc-normative-capability-adoption-001",
+  "pre_release_head": "75d994afebe62a7fcc18212cfc562db1bbbe7b41",
+  "accepted_architecture": "d43950df47d9d01b516a46f63e7ae9f7da1f24f7",
+  "owner_disposition": "88f1be46a3920154e66cad2d64344b9263737c78",
+  "corrected_normative_contract_commit": "917b16a5bd3a79fce0cde3178794bf191f8bb0e2",
+  "block_2_machine_candidate": "d25cc9a30ab77f7025d8d6e4129daf530501e214",
+  "block_2_result_head": "75d994afebe62a7fcc18212cfc562db1bbbe7b41",
+  "compatibility": {
+    "framework_contract": "2.0.0",
+    "consumer_lock_schema": "2.0.0",
+    "consumer_configuration_schema": "1.0.0"
+  },
+  "wpdc": {
+    "contract_version": "1.0.0",
+    "adoption_contract_version": "1.0.0",
+    "binding_schema_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "optional": true
+  },
+  "manifest_last": true,
+  "pull_request": 13
+}

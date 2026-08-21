@@ -40,26 +40,39 @@ change and is outside framework authority.
 
 ## Compatibility
 
-Version `0.1.0-rc.5` uses framework contract `2.0.0`, consumer-lock schema
+Version `0.1.0-rc.6` uses framework contract `2.0.0`, consumer-lock schema
 `2.0.0`, and consumer-configuration schema `1.0.0`, unchanged from
-`0.1.0-rc.2`. It publishes the `0.1.0-rc.3` optional capability-composition
-contract/schema `1.0.0` unchanged and preserves the `0.1.0-rc.4` bounded
-operational delegation authority model unchanged.
+`0.1.0-rc.2`. It preserves the `0.1.0-rc.3` optional capability-composition
+contract/schema `1.0.0`, the `0.1.0-rc.4` bounded operational delegation
+authority model, and the `0.1.0-rc.5` bounded replacement-execution lifecycle
+semantics unchanged.
 
-rc.5 adds bounded replacement-execution lifecycle semantics to the reusable
-Project Operating Contract. A terminal consumed failure creates zero execution
-authority. A replacement is a distinct formal execution identity, requires
-explicit finite replacement semantics rather than a bare execution count, must
-bind causal lineage and failure evidence, must pass effect-state and currentness
-gates, and consumes its own admitted allowance at its authoritative execution
-boundary. Replacement failure does not manufacture recursive authority. Resume
-of the same execution identity and `R<N>` correction remain distinct lifecycle
-concepts. A change to authority-bound role, mode, protocol, material scope,
-controls, environment assumptions, effect model, or mutation surface requires
-new execution-strategy authority; selection among prospectively declared
-interchangeable providers or executors does not by itself do so. These are L0
-semantic constraints only: no schema, configuration, capability-composition, or
-consumer migration contract changes in rc.5.
+rc.6 adds Work Packet Design & Dependency Closure (WPDC) as an optional reusable
+L2 capability. WPDC contract version `1.0.0` and adoption contract version
+`1.0.0` define explicit outcomes, completion conditions, prerequisite relations
+(`REACH`, `VALIDATE`, `COMPLETE`), transitive closure, and the resolution set
+`IN_PACKET`, `PREEXISTING_SATISFIED`, `BOUND_EXTERNAL_SATISFIED`, and
+`UNRESOLVED`. `UNRESOLVED` may produce `VALID_BUT_BLOCKED`; hidden or
+contradictorily excluded required prerequisites remain invalid. Direct
+adopter-owned satisfaction is distinct from separately bound external
+satisfaction, and immutable repository identity never proves mutable state by
+itself.
+
+The rc.6 machine projection uses `contracts/work-packet-capability-binding.schema.json`
+and `contracts/work-packet-manifest.schema.json`, both schema version `1.0.0`,
+with dedicated deterministic validator `tools/validate_work_packet.py`. The
+validator checks represented graph/reference integrity, resolution/evidence and
+currentness bindings, cycles, exclusion contradictions, validation coverage,
+required authority/control declarations, and derives WPDC packet dispositions.
+It does not infer undeclared semantic dependencies and does not grant execution,
+mutation, merge, release, publication, or acceptance authority.
+
+WPDC is absent unless explicitly adopted by the consumer. The reserved optional
+discovery key is `configuration.capabilities.work_packet_design.binding_path`.
+A consumer that does not adopt WPDC requires no configuration migration from
+rc.5. A consumer that does adopt WPDC must provide a supported exact adoption
+binding and conforming work-packet projection; framework availability alone does
+not activate the capability or retroactively re-evaluate historical packets.
 
 The current `framework-lock.json` remains a General Governance lock only. A
 consumer that composes additional independently governed systems uses the
@@ -87,9 +100,11 @@ unverifiable, or configuration-incomplete transition. Consumers never follow a
 moving branch automatically.
 
 See `docs/upgrades/0.1.0-rc.1-to-0.1.0-rc.2.md` for adopter #1 and adopter #2
-migration requirements. Moving from rc.2 to rc.3, rc.3 to rc.4, or rc.4 to
-rc.5 requires a new immutable GG lock identity but no configuration migration
-when the existing rc.2 configuration remains valid.
+migration requirements. Moving from rc.2 to rc.3, rc.3 to rc.4, rc.4 to rc.5,
+or rc.5 to rc.6 requires a new immutable GG lock identity. The rc.5 -> rc.6
+transition requires no configuration migration when WPDC remains unadopted; an
+adopter enabling WPDC supplies its optional binding as a separate adopter-owned
+change.
 
 ## Ownership boundary
 
