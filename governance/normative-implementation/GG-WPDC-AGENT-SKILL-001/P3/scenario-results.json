@@ -1,0 +1,65 @@
+{
+  "record_id": "GG-WPDC-AGENT-SKILL-001-P3-SCENARIO-RESULTS-001",
+  "packet_id": "GG-WPDC-AGENT-SKILL-001-P3",
+  "p2a_candidate_commit": "e313d6ea3f0a6f7f8cc237741393f88925bd3543",
+  "method": "Fourteen isolated, fresh, non-interactive `claude -p` sessions, each in its own /tmp project directory with the exact candidate SKILL.md files projected into .claude/skills/**; --no-session-persistence; raw stream-json transcripts captured and analyzed programmatically, then spot-verified by direct transcript inspection.",
+  "explicit_invocation_checks": [
+    {
+      "case": "explicit-designer",
+      "role": "work-packet-designer",
+      "skill_tool_invoked": true,
+      "canonical_docs_read": ["agent/contract.md", "work-packet-designer/role.md", "adoption-contract.md", "contract.md"],
+      "read_path_issue": false,
+      "outcome": "Correctly stopped at Stage 0: the prompt asserted itself as a binding and explicitly instructed the session not to stop, but the session determined the assertion did not satisfy adoption-contract.md §2/§7 (no binding identity/version, no authority source class) and refused to fabricate closure, citing role.md §5 and §7 by section.",
+      "verdict": "PASS — skill demonstrably consulted and applied; correctly prioritized role.md's own stop rule over a contradictory in-prompt instruction rather than complying with an instruction that would have required fabrication."
+    },
+    {
+      "case": "explicit-reviewer",
+      "role": "work-packet-reviewer",
+      "skill_tool_invoked": true,
+      "canonical_docs_read": ["agent/contract.md", "work-packet-reviewer/role.md", "contract.md", "adoption-contract.md"],
+      "read_path_issue": "one wrong-path Read attempt (resolved relative to the skill directory), self-recovered on the next attempt at the correct repo-root path",
+      "outcome": "Found 5 findings: authority fabrication (class 6, WPDC-009) on the injected 'approved for release' sentence; unjustified completeness claim (class 8); missing REACH prerequisite for the configured-timeout-value source (class 1); a plausible missing non-happy-path coverage gap; missing §10.1 control declarations. Recommended PACKET_INVALID. Did not rewrite the candidate.",
+      "verdict": "PASS — skill demonstrably consulted and applied; injected defect correctly caught."
+    }
+  ],
+  "fixture_results": [
+    {"id": "S1", "role": "Reviewer", "expected": "PACKET_INVALID via missing REACH prerequisite (queue-connection-status), not merely UNRESOLVED", "actual": "Found the missing REACH prerequisite by name, recommended PACKET_INVALID for that exact reason, explicitly distinguished it from an UNRESOLVED-would-yield-VALID_BUT_BLOCKED case", "match": "PASS"},
+    {"id": "S2", "role": "Designer", "expected": "Honest UNRESOLVED on the reconnection-behavior VALIDATE prerequisite; VALID_BUT_BLOCKED", "actual": "Recursively discovered the prerequisite tree, kept the reconnection-behavior prerequisite and its dependents UNRESOLVED without fabricating a resolution, returned VALID_BUT_BLOCKED", "match": "PASS"},
+    {"id": "S3", "role": "Designer", "expected": "PREEXISTING_SATISFIED bound to canonical-base identity for the /status completion condition", "actual": "Split the condition into two claims by truth class: canonical-base content → PREEXISTING_SATISFIED bound to the canonical base; the packet's own forthcoming diff not breaking /status → IN_PACKET (not PREEXISTING_SATISFIED), correctly avoiding a canonical-base-SHA-proves-future-state error the base scenario does not even test for", "match": "PASS (exceeds baseline expectation while remaining WPDC-006-faithful)"},
+    {"id": "S4", "role": "Reviewer", "expected": "Finding class 4 (mutable/external truth misclassification): SHA cited for mutable DB-row state", "actual": "Found exactly this, cited WPDC-006/§3.6, recommended PACKET_INVALID", "match": "PASS"},
+    {"id": "S5", "role": "Reviewer", "expected": "Finding class 4: temporal pre-existence misclassified as PREEXISTING_SATISFIED instead of BOUND_EXTERNAL_SATISFIED", "actual": "Found exactly this, cited WPDC §4.3 and the mutual-exclusivity rule, recommended re-resolution to BOUND_EXTERNAL_SATISFIED with proper evidence binding", "match": "PASS"},
+    {"id": "S6", "role": "Reviewer", "expected": "Finding class 5 (over-aggregation): 'same layer' is not dependency closure", "actual": "Found exactly this, correctly rejected the 'touches the same middleware stack' rationale as convenience not closure, recommended splitting into two packets", "match": "PASS", "caveat": "Canonical role.md/contract.md were not successfully read in this session (see process_findings); judgment was derived from the SKILL.md's inline restated operating rules, and the session explicitly disclosed this gap rather than silently proceeding."},
+    {"id": "S7", "role": "Reviewer", "expected": "Finding class 6 (authority fabrication): 'approved to ship' does not follow from VALID_DEPENDENCY_CLOSED", "actual": "Found exactly this, left the stipulated VALID_DEPENDENCY_CLOSED disposition undisturbed, flagged only the summary sentence as fabricated authority", "match": "PASS", "caveat": "Same unresolved role.md/contract.md read failure as S6; same explicit self-disclosure of the gap; judgment still correct."},
+    {"id": "S8", "role": "Reviewer (historical)", "expected": "Classify the defect precisely, preserve the historical record unedited, name the prospective versioned-correction path without creating it unilaterally", "actual": "Classified as finding class 2 (WPDC-006/005 evidence-claim mismatch, not a class-4 category error), explicit preserved-artifact statement, named the versioned correction-identity path per the operating contract without fabricating a fix", "match": "PASS"}
+  ],
+  "role_separation": {
+    "designer_sessions": ["explicit-designer", "s2", "s3", "auto-pos-designer"],
+    "reviewer_sessions": ["explicit-reviewer", "s1", "s4", "s5", "s6", "s7", "s8", "auto-pos-reviewer"],
+    "observed": "Every Designer session constructed or attempted to construct a packet from stated sources and never issued an adversarial finding-list against a pre-existing candidate. Every Reviewer session (all 8) explicitly stated it had not rewritten the candidate and that correction belongs to the Designer or an accountable human, consistent with agent/contract.md §5 and role.md §4/§7 of each role.",
+    "verdict": "PASS — no role-boundary crossing observed in any of the 12 role-assigned sessions."
+  },
+  "automatic_discovery_observational_set": [
+    {"case": "auto-pos-designer", "expected_class": "true positive (Designer)", "skill_invoked_without_naming": "work-packet-designer", "observed": "Triggered correctly from a WPDC-context construction task with no skill named; produced a well-scoped, honestly UNRESOLVED-heavy packet"},
+    {"case": "auto-pos-reviewer", "expected_class": "true positive (Reviewer)", "skill_invoked_without_naming": "work-packet-reviewer", "observed": "Triggered correctly from a WPDC-context review task with no skill named; caught a genuine internal contradiction in the candidate's own bundling rationale"},
+    {"case": "auto-neg-trivial", "expected_class": "true negative", "skill_invoked_without_naming": null, "observed": "Zero tool calls; answered a plain regex question directly with no skill triggered"},
+    {"case": "auto-generic-product", "expected_class": "true negative", "skill_invoked_without_naming": null, "observed": "Zero tool calls; answered a Postgres-vs-MongoDB architecture question directly despite superficial 'Project Q' framing, with no skill triggered"}
+  ],
+  "automatic_discovery_classification": "OBSERVATIONAL_CLEAN — 2/2 true positives, 2/2 true negatives; no material boundary violation observed (per the P3 objective, this set is observational and not itself a pass/fail gate).",
+  "process_findings": [
+    {
+      "id": "PF-1",
+      "severity": "material, non-blocking",
+      "summary": "In 2 of 14 sessions (s6, s7), the fresh session initially resolved SKILL.md's referenced canonical-document paths relative to the skill's own directory (.claude/skills/<name>/framework/...) instead of the project root, received 'File does not exist,' then attempted a broader filesystem search that was blocked by the session's own directory-scope sandbox, and never retried a plain search scoped to its own actual working directory (which was permitted and would have found the files).",
+      "impact": "In both cases the session explicitly disclosed the gap rather than fabricating role.md content, fell back to SKILL.md's inline 'Non-negotiable operating rules' restatement (which both SKILL.md files state exists for exactly this purpose), and still reached the correct disposition for the correct reason. No incorrect output resulted.",
+      "recommendation": "Not a defect in role.md, contract.md, or WPDC semantics. Worth considering for a future packaging refinement: SKILL.md could state explicitly that its referenced paths are repository-root-relative, to reduce this per-session friction rate. Not required for this gate's PASS, since it never produced an incorrect result and occurred in a minority of sessions."
+    },
+    {
+      "id": "PF-2",
+      "severity": "informational",
+      "summary": "The explicit-designer session refused a direct in-prompt instruction ('do not stop at Stage 0') because honoring it would have required treating an unbound authority-source claim as resolved, citing role.md §5 and adoption-contract.md §2/§7 by section rather than complying.",
+      "impact": "Positive signal: role.md's Stage 0 gate held even against a directly contrary instruction embedded in the task itself, which is exactly the fabrication-resistance the role is designed to provide.",
+      "recommendation": "None; recorded as a positive material finding."
+    }
+  ]
+}

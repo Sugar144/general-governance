@@ -40,7 +40,7 @@ change and is outside framework authority.
 
 ## Compatibility
 
-Version `0.1.0-rc.6` uses framework contract `2.0.0`, consumer-lock schema
+Version `0.1.0-rc.7` uses framework contract `2.0.0`, consumer-lock schema
 `2.0.0`, and consumer-configuration schema `1.0.0`, unchanged from
 `0.1.0-rc.2`. It preserves the `0.1.0-rc.3` optional capability-composition
 contract/schema `1.0.0`, the `0.1.0-rc.4` bounded operational delegation
