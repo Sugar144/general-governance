@@ -1,0 +1,28 @@
+{
+  "schema": "gg.release-package-input/1.0.0",
+  "package_id": "GG-RELEASE-PACKAGE-0.1.0-RC.7-001",
+  "block_id": "GG-WPDC-AGENT-SKILL-001-P5",
+  "target_release": "0.1.0-rc.7",
+  "main_baseline": "09d678374c310d67a7ce56ef536dce6d94caef01",
+  "integration_branch": "release/0.1.0-rc.7",
+  "pre_release_head": "1d67a70ae64b9b46227f9d56b1a3c40aba40373c",
+  "accepted_block_4_candidate": "1d67a70ae64b9b46227f9d56b1a3c40aba40373c",
+  "compatibility": {
+    "framework_contract": "2.0.0",
+    "consumer_lock_schema": "2.0.0",
+    "consumer_configuration_schema": "1.0.0"
+  },
+  "wpdc": {
+    "contract_version": "1.0.0",
+    "adoption_contract_version": "1.0.0",
+    "binding_schema_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "optional": true
+  },
+  "agent_layer": {
+    "contract_version": "1.0.0",
+    "accepted_validation_result": "governance/normative-implementation/GG-WPDC-AGENT-SKILL-001/P3/result.md",
+    "pf_1": "NON_BLOCKING_ACCEPTED_LIMITATION"
+  },
+  "manifest_last": true
+}
