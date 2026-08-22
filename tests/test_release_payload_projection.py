@@ -56,16 +56,19 @@ class ProjectionRepo:
         self.write("release-manifest.json", json.dumps(manifest_template(), indent=2) + "\n")
         git(self.root, "add", ".")
         git(self.root, "commit", "-qm", "initial")
-        manifest = manifest_template()
-        manifest["content_sha256"] = content_digest(self.root, manifest)
-        self.write("release-manifest.json", json.dumps(manifest, indent=2) + "\n")
-        git(self.root, "add", "release-manifest.json")
-        git(self.root, "commit", "-qm", "bind manifest")
+        self.rebind_manifest("bind manifest")
 
     def write(self, relative: str, text: str) -> None:
         path = self.root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
+
+    def rebind_manifest(self, commit_message: str = "rebind manifest") -> None:
+        manifest = load_release_manifest(self.root)
+        manifest["content_sha256"] = content_digest(self.root, manifest)
+        self.write("release-manifest.json", json.dumps(manifest, indent=2) + "\n")
+        git(self.root, "add", "release-manifest.json")
+        git(self.root, "commit", "-qm", commit_message)
 
     def close(self) -> None:
         self.temp.cleanup()
@@ -97,6 +100,7 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
             git(repo.root, "add", "tools/run.sh")
             git(repo.root, "update-index", "--chmod=+x", "tools/run.sh")
             self.assertTrue(git(repo.root, "ls-files", "-s", "tools/run.sh").startswith("100755 "))
+            repo.rebind_manifest("bind executable fixture")
             with tempfile.TemporaryDirectory() as temp:
                 projection = Path(temp) / "projection"
                 index = build_projection(repo.root, projection)
@@ -118,6 +122,7 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
             repo.write("tools/run.sh", "#!/bin/sh\nexit 0\n")
             git(repo.root, "add", "tools/run.sh")
             git(repo.root, "update-index", "--chmod=+x", "tools/run.sh")
+            repo.rebind_manifest("bind executable downgrade fixture")
             with tempfile.TemporaryDirectory() as temp:
                 projection = Path(temp) / "projection"
                 index = build_projection(repo.root, projection)
