@@ -1,0 +1,17 @@
+{
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-IR-001",
+  "candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "reviewer": "CLAUDE",
+  "independence_conditions": {
+    "fresh_session_required": true,
+    "implementation_agent_context_reuse_forbidden": true,
+    "repository_write_authority": "NONE",
+    "correction_execution_forbidden": true
+  },
+  "status": "READY_FOR_INDEPENDENT_REVIEW_EXECUTION",
+  "terminal_success": "INDEPENDENT_REVIEWER_PASS",
+  "terminal_failure": [
+    "CHANGES_REQUIRED",
+    "INDETERMINATE"
+  ]
+}
