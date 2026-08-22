@@ -29,6 +29,8 @@ RELEASE_INCLUDED = "RELEASE_INCLUDED"
 OPERATIONAL_EXCLUDED = "OPERATIONAL_EXCLUDED"
 MANIFEST_SELF_EXCLUDED = "MANIFEST_SELF_EXCLUDED"
 
+SUPPORTED_TRACKED_FILE_MODES = frozenset({"100644", "100755"})
+
 PROTECTED_RELEASE_PREFIXES = (
     "framework/",
     "contracts/",
@@ -74,7 +76,15 @@ def fail(message: str) -> None:
     raise ReleasePayloadError(message)
 
 
+def _require_regular_file(path: Path, label: str) -> None:
+    if path.is_symlink():
+        fail(f"{label} must not be a symlink: {path}")
+    if not path.is_file():
+        fail(f"{label} is missing or not a regular file: {path}")
+
+
 def file_digest(path: Path) -> str:
+    _require_regular_file(path, "release content path")
     try:
         return hashlib.sha256(path.read_bytes()).hexdigest()
     except OSError as exc:
@@ -83,6 +93,8 @@ def file_digest(path: Path) -> str:
 
 def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, object]) -> None:
     schema_path = root / MANIFEST_SCHEMA_PATH
+    if schema_path.is_symlink():
+        fail(f"release-manifest schema must not be a symlink: {schema_path}")
     if not schema_path.is_file():
         if manifest.get("manifest_schema_version") == SCOPED_SCHEMA_VERSION:
             fail("scoped release manifest requires contracts/release-manifest.schema.json")
@@ -104,6 +116,7 @@ def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, objec
 
 def load_release_manifest(root: Path) -> dict:
     path = root / MANIFEST_PATH
+    _require_regular_file(path, "release manifest")
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -204,7 +217,7 @@ def identity_method(manifest: Mapping[str, object]) -> str:
 def tracked_paths(root: Path) -> tuple[str, ...]:
     try:
         raw = subprocess.check_output(
-            ["git", "-C", str(root), "ls-files", "-z"], text=False
+            ["git", "-C", str(root), "ls-files", "-s", "-z"], text=False
         )
     except (OSError, subprocess.CalledProcessError) as exc:
         fail(f"cannot enumerate tracked paths: {exc}")
@@ -212,10 +225,23 @@ def tracked_paths(root: Path) -> tuple[str, ...]:
     for item in raw.split(b"\0"):
         if not item:
             continue
+        metadata, separator, path_bytes = item.partition(b"\t")
+        if not separator:
+            fail("tracked index entry metadata is malformed")
+        fields = metadata.split()
+        if len(fields) != 3:
+            fail("tracked index entry metadata is malformed")
         try:
-            path = item.decode("utf-8")
-        except UnicodeDecodeError as exc:
-            fail(f"tracked path is not UTF-8: {exc}")
+            mode = fields[0].decode("ascii")
+            stage = fields[2].decode("ascii")
+            path = path_bytes.decode("utf-8")
+        except (UnicodeDecodeError, UnicodeError) as exc:
+            fail(f"tracked index entry encoding is invalid: {exc}")
+        _normalized_repo_path(path, "tracked path")
+        if stage != "0":
+            fail(f"tracked path has unsupported non-zero index stage {stage}: {path}")
+        if mode not in SUPPORTED_TRACKED_FILE_MODES:
+            fail(f"unsupported tracked Git mode {mode} for path: {path}")
         values.append(path)
     if len(values) != len(set(values)):
         fail("tracked path enumeration contains duplicates")
@@ -271,8 +297,7 @@ def _digest_paths(root: Path, paths: Iterable[str]) -> str:
     for path in paths:
         _normalized_repo_path(path, "release content path")
         target = root / path
-        if not target.exists() or target.is_dir():
-            fail(f"release content path is missing or not a file: {path}")
+        _require_regular_file(target, "release content path")
         records.append((path, file_digest(target)))
     encoded = "".join(
         f"{path}\0{hash_value}\n" for path, hash_value in sorted(records)
@@ -315,8 +340,7 @@ def build_projection(source: Path, destination: Path) -> dict:
     destination.mkdir(parents=True)
     for relative in classification.included + (MANIFEST_PATH,):
         source_path = source / relative
-        if not source_path.exists() or source_path.is_dir():
-            fail(f"projection source path is missing or not a file: {relative}")
+        _require_regular_file(source_path, "projection source path")
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(source_path.read_bytes())
@@ -340,6 +364,7 @@ def build_projection(source: Path, destination: Path) -> dict:
 
 
 def _load_projection_index(path: Path) -> dict:
+    _require_regular_file(path, "projection index")
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -393,7 +418,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
     excluded_paths: list[str] = []
     for raw in excluded_raw:
         path = _normalized_repo_path(raw, "projection excluded path")
-        if (projection / path).exists():
+        if (projection / path).exists() or (projection / path).is_symlink():
             fail(f"projection contains operationally excluded path: {path}")
         excluded_paths.append(path)
     if len(excluded_paths) != len(set(excluded_paths)):
