@@ -1,0 +1,27 @@
+{
+  "schema": "gg.i1-correction-validation-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001",
+  "corrected_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "status": "SELF_VALIDATED_PENDING_INDEPENDENT_REVIEW",
+  "checks": [
+    {"id":"CORR-VAL-001","name":"main_currentness","result":"PASS","observed":"main remains 22a1d5e2f759fda53574884e1056a3a56baa211a"},
+    {"id":"CORR-VAL-002","name":"successor_base_exactness","result":"PASS","observed":"correction branch descends from exact reviewed predecessor b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea"},
+    {"id":"CORR-VAL-003","name":"functional_write_surface","result":"PASS","observed":"only tools/release_payload.py and the two authorized release-payload test files differ functionally from predecessor"},
+    {"id":"CORR-VAL-004","name":"included_tracked_symlink","result":"PASS_SELF_ADVERSARIAL","observed":"mode 120000 is rejected for release-included paths before filesystem bytes are consumed"},
+    {"id":"CORR-VAL-005","name":"included_broken_symlink","result":"PASS_SELF_ADVERSARIAL","observed":"broken included symlink is rejected from Git index mode independent of target existence"},
+    {"id":"CORR-VAL-006","name":"included_gitlink","result":"PASS_SELF_ADVERSARIAL","observed":"mode 160000 is rejected for release-included paths"},
+    {"id":"CORR-VAL-007","name":"ancestor_symlink_source","result":"PASS_SELF_ADVERSARIAL","observed":"regular index entry reached through symlinked ancestor such as tools -> governance fails on path-component check"},
+    {"id":"CORR-VAL-008","name":"projection_direct_symlink_tamper","result":"PASS_SELF_ADVERSARIAL","observed":"included projection file replaced by symlink fails verification even when target bytes match"},
+    {"id":"CORR-VAL-009","name":"projection_ancestor_symlink_tamper","result":"PASS_SELF_ADVERSARIAL","observed":"included projection directory replaced by symlink fails path-component verification"},
+    {"id":"CORR-VAL-010","name":"operational_plane_decoupling","result":"PASS_SELF_ADVERSARIAL","observed":"tracked symlink wholly under governance/** is classified operationally excluded and does not alter scoped payload digest/projection"},
+    {"id":"CORR-VAL-011","name":"regular_modes","result":"PASS_SELF_ADVERSARIAL","observed":"100644 and 100755 release-included regular files remain accepted"},
+    {"id":"CORR-VAL-012","name":"historical_rc7_mode_compatibility","result":"PASS_STATIC","observed":"rc.7 tracked tree inspection contains no 120000 or 160000 entries; exact historical rc.7 reproduction regression remains present and unchanged in purpose"},
+    {"id":"CORR-VAL-013","name":"find_002_bootstrap_disclosure","result":"PASS","observed":"Gate A / legacy consumer regressions remain expected bootstrap failures until P1; this is explicitly disclosed rather than counted as green"},
+    {"id":"CORR-VAL-014","name":"independent_reviewer","result":"PENDING","observed":"fresh Claude review has not yet executed against exact corrected candidate 2567fbd67e7fff50383d347913cf6442fbdebc61"}
+  ],
+  "important_limit": "implementation-agent self-validation is not an independent reviewer PASS; Claude must independently execute the exact tests and adversarial fixtures against the frozen corrected candidate",
+  "full_ci_classification": "EXPECTED_NON_GREEN_AT_GATE_A_UNTIL_P1_SUCCESSOR_MANIFEST_VERSION_PACKAGING",
+  "terminal_state": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "integration_state": "NON_INTEGRABLE_PENDING_INDEPENDENT_REVIEW_AND_SUCCESSOR_RELEASE_PACKAGING",
+  "next_gate": "FRESH_CLAUDE_INDEPENDENT_REVIEW_OF_2567fbd67e7fff50383d347913cf6442fbdebc61"
+}
