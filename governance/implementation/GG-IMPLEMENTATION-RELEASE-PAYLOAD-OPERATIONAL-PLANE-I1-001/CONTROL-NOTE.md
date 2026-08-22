@@ -1,0 +1,1 @@
+I1 branch prepared from exact baseline. A temporary PREFLIGHT_SENTINEL.md was accidentally created during tool invocation and must be removed before terminal validation. This operational custody event creates no new authority.
