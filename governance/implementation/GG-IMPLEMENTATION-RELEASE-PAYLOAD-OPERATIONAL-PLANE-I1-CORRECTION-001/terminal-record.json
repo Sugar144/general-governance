@@ -1,0 +1,26 @@
+{
+  "schema": "gg.i1-correction-terminal-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001-RUN-001",
+  "corrected_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "run_allowance": "CONSUMED_NO_RETRY_OR_REPLACEMENT_AUTHORITY",
+  "correction_status": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "integration_status": "NON_INTEGRABLE_PENDING_INDEPENDENT_REVIEW_AND_SUCCESSOR_RELEASE_PACKAGING",
+  "original_blocking_finding": "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B",
+  "intermediate_candidate_96512f33": "REJECTED_BY_IMPLEMENTATION_AGENT_SELF_REVIEW_ANCESTOR_SYMLINK_BYPASS",
+  "self_validation": "PASS_FOR_TARGETED_DIRECT_ANCESTOR_AND_OPERATIONAL_PLANE_CASES_NOT_AN_INDEPENDENT_PASS",
+  "fresh_independent_review": {
+    "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001-IR-001",
+    "reviewer": "CLAUDE",
+    "status": "NOT_YET_EXECUTED",
+    "candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61"
+  },
+  "find_002_bootstrap_state": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1",
+  "main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "adopter_mutation_authorized": false,
+  "next_gate": "CLAUDE_INDEPENDENT_REVIEW_OF_EXACT_CORRECTED_CANDIDATE_2567fbd67e7fff50383d347913cf6442fbdebc61"
+}
