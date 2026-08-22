@@ -9,6 +9,8 @@ from pathlib import Path
 from tools.release_payload import PROJECTION_INDEX, build_projection, content_digest, load_release_manifest, verify_projection
 from tools.validate_capability_stack import component_set_sha256, validate_stack
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def git(root: Path, *args: str) -> str:
     return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
@@ -40,6 +42,7 @@ class ProjectionRepo:
         git(self.root, "config", "user.name", "GG Tests")
         self.write("README.md", "projection test\n")
         self.write("RELEASE_VERSION", "0.1.0-rc.test\n")
+        self.write("contracts/release-manifest.schema.json", (ROOT / "contracts/release-manifest.schema.json").read_text(encoding="utf-8"))
         if hidden_dependency:
             self.write("tools/check.py", "from pathlib import Path\nprint(Path('governance/secret.txt').read_text())\n")
             self.write("governance/secret.txt", "secret\n")

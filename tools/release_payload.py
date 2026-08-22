@@ -14,7 +14,10 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Iterable, Mapping, Sequence
 
+from jsonschema import Draft202012Validator
+
 MANIFEST_PATH = "release-manifest.json"
+MANIFEST_SCHEMA_PATH = "contracts/release-manifest.schema.json"
 PROJECTION_INDEX = "projection-index.json"
 
 LEGACY_SCHEMA_VERSION = "1.3.0"
@@ -78,6 +81,27 @@ def file_digest(path: Path) -> str:
         fail(f"cannot read release content path {path}: {exc}")
 
 
+def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, object]) -> None:
+    schema_path = root / MANIFEST_SCHEMA_PATH
+    if not schema_path.is_file():
+        if manifest.get("manifest_schema_version") == SCOPED_SCHEMA_VERSION:
+            fail("scoped release manifest requires contracts/release-manifest.schema.json")
+        return
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        Draft202012Validator.check_schema(schema)
+    except Exception as exc:
+        fail(f"invalid release-manifest schema {schema_path}: {exc}")
+    errors = sorted(
+        Draft202012Validator(schema).iter_errors(manifest),
+        key=lambda error: [str(part) for part in error.absolute_path],
+    )
+    if errors:
+        first = errors[0]
+        where = "$" + "".join(f"[{part!r}]" for part in first.absolute_path)
+        fail(f"release manifest schema validation failed at {where}: {first.message}")
+
+
 def load_release_manifest(root: Path) -> dict:
     path = root / MANIFEST_PATH
     try:
@@ -87,6 +111,7 @@ def load_release_manifest(root: Path) -> dict:
     if not isinstance(value, dict):
         fail("release manifest must be a JSON object")
     validate_release_manifest(value)
+    _validate_manifest_schema_from_root(root, value)
     return value
 
 

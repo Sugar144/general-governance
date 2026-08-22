@@ -50,6 +50,7 @@ class TempScopedRepo:
         self.write("RELEASE_VERSION", "0.1.0-rc.test\n")
         self.write("tools/example.py", "VALUE = 1\n")
         self.write("contracts/example.schema.json", "{}\n")
+        self.write("contracts/release-manifest.schema.json", (ROOT / "contracts/release-manifest.schema.json").read_text(encoding="utf-8"))
         self.write("governance/discovery/evidence.md", "operational\n")
         self.write("PROJECT_STATE.yaml", "status: TEST\n")
         self.write(".github/workflows/conformance-ci.yml", "name: test\non: [push]\njobs: {}\n")
@@ -161,6 +162,17 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
         manifest["content_identity"]["method"] = "FUTURE_UNKNOWN"
         with self.assertRaisesRegex(ValueError, "unsupported scoped release identity method"):
             validate_release_manifest(manifest)
+
+    def test_scoped_manifest_rejects_unrecognized_top_level_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "contracts").mkdir(parents=True)
+            (root / "contracts/release-manifest.schema.json").write_text((ROOT / "contracts/release-manifest.schema.json").read_text(encoding="utf-8"), encoding="utf-8")
+            manifest = scoped_manifest()
+            manifest["unexpected"] = "unsafe"
+            (root / "release-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "schema validation failed"):
+                load_release_manifest(root)
 
     def test_policy_change_changes_manifest_hash(self) -> None:
         first = scoped_manifest()
