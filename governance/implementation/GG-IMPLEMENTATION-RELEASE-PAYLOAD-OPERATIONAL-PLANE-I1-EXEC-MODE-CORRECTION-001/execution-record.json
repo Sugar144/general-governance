@@ -1,0 +1,28 @@
+{
+  "schema": "gg.i1-exec-mode-correction-execution/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-RUN-001",
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "predecessor_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "functional_candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "execution_allowance": {
+    "permitted": 1,
+    "consumed": true,
+    "remaining": 0,
+    "retry_or_replacement": "NONE"
+  },
+  "functional_changes": [
+    "tools/release_payload.py: projection-index schema 1.1.0; bind included Git mode; materialize 0644/0755; verify mode drift",
+    "tests/test_release_payload_projection.py: executable-mode preservation, direct execution, downgrade and upgrade regressions"
+  ],
+  "unchanged_authorized_path": "tests/test_release_payload_identity.py",
+  "preserved_findings": {
+    "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B": "CLOSED_BY_PREDECESSOR_AND_NOT_REOPENED",
+    "FIND-TOCTOU-001": "MINOR_OUT_OF_SCOPE_UNCHANGED"
+  },
+  "forbidden_effects_observed": false,
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false
+}
