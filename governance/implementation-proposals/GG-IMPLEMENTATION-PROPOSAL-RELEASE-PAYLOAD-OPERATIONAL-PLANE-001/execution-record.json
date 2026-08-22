@@ -1,0 +1,27 @@
+{
+  "schema": "gg.implementation-proposal-execution-record/0.1.0",
+  "proposal_id": "GG-IMPLEMENTATION-PROPOSAL-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001",
+  "run_id": "GG-IMPLEMENTATION-PROPOSAL-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001-RUN-001",
+  "execution_status": "EXECUTED",
+  "execution_boundary_crossed": true,
+  "execution_allowance_consumed": true,
+  "permitted_execution_count": 1,
+  "replacement_or_retry_authority": "NONE",
+  "authority_comment_id": 5381206530,
+  "prompt_snapshot": {
+    "prompt_id": "GG-MP-0009",
+    "version": "1.0.0",
+    "blob_sha": "da57158610107bf0367319b66d82d582262c6955"
+  },
+  "input_package": {
+    "blob_sha": "2861a160f675243bc6528804f3970247b4ce7974",
+    "sha256": "0f3ff2a6f6e29f4006d6efe4f3a9adf512d7b3aca904b988162d75c0a9d3e74e"
+  },
+  "run_contract_blob_sha": "4e5fadf189c5e0a441a557e5db2d0041e59bcff3",
+  "result": {
+    "commit_sha": "b8e19bd5ccb2093624a2d9d55a0d5f8aca0d18fc",
+    "blob_sha": "2b976113013e26237fa7191db400c1184c733f00",
+    "disposition": "IMPLEMENTATION_PACKAGE_READY_FOR_OWNER_AUTHORIZATION"
+  },
+  "note": "This record consumes the sole proposal-analysis allowance. It creates no implementation, packaging, PR, merge, release, or adopter authority."
+}
