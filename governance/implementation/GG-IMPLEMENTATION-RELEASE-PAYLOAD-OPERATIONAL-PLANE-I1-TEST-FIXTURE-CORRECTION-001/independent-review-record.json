@@ -1,0 +1,36 @@
+{
+  "schema": "gg.independent-review-record/0.1.0",
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-IR-001",
+  "reviewer": "CLAUDE",
+  "mode": "INDEPENDENT_READ_ONLY_SEMANTIC_SECURITY_REVIEW",
+  "candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "predecessor": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "verdict": "PASS",
+  "blocking_findings": [],
+  "material_findings": [],
+  "resolved_findings": [
+    "FIND-EXEC-MODE-TEST-001",
+    "FIND-EXEC-BIT-001",
+    "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B"
+  ],
+  "minor_findings_remaining": [
+    "FIND-MANIFEST-MODE-001",
+    "FIND-TOCTOU-001"
+  ],
+  "targeted_suite": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "result": "PASS"
+  },
+  "full_suite": {
+    "tests": 77,
+    "failures": 10,
+    "errors": 1,
+    "classification": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1",
+    "new_failures": 0
+  },
+  "production_finding_status": "FIND-EXEC-BIT-001_CLOSED",
+  "prior_symlink_finding_status": "FIND-001_CLOSED",
+  "authority_granted": "NONE"
+}
