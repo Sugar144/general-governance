@@ -1,0 +1,78 @@
+{
+  "schema": "gg.cross-project-learning-pilot-validation/0.2.0",
+  "package_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001-SVP-GA-PRE-RUN-002",
+  "deterministic_validation": "PASS",
+  "terminal_status": "VALIDATED_PENDING_PROJECT_OWNER_INTEGRATION_DECISION",
+  "gg_baseline": "b49ee80650bff951dd269f520c8220b481c53508",
+  "candidate_before_validation_record": "8d7677db1efe0e6d600e1811996ffeb0137bccbd",
+  "reviewed_candidate_commit": "8fab6d8467c58a8d629dcd433fcf1e13d7251131",
+  "custody_correction": {
+    "role": "REVIEW_EVIDENCE_ONLY_NO_SEMANTIC_CANDIDATE_CHANGE",
+    "authority_source": "Project Owner chat authorization 2026-08-22T23:53+02:00",
+    "scope": "validation-record.json only",
+    "review_binding_rule": "Independent review remains bound to reviewed_candidate_commit. This custody update records the completed review and does not represent the resulting custody commit as the independently reviewed semantic candidate."
+  },
+  "expected_release_content_sha256": "1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf",
+  "checks": [
+    {"id":"VAL-001","name":"gg_main_currentness","expected":"b49ee80650bff951dd269f520c8220b481c53508","observed":"b49ee80650bff951dd269f520c8220b481c53508","result":"PASS"},
+    {"id":"VAL-002","name":"branch_ancestry","expected":"fresh successor branch from exact baseline, behind_by=0","observed":"merge_base=b49ee80650bff951dd269f520c8220b481c53508; ahead_by=4; behind_by=0 before validation record","result":"PASS"},
+    {"id":"VAL-003","name":"candidate_write_surface","expected":"only PRE-RUN-002 governance path","observed":"exactly four candidate files added under governance/pilots/GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001/SVP-GUIDED-ANSWERING-PRE-RUN-002/** before the original validation record; no pre-existing file modified","result":"PASS"},
+    {"id":"VAL-004","name":"release_version_unchanged","expected":"0.1.0-rc.8","observed":"0.1.0-rc.8","result":"PASS"},
+    {"id":"VAL-005","name":"manifest_method_unchanged","expected":"manifest 1.4.0 / SCOPED_TRACKED_FILES_V1","observed":"manifest_schema_version=1.4.0; content_identity.method=SCOPED_TRACKED_FILES_V1","result":"PASS"},
+    {"id":"VAL-006","name":"governance_operational_classification","expected":"governance/ excluded from framework release payload by rc.8 policy","observed":"release-manifest content_identity.reserved_operational_prefixes contains exactly governance/","result":"PASS"},
+    {"id":"VAL-007","name":"release_identity_preservation","expected":"no scoped digest input record changes","observed":"independent reviewer reproduced tools/release_payload.py digest at baseline and reviewed candidate; both produced 1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf","result":"PASS","evidence_class":"INDEPENDENT_REVIEWER_DIRECT_TOOL_REPRODUCTION"},
+    {"id":"VAL-008","name":"declared_content_sha256_unchanged","expected":"1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf","observed":"1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf","result":"PASS"},
+    {"id":"VAL-009","name":"historical_predecessor_fenced","expected":"PRE-RUN-001 / PR #16 historical only","observed":"package and authorization explicitly classify PR #16 as historical stopped predecessor and forbid retry/reuse","result":"PASS"},
+    {"id":"VAL-010","name":"historical_svp_sha_not_current","expected":"280aab9c... not rebound as current","observed":"historical SHA is explicitly non-current and unresolved; current exact packet binding remains null/required from SVP before execution","result":"PASS"},
+    {"id":"VAL-011","name":"learning_disposition_enums","expected":"exact packet and vertical disposition sets preserved","observed":"packet={NO_MATERIAL_LEARNING,LOCAL_LEARNING_RECORDED,CROSS_PROJECT_SIGNAL_RECORDED}; vertical={NO_CROSS_PROJECT_SIGNALS,HARVEST_RECORDED}","result":"PASS"},
+    {"id":"VAL-012","name":"conditional_harvest","expected":"harvest iff one or more packet cross-project signals","observed":"REQUIRED_IFF_ONE_OR_MORE_PACKET_CROSS_PROJECT_SIGNALS","result":"PASS"},
+    {"id":"VAL-013","name":"authority_transfer","expected":"NONE","observed":"NONE plus explicit no-authority-transfer clauses","result":"PASS"},
+    {"id":"VAL-014","name":"cross_project_effect_boundary","expected":"no SVP/AET-P4/P5B/RUN-001 authority","observed":"all remain separately governed; SVP mutation=false; ST-01 execution=false; Claude Agent SDK RUN-001=false","result":"PASS"},
+    {"id":"VAL-015","name":"prospective_capture_boundary","expected":"SVP exact packet identity must be rebound before execution","observed":"exact adopter packet id/branch/head/report path are intentionally unset and required before ST-01 execution","result":"PASS"}
+  ],
+  "validation_summary": "15/15 DETERMINISTIC/STRUCTURAL PASS",
+  "independent_review": {
+    "required": true,
+    "provider": "Claude",
+    "status": "PASS",
+    "exact_reviewed_head": "8fab6d8467c58a8d629dcd433fcf1e13d7251131",
+    "identity_fence": "PASS",
+    "write_surface": "PASS",
+    "rc8_release_identity": "PASS",
+    "observed_content_sha256": "1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf",
+    "predecessor_fencing": "PASS",
+    "svp_currentness_model": "PASS",
+    "learning_lifecycle_semantics": "PASS",
+    "authority_boundaries": "PASS",
+    "worktree": "CLEAN",
+    "no_mutation_confirmed": true,
+    "blocking_findings": 0,
+    "material_findings": 0,
+    "minor_findings": 0,
+    "advisories": [
+      {
+        "id": "FINDING-01",
+        "classification": "ADVISORY",
+        "summary": "The original validation record understated achievable release-identity rigor by claiming local helper execution was unavailable. The reviewer directly reproduced the expected digest at both baseline and candidate; no operative invariant was affected and no semantic candidate correction was required."
+      }
+    ],
+    "clarification_disposition": "PASS_WITH_ADVISORY_NON_BLOCKING"
+  },
+  "custody_effect": {
+    "semantic_candidate_changed": false,
+    "reviewed_candidate_changed": false,
+    "durable_review_evidence_recorded": true,
+    "requires_new_semantic_review": false,
+    "integration_still_requires_separate_project_owner_authority": true
+  },
+  "forbidden_next_effects": [
+    "merge/integration without a fresh exact-head/currentness gate and Project Owner authority",
+    "tag/GitHub Release/deployment/publication",
+    "PR #16 mutation",
+    "SVP adopter mutation",
+    "ST-01 implementation",
+    "AET-P4/P5B mutation",
+    "Claude Agent SDK RUN-001 execution"
+  ],
+  "note": "This custody correction durably records the completed independent review of reviewed_candidate_commit without pretending that the custody commit itself was the semantic candidate reviewed by Claude."
+}
