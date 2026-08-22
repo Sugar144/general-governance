@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import stat
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -19,6 +20,7 @@ from jsonschema import Draft202012Validator
 MANIFEST_PATH = "release-manifest.json"
 MANIFEST_SCHEMA_PATH = "contracts/release-manifest.schema.json"
 PROJECTION_INDEX = "projection-index.json"
+PROJECTION_INDEX_SCHEMA = "gg.release-payload-projection-index/1.1.0"
 
 LEGACY_SCHEMA_VERSION = "1.3.0"
 LEGACY_METHOD = "LEGACY_COMPLETE_TRACKED_FILES_V1"
@@ -30,6 +32,10 @@ OPERATIONAL_EXCLUDED = "OPERATIONAL_EXCLUDED"
 MANIFEST_SELF_EXCLUDED = "MANIFEST_SELF_EXCLUDED"
 
 SUPPORTED_TRACKED_FILE_MODES = frozenset({"100644", "100755"})
+TRACKED_MODE_PERMISSIONS = {
+    "100644": 0o644,
+    "100755": 0o755,
+}
 
 PROTECTED_RELEASE_PREFIXES = (
     "framework/",
@@ -104,6 +110,34 @@ def _require_regular_repo_file(root: Path, relative: str, label: str) -> Path:
     if not path.is_file():
         fail(f"{label} is missing or not a regular file: {relative}")
     return path
+
+
+def _permissions_for_tracked_mode(mode: str, label: str) -> int:
+    permissions = TRACKED_MODE_PERMISSIONS.get(mode)
+    if permissions is None:
+        fail(f"unsupported tracked Git mode {mode} for {label}")
+    return permissions
+
+
+def _materialize_tracked_mode(path: Path, mode: str, label: str) -> None:
+    permissions = _permissions_for_tracked_mode(mode, label)
+    try:
+        path.chmod(permissions)
+    except OSError as exc:
+        fail(f"cannot materialize Git mode {mode} for {label}: {exc}")
+
+
+def _verify_projected_mode(path: Path, mode: str, label: str) -> None:
+    expected = _permissions_for_tracked_mode(mode, label)
+    try:
+        observed = stat.S_IMODE(path.stat().st_mode)
+    except OSError as exc:
+        fail(f"cannot inspect projected mode for {label}: {exc}")
+    if observed != expected:
+        fail(
+            f"projection Git mode mismatch for {label}: "
+            f"expected={mode}/{expected:#05o} observed={observed:#05o}"
+        )
 
 
 def file_digest(path: Path) -> str:
@@ -380,6 +414,7 @@ def build_projection(source: Path, destination: Path) -> dict:
     if destination.exists():
         fail("projection destination must not already exist")
     entries = _tracked_entries(source)
+    mode_by_path = {entry.path: entry.mode for entry in entries}
     paths = tuple(entry.path for entry in entries)
     classification = classify_tracked_paths(paths, manifest)
     _validate_supported_tracked_modes(entries, classification.included + (MANIFEST_PATH,))
@@ -394,12 +429,17 @@ def build_projection(source: Path, destination: Path) -> dict:
             target.write_bytes(source_path.read_bytes())
         except OSError as exc:
             fail(f"cannot copy projection source path {relative}: {exc}")
+        _materialize_tracked_mode(target, mode_by_path[relative], relative)
     included_records = [
-        {"path": path, "sha256": _repo_file_digest(source, path)}
+        {
+            "path": path,
+            "sha256": _repo_file_digest(source, path),
+            "mode": mode_by_path[path],
+        }
         for path in classification.included
     ]
     index = {
-        "schema": "gg.release-payload-projection-index/1.0.0",
+        "schema": PROJECTION_INDEX_SCHEMA,
         "source_commit": _git_head_or_none(source),
         "release_manifest_sha256": _repo_file_digest(source, MANIFEST_PATH, "release manifest"),
         "content_sha256": manifest["content_sha256"],
@@ -438,7 +478,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
     }
     if set(index) != expected_keys:
         fail("projection index shape is invalid")
-    if index["schema"] != "gg.release-payload-projection-index/1.0.0":
+    if index["schema"] != PROJECTION_INDEX_SCHEMA:
         fail("projection index schema is unsupported")
     _validate_sha256(index["release_manifest_sha256"], "projection manifest hash")
     _validate_sha256(index["content_sha256"], "projection content hash")
@@ -456,13 +496,17 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
         fail("projection index path sets are invalid")
     included_paths: list[str] = []
     for item in included_raw:
-        if not isinstance(item, dict) or set(item) != {"path", "sha256"}:
+        if not isinstance(item, dict) or set(item) != {"path", "sha256", "mode"}:
             fail("projection included record shape is invalid")
         path = _normalized_repo_path(item["path"], "projection included path")
         _validate_sha256(item["sha256"], f"projection included hash for {path}")
+        mode = item["mode"]
+        if not isinstance(mode, str) or mode not in SUPPORTED_TRACKED_FILE_MODES:
+            fail(f"projection included Git mode is unsupported for {path}: {mode!r}")
         projection_path = _require_regular_repo_file(projection, path, "projection included path")
         if file_digest(projection_path) != item["sha256"]:
             fail(f"projection included file hash mismatch: {path}")
+        _verify_projected_mode(projection_path, mode, path)
         included_paths.append(path)
     if len(included_paths) != len(set(included_paths)):
         fail("projection included paths contain duplicates")
