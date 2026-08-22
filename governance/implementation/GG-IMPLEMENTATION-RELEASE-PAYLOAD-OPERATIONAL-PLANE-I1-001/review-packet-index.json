@@ -1,0 +1,10 @@
+{
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-IR-001",
+  "files": [
+    "claude-independent-review-packet.md",
+    "independent-review-request.json",
+    "claude-review-execution-instructions.md",
+    "review-gate-status.json",
+    "reviewer-handoff.md"
+  ]
+}
