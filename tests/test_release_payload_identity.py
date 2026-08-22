@@ -127,6 +127,18 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_operational_symlink_is_excluded_without_blocking_scoped_digest(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            before = release_content_digest(repo.root)
+            link = repo.root / "governance/discovery/evidence-link.md"
+            link.symlink_to("evidence.md")
+            git(repo.root, "add", "governance/discovery/evidence-link.md")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "governance/discovery/evidence-link.md").startswith("120000 "))
+            self.assertEqual(release_content_digest(repo.root), before)
+        finally:
+            repo.close()
+
     def test_unknown_root_file_is_included_and_changes_scoped_digest(self) -> None:
         repo = TempScopedRepo()
         try:
