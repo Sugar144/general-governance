@@ -1,0 +1,19 @@
+{
+  "schema": "gg.i1-exec-mode-correction-validation/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "status": "STRUCTURAL_AND_ALGORITHMIC_PASS_PENDING_INDEPENDENT_EXACT_SUITE",
+  "checks": [
+    {"id": "SCOPE", "result": "PASS", "evidence": "predecessor..candidate changes only four preparation custody files plus tools/release_payload.py and tests/test_release_payload_projection.py"},
+    {"id": "INDEX_MODE_BINDING", "result": "PASS", "evidence": "included records require path+sha256+mode; projection index schema advanced to 1.1.0"},
+    {"id": "MODE_MATERIALIZATION", "result": "PASS", "evidence": "100644 maps to 0644 and 100755 maps to 0755 via chmod after byte copy"},
+    {"id": "MODE_VERIFICATION", "result": "PASS", "evidence": "verify_projection compares stat.S_IMODE against the bound Git mode independently of file hash"},
+    {"id": "POSIX_ALGORITHMIC_HARNESS", "result": "PASS", "evidence": "0755 file executed directly; 0755->0644 and 0644->0755 mode drift were both rejected in a local semantic harness"},
+    {"id": "REGRESSION_SURFACE", "result": "PASS", "evidence": "new repository regressions cover mode binding, direct execution, downgrade and upgrade"},
+    {"id": "PRIOR_SYMLINK_HARDENING", "result": "PRESERVED_BY_DIFF_INSPECTION", "evidence": "no predecessor symlink/gitlink/ancestor checks were removed or weakened"},
+    {"id": "FULL_REPOSITORY_TEST_SUITE", "result": "NOT_CLAIMED", "evidence": "connector exposed no push-triggered workflow status for the exact candidate; fresh Claude independent review is required to execute the exact suite and adversarial fixtures"},
+    {"id": "BOOTSTRAP_GATE_A", "result": "EXPECTED_NON_GREEN_PENDING_P1", "evidence": "release-manifest.json and RELEASE_VERSION remain historical rc.7 and are outside this correction authority"}
+  ],
+  "independent_review_required": true,
+  "terminal_before_review": "CORRECTED_PENDING_INDEPENDENT_REVIEW"
+}
