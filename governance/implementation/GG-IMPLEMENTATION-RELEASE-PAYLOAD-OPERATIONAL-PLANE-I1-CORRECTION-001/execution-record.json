@@ -1,0 +1,51 @@
+{
+  "schema": "gg.i1-correction-execution-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001-RUN-001",
+  "predecessor_candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "corrected_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "execution_boundary_first_crossed_at": "bdf0c86ae74f112383ed2639d7e9709f1409f741",
+  "execution_allowance": {
+    "permitted": 1,
+    "consumed": true,
+    "remaining": 0,
+    "retry_or_replacement": "NONE"
+  },
+  "blocking_input_finding": "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B",
+  "functional_paths_changed": [
+    "tools/release_payload.py",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py"
+  ],
+  "implementation_evolution": [
+    {
+      "state": "FIRST_CORRECTION_ATTEMPT_REJECTED_BY_SELF_REVIEW",
+      "sha": "96512f33ee4af4e189a7648d48772ea38c45d8b9",
+      "reason": "direct tracked symlink and gitlink modes were rejected, but a regular tracked file could still be reached through a symlinked ancestor directory such as tools -> governance"
+    },
+    {
+      "state": "ANCESTOR_SYMLINK_HARDENING_APPLIED",
+      "reason": "every repository-relative component of an included source/projection path is now checked fail-closed before bytes are read or verified"
+    },
+    {
+      "state": "TWO_PLANE_DECOUPLING_PRESERVED",
+      "reason": "Git-mode enforcement is applied to release-included paths plus the manifest, not to operationally excluded governance paths; an excluded operational symlink therefore cannot smuggle bytes and does not itself perturb payload identity"
+    }
+  ],
+  "self_adversarial_observations": [
+    "included tracked mode 120000 fails before dereference",
+    "included tracked mode 160000 fails before projection",
+    "broken included symlink fails by Git mode rather than target existence",
+    "regular tracked 100644 and 100755 modes remain admitted",
+    "symlinked ancestor directory of an included source path fails before digest/projection",
+    "direct or ancestor symlink substitution inside the isolated projection fails verification",
+    "operationally excluded governance symlink remains outside scoped payload identity"
+  ],
+  "material_finding_002_disposition": "EXPECTED_BOOTSTRAP_FAILURE_PENDING_P1_MUST_BE_DISCLOSED_NOT_CORRECTED_IN_I1",
+  "terminal_pre_review_state": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "adopter_mutation_authorized": false
+}
