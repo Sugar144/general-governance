@@ -1,0 +1,22 @@
+{
+  "schema": "gg.i1-terminal-record/0.1.0",
+  "i1_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001",
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-IR-001",
+  "functional_candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "independent_review_verdict": "PASS",
+  "terminal_status": "IMPLEMENTED_PENDING_SUCCESSOR_RELEASE_PACKAGING",
+  "integration_state": "NON_INTEGRABLE_PENDING_SUCCESSOR_RELEASE_PACKAGING",
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "adopter_mutation_authorized": false,
+  "run_allowance": "CONSUMED",
+  "retry_or_replacement_authority": "NONE",
+  "remaining_minor_findings": [
+    "FIND-MANIFEST-MODE-001",
+    "FIND-TOCTOU-001"
+  ],
+  "known_bootstrap_state": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1"
+}
