@@ -1,0 +1,145 @@
+{
+  "schema": "gg.cross-project-learning-pilot-package/0.1.0",
+  "package_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001-SVP-GA-PRE-RUN-001",
+  "pilot_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
+  "status": "GG_CANDIDATE_PENDING_INTEGRATION_AUTHORITY",
+  "normative_status": "NON_NORMATIVE_PILOT",
+  "general_governance": {
+    "repository": "Sugar144/general-governance",
+    "baseline_commit": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+    "framework_version": "0.1.0-rc.7",
+    "issue": 12,
+    "owner_authorization_comment_id": 5380971339,
+    "branch": "method/pilot-cross-project-learning-lifecycle-svp-ga-001"
+  },
+  "resume_condition": {
+    "status": "SATISFIED",
+    "blocking_functionality": {
+      "wpdc_core_integration": "09d678374c310d67a7ce56ef536dce6d94caef01",
+      "wpdc_agent_layer_integration": "22a1d5e2f759fda53574884e1056a3a56baa211a"
+    },
+    "svp_guided_answering_resumed": true,
+    "functional_st01_started": false
+  },
+  "adopter": {
+    "repository": "Sugar144/stakeholder-validation-portal",
+    "vertical_id": "SVP-STAGE2A-GUIDED-ANSWERING-001",
+    "packet_id": "SVP-STAGE2A-GUIDED-ANSWERING-PACKET-01-C2",
+    "branch": "implementation/stage2a-guided-answering-st01-c2",
+    "preparation_head": "280aab9c202394cca4107c3ac3df0885be6a9164",
+    "preparation_head_evidence_class": "OWNER_REPORTED_LOCAL_UNPUBLISHED",
+    "remote_verification": "NOT_AVAILABLE",
+    "wpdc_disposition": "VALID_DEPENDENCY_CLOSED",
+    "independent_reviewer": "PASS",
+    "coordination_start_gate": "CLEAR",
+    "functional_implementation": "NOT_STARTED",
+    "c1_product_implementation_reuse": "FORBIDDEN"
+  },
+  "lifecycle": {
+    "event_time_capture": "MATERIAL_EVENTS_ONLY",
+    "packet_dispositions": [
+      "NO_MATERIAL_LEARNING",
+      "LOCAL_LEARNING_RECORDED",
+      "CROSS_PROJECT_SIGNAL_RECORDED"
+    ],
+    "vertical_closeout_dispositions": [
+      "NO_CROSS_PROJECT_SIGNALS",
+      "HARVEST_RECORDED"
+    ],
+    "full_harvest_rule": "REQUIRED_IFF_ONE_OR_MORE_PACKET_CROSS_PROJECT_SIGNALS",
+    "authority_transfer": "NONE"
+  },
+  "svp_adopter_projection": {
+    "required": true,
+    "must_be_materialized_before_future_c2_execution_boundary": true,
+    "authorized_write_surface": [
+      {
+        "path": "docs/governance/learning/README.md",
+        "effect": "CREATE_IF_ABSENT",
+        "purpose": "discoverable learning surface and pilot index"
+      },
+      {
+        "path": "docs/governance/learning/GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001.yaml",
+        "effect": "CREATE",
+        "purpose": "adopter-owned prospective pilot binding"
+      },
+      {
+        "path": "reports/work-packages/SVP-STAGE2A-GUIDED-ANSWERING-PACKET-01-C2.md",
+        "effect": "CREATE_OR_UPDATE",
+        "purpose": "C2 material-event capture references, measurements, and terminal learning disposition only"
+      },
+      {
+        "path": "reports/work-packages/SVP-STAGE2A-GUIDED-ANSWERING-LEARNING-CLOSEOUT-001.md",
+        "effect": "CREATE_AT_VERTICAL_LEARNING_CLOSEOUT",
+        "purpose": "exactly one vertical learning closeout"
+      },
+      {
+        "path": "reports/work-packages/SVP-STAGE2A-GUIDED-ANSWERING-CROSS-PROJECT-LEARNING-HARVEST-001.md",
+        "effect": "CREATE_ONLY_IF_CROSS_PROJECT_SIGNAL_EXISTS",
+        "purpose": "bounded cross-project harvest"
+      }
+    ],
+    "forbidden_surfaces": [
+      "Guided Answering product requirements",
+      "Guided Answering architecture",
+      "ST-01 functional scope",
+      "AET-P4 adoption surfaces",
+      "P5B Agent Orchestrator/CWG runtime surfaces",
+      "OPD surfaces",
+      "historical C1 learning/evidence rewritten as contemporaneous C2 evidence"
+    ]
+  },
+  "measurements": [
+    "packet_learning_disposition",
+    "material_learning_record_count_and_type",
+    "cross_project_signal_count_and_targets",
+    "retrospective_only_discovery_count",
+    "owner_reminder_required",
+    "avoided_noise_or_duplicate_count_when_observable",
+    "lifecycle_friction_observation",
+    "materiality_ambiguity_observation",
+    "deterministic_check_usefulness_observation"
+  ],
+  "validation": {
+    "gg_side": [
+      "GG baseline currentness",
+      "package path confinement",
+      "non-normative status",
+      "AET-P4 and P5B separation",
+      "RUN-001 remains unauthorized",
+      "SVP remote-verification limitation preserved",
+      "lifecycle enum integrity",
+      "conditional-harvest logic",
+      "authority-transfer prohibition",
+      "write-surface boundedness"
+    ],
+    "svp_pre_run_required": [
+      "local git HEAD equals bound preparation_head or package is explicitly rebound before use",
+      "current branch identity matches bound branch",
+      "C2 WPDC disposition remains VALID_DEPENDENCY_CLOSED",
+      "independent Reviewer remains PASS or any changed packet is re-reviewed under applicable governance",
+      "coordination start gate remains CLEAR",
+      "functional ST-01 implementation has not crossed the future authorized execution boundary before pilot projection is materialized",
+      "all three separate pre-run dependencies are integrated before future RUN-001 authorization",
+      "future RUN-001 exact component set is known and separately authorized"
+    ]
+  },
+  "stop_conditions": [
+    "GG main drift before GG package integration disposition",
+    "SVP C2 preparation HEAD/branch drift without explicit rebinding",
+    "WPDC disposition ceases to be VALID_DEPENDENCY_CLOSED",
+    "independent review becomes failed, indeterminate, or stale due to material packet change",
+    "coordination start gate ceases to be CLEAR",
+    "functional execution crosses boundary before pilot projection is prospective",
+    "write-surface or product/architecture scope drift",
+    "attempt to combine AET-P4 or P5B authority into this package",
+    "attempt to infer RUN-001 authority from this package",
+    "need to reconstruct historical learning as contemporaneous evidence"
+  ],
+  "integration": {
+    "gg_pull_request_authorized": false,
+    "gg_merge_authorized": false,
+    "svp_mutation_authorized_by_this_gg_package": false,
+    "future_run_001_authorized": false
+  }
+}
