@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import stat
 import json
 import subprocess
 import tempfile
@@ -76,6 +78,8 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as temp:
                 projection = Path(temp) / "projection"
                 index = build_projection(repo.root, projection)
+                self.assertEqual(index["schema"], "gg.release-payload-projection-index/1.1.0")
+                self.assertTrue(all(set(item) == {"path", "sha256", "mode"} for item in index["included"]))
                 self.assertFalse((projection / ".git").exists())
                 self.assertFalse((projection / "governance/evidence.md").exists())
                 self.assertFalse((projection / "PROJECT_STATE.yaml").exists())
@@ -83,6 +87,56 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 self.assertTrue((projection / "release-manifest.json").is_file())
                 self.assertTrue((projection / PROJECTION_INDEX).is_file())
                 verify_projection(projection, index)
+        finally:
+            repo.close()
+
+    def test_projection_preserves_and_binds_executable_mode(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            repo.write("tools/run.sh", "#!/bin/sh\nprintf 'projected-ok\\n'\n")
+            git(repo.root, "add", "tools/run.sh")
+            git(repo.root, "update-index", "--chmod=+x", "tools/run.sh")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/run.sh").startswith("100755 "))
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                index = build_projection(repo.root, projection)
+                record = next(item for item in index["included"] if item["path"] == "tools/run.sh")
+                self.assertEqual(record["mode"], "100755")
+                projected = projection / "tools/run.sh"
+                self.assertEqual(stat.S_IMODE(projected.stat().st_mode), 0o755)
+                verify_projection(projection, index)
+                if os.name == "posix":
+                    result = subprocess.run([str(projected)], cwd=projection, text=True, capture_output=True)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(result.stdout, "projected-ok\n")
+        finally:
+            repo.close()
+
+    def test_projection_detects_executable_mode_downgrade(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            repo.write("tools/run.sh", "#!/bin/sh\nexit 0\n")
+            git(repo.root, "add", "tools/run.sh")
+            git(repo.root, "update-index", "--chmod=+x", "tools/run.sh")
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                index = build_projection(repo.root, projection)
+                (projection / "tools/run.sh").chmod(0o644)
+                with self.assertRaisesRegex(ValueError, "projection Git mode mismatch"):
+                    verify_projection(projection, index)
+        finally:
+            repo.close()
+
+    def test_projection_detects_non_executable_mode_upgrade(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/check.py").startswith("100644 "))
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                index = build_projection(repo.root, projection)
+                (projection / "tools/check.py").chmod(0o755)
+                with self.assertRaisesRegex(ValueError, "projection Git mode mismatch"):
+                    verify_projection(projection, index)
         finally:
             repo.close()
 
