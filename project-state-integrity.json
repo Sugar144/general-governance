@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "project_id": "general_governance",
+  "state_paths": [
+    "PROJECT_STATE.yaml"
+  ],
+  "roadmap_paths": [
+    "ROADMAP.md"
+  ]
+}
