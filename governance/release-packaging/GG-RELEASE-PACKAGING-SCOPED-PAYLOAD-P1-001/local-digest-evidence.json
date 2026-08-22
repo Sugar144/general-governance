@@ -1,0 +1,14 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-001-LOCAL-DIGEST-001",
+  "record_type": "OWNER_LOCAL_EXECUTION_EVIDENCE",
+  "status": "OBSERVED",
+  "reported_by": "PROJECT_OWNER",
+  "exact_input_head": "676977a76db152cabd757f3d5fb0e5513f8a30a6",
+  "origin_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "i1_candidate_exists": true,
+  "framework_version": "0.1.0-rc.8",
+  "manifest_schema_version": "1.4.0",
+  "content_identity_method": "SCOPED_TRACKED_FILES_V1",
+  "content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86",
+  "evidence_limit": "This record preserves the Project Owner's pasted local command output. It does not claim independent remote recomputation or Gate A/Gate B execution."
+}
