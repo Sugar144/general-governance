@@ -72,6 +72,12 @@ class Classification:
     manifest_self_excluded: tuple[str, ...] = (MANIFEST_PATH,)
 
 
+@dataclass(frozen=True)
+class TrackedEntry:
+    path: str
+    mode: str
+
+
 def fail(message: str) -> None:
     raise ReleasePayloadError(message)
 
@@ -236,14 +242,14 @@ def identity_method(manifest: Mapping[str, object]) -> str:
     return SCOPED_METHOD
 
 
-def tracked_paths(root: Path) -> tuple[str, ...]:
+def _tracked_entries(root: Path) -> tuple[TrackedEntry, ...]:
     try:
         raw = subprocess.check_output(
             ["git", "-C", str(root), "ls-files", "-s", "-z"], text=False
         )
     except (OSError, subprocess.CalledProcessError) as exc:
         fail(f"cannot enumerate tracked paths: {exc}")
-    values: list[str] = []
+    entries: list[TrackedEntry] = []
     for item in raw.split(b"\0"):
         if not item:
             continue
@@ -262,12 +268,25 @@ def tracked_paths(root: Path) -> tuple[str, ...]:
         _normalized_repo_path(path, "tracked path")
         if stage != "0":
             fail(f"tracked path has unsupported non-zero index stage {stage}: {path}")
+        entries.append(TrackedEntry(path=path, mode=mode))
+    paths = [entry.path for entry in entries]
+    if len(paths) != len(set(paths)):
+        fail("tracked path enumeration contains duplicates")
+    return tuple(entries)
+
+
+def tracked_paths(root: Path) -> tuple[str, ...]:
+    return tuple(entry.path for entry in _tracked_entries(root))
+
+
+def _validate_supported_tracked_modes(entries: Sequence[TrackedEntry], paths: Iterable[str]) -> None:
+    mode_by_path = {entry.path: entry.mode for entry in entries}
+    for path in paths:
+        mode = mode_by_path.get(path)
+        if mode is None:
+            fail(f"release content path is not present in the Git index: {path}")
         if mode not in SUPPORTED_TRACKED_FILE_MODES:
             fail(f"unsupported tracked Git mode {mode} for path: {path}")
-        values.append(path)
-    if len(values) != len(set(values)):
-        fail("tracked path enumeration contains duplicates")
-    return tuple(values)
 
 
 def classify_path(path: str, manifest: Mapping[str, object]) -> str:
@@ -327,10 +346,14 @@ def _digest_paths(root: Path, paths: Iterable[str]) -> str:
 
 def content_digest(root: Path, manifest: Mapping[str, object]) -> str:
     method = identity_method(manifest)
-    paths = tracked_paths(root)
+    entries = _tracked_entries(root)
+    paths = tuple(entry.path for entry in entries)
     if method == LEGACY_METHOD:
-        return _digest_paths(root, (path for path in paths if path != MANIFEST_PATH))
+        included = tuple(path for path in paths if path != MANIFEST_PATH)
+        _validate_supported_tracked_modes(entries, included + (MANIFEST_PATH,))
+        return _digest_paths(root, included)
     classification = classify_tracked_paths(paths, manifest)
+    _validate_supported_tracked_modes(entries, classification.included + (MANIFEST_PATH,))
     return _digest_paths(root, classification.included)
 
 
@@ -356,7 +379,10 @@ def build_projection(source: Path, destination: Path) -> dict:
         fail("isolated release-payload projection requires SCOPED_TRACKED_FILES_V1")
     if destination.exists():
         fail("projection destination must not already exist")
-    classification = classify_tracked_paths(tracked_paths(source), manifest)
+    entries = _tracked_entries(source)
+    paths = tuple(entry.path for entry in entries)
+    classification = classify_tracked_paths(paths, manifest)
+    _validate_supported_tracked_modes(entries, classification.included + (MANIFEST_PATH,))
     source_paths: dict[str, Path] = {}
     for relative in classification.included + (MANIFEST_PATH,):
         source_paths[relative] = _require_regular_repo_file(source, relative, "projection source path")
