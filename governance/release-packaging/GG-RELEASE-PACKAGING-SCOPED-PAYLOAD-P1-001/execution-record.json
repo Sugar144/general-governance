@@ -1,0 +1,29 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-001-EXEC-001",
+  "record_type": "P1_PACKAGING_EXECUTION_RECORD",
+  "status": "PACKAGED_PENDING_LOCAL_GATES",
+  "issue": 24,
+  "authorized_version": "0.1.0-rc.8",
+  "source_i1_candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "functional_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86",
+  "manifest_schema_version": "1.4.0",
+  "content_identity_method": "SCOPED_TRACKED_FILES_V1",
+  "functional_write_surface": [
+    "RELEASE_VERSION",
+    "release-manifest.json"
+  ],
+  "packaging_commit_atomic": true,
+  "run_allowance": "CONSUMED",
+  "local_gate_a": "PENDING",
+  "local_gate_b": "PENDING",
+  "targeted_regressions": "PENDING",
+  "full_suite": "PENDING",
+  "independent_review": "PENDING",
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "publication_authorized": false,
+  "adopter_mutation_authorized": false,
+  "next_gate": "EXACT_CANDIDATE_LOCAL_GATE_A_GATE_B_AND_REGRESSION_VALIDATION"
+}
