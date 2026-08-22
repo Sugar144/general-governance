@@ -1,0 +1,27 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-TERMINAL-001",
+  "run_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "status": "TERMINAL_STOP_SCOPE_EXPANSION_REQUIRED",
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "execution_allowance_consumed": true,
+  "functional_mutation_performed": false,
+  "finding": "P1-FIND-TEST-FIXTURE-SCHEMA-001",
+  "stop_reason": "The authorized correction path tests/test_work_packet_contract.py is RELEASE_INCLUDED under SCOPED_TRACKED_FILES_V1. Any byte change to that test changes the rc.8 scoped content_sha256 and therefore requires a corresponding release-manifest.json content_sha256 rebind. release-manifest.json mutation is explicitly forbidden by this run's authority.",
+  "required_additional_surface": [
+    "release-manifest.json"
+  ],
+  "release_version_change_required": false,
+  "production_code_change_required": false,
+  "retry_replacement_authority": "NONE",
+  "next_gate": "PROJECT_OWNER_DISPOSITION_FOR_SUCCESSOR_CORRECTION_WITH_TEST_PLUS_MANIFEST_REBIND_AUTHORITY",
+  "forbidden_until_new_authority": [
+    "tests/test_work_packet_contract.py mutation",
+    "release-manifest.json mutation",
+    "PR",
+    "merge",
+    "tag",
+    "release",
+    "publication",
+    "adopter mutation"
+  ]
+}
