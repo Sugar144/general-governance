@@ -1,0 +1,51 @@
+{
+  "schema": "gg.architecture-design-run-contract/0.1.0",
+  "design_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001",
+  "run_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001-RUN-001",
+  "role": "RELEASE_IDENTITY_ARCHITECT",
+  "mode": "READ_ONLY_ARCHITECTURE_DESIGN",
+  "protocol": "GG-ARCHITECTURE-DESIGN-PROTOCOL-001",
+  "prompt_id": "GG-MP-0008",
+  "prompt_version": "1.0.0",
+  "input_package_sha256": "4d847d44e76ab73ec853b76466e59625d991a0303c82e80d3c95f7a7315e55f2",
+  "permitted_execution_count": 1,
+  "execution_boundary": "BEGIN_SUBSTANTIVE_RELEASE_PAYLOAD_ARCHITECTURE_DESIGN",
+  "output_contract": {
+    "path": "governance/architecture-design/GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001/design.md",
+    "format": "markdown",
+    "required_sections": [
+      "Design decision",
+      "Content-plane taxonomy and ownership",
+      "Fail-closed classification algorithm",
+      "Manifest and policy representation",
+      "Release-payload digest algorithm",
+      "Isolated projection and validation contract",
+      "Historical rc.7 compatibility",
+      "Consumer-lock compatibility decision",
+      "Main and release-anchor lifecycle",
+      "Prospective implementation write surface",
+      "Regression matrix and counterexamples",
+      "Migration and release packaging strategy",
+      "Frozen PR #15 and PR #16 successor strategy",
+      "SVP learning-pilot impact",
+      "Non-goals and stop conditions",
+      "Final disposition"
+    ],
+    "allowed_dispositions": [
+      "ARCHITECTURE_READY_FOR_IMPLEMENTATION_PROPOSAL",
+      "ARCHITECTURE_REQUIRES_FURTHER_DESIGN",
+      "DISCOVERY_ASSUMPTION_INVALIDATED"
+    ]
+  },
+  "forbidden_effects": [
+    "modify main or rc.7",
+    "modify release-manifest RELEASE_VERSION POC schemas validators CI or consumer locks",
+    "repair retry rebase or merge PR15 or PR16",
+    "implement Project State Integrity or learning pilot",
+    "create or package rc.8",
+    "create PR or merge this architecture branch",
+    "tag release deploy or publish",
+    "mutate SVP Dopis or another adopter"
+  ],
+  "terminal_boundary": "VALIDATED_ARCHITECTURE_PENDING_PROJECT_OWNER_REVIEW"
+}
