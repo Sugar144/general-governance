@@ -1,0 +1,27 @@
+{
+  "schema": "gg.method-discovery-execution-record/0.1.0",
+  "discovery_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001",
+  "run_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001-RUN-001",
+  "execution_status": "EXECUTED",
+  "execution_boundary_crossed": true,
+  "execution_allowance_consumed": true,
+  "permitted_execution_count": 1,
+  "replacement_or_retry_authority": "NONE",
+  "prompt_snapshot": {
+    "prompt_id": "GG-MP-0007",
+    "version": "1.0.0",
+    "blob_sha": "8ed8ccb9c45ac0a94bd2de16c393fc873b2a078c",
+    "snapshot_lifecycle_status": "APPROVED_NOT_EXECUTED"
+  },
+  "input_package": {
+    "blob_sha": "464e8051d0c11d8d5f64298f0d41146237932205",
+    "sha256": "2457e3f0e1b12af74e91697bedd91550d59c7c16828006ac203e10bdc27ecc41"
+  },
+  "run_contract_blob_sha": "8a8ccf391ed699f66ce3fb3a3fba63ca9dbc1868",
+  "result": {
+    "commit_sha": "baf788ee2cba3b6c1ef3d63a1ad98060b3a04006",
+    "blob_sha": "706285b3a4e0ecc6c3ec950972aab8ac8fd25ad6",
+    "disposition": "RELEASE_IDENTITY_ARCHITECTURE_CHANGE_CANDIDATE"
+  },
+  "note": "The prompt snapshot preserves its pre-execution lifecycle state. This execution record is the durable transition evidence that RUN-001 crossed its bound substantive synthesis boundary and consumed its sole allowance."
+}
