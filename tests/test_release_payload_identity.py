@@ -79,12 +79,11 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
             with self.assertRaises(OSError):
                 file_digest(Path(temp) / "missing")
 
-    def test_current_rc7_manifest_matches_new_schema_legacy_branch(self) -> None:
+    def test_current_manifest_matches_release_manifest_schema(self) -> None:
         schema = json.loads((ROOT / "contracts/release-manifest.schema.json").read_text())
         manifest = json.loads((ROOT / "release-manifest.json").read_text())
         errors = list(Draft202012Validator(schema).iter_errors(manifest))
         self.assertEqual(errors, [], [error.message for error in errors])
-        self.assertEqual(identity_method(manifest), LEGACY_METHOD)
 
     def test_exact_historical_rc7_identity_is_reproduced(self) -> None:
         if not (ROOT / ".git").exists():
@@ -94,6 +93,8 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
             worktree = Path(temp) / "rc7"
             subprocess.check_call(["git", "-C", str(ROOT), "worktree", "add", "--quiet", "--detach", str(worktree), RC7_COMMIT])
             try:
+                manifest = json.loads((worktree / "release-manifest.json").read_text())
+                self.assertEqual(identity_method(manifest), LEGACY_METHOD)
                 self.assertEqual(file_digest(worktree / "release-manifest.json"), RC7_MANIFEST_SHA256)
                 self.assertEqual(release_content_digest(worktree), RC7_CONTENT_SHA256)
             finally:

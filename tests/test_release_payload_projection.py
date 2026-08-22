@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from tools.release_payload import PROJECTION_INDEX, build_projection, content_digest, load_release_manifest, verify_projection
+from tools.validate_capability_stack import component_set_sha256, validate_stack
 
 
 def git(root: Path, *args: str) -> str:
@@ -142,6 +143,29 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 self.assertEqual(index["content_sha256"], manifest["content_sha256"])
         finally:
             repo.close()
+
+    def test_capability_stack_validation_is_projection_safe(self) -> None:
+        components = [
+            {
+                "component_id": "GG",
+                "role": "GOVERNANCE_FRAMEWORK",
+                "repository": "Sugar144/general-governance",
+                "commit_sha": "1" * 40,
+                "governance_authority": "OWN_DOMAIN_ONLY",
+            }
+        ]
+        document = {
+            "schema_version": "1.0.0",
+            "stack_id": "PROJECTION-SAFE",
+            "component_set_sha256": component_set_sha256(components),
+            "status": "PREPARED",
+            "components": components,
+            "compatibility_evidence": [],
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            stack_path = Path(temp) / "capability-stack.json"
+            stack_path.write_text(json.dumps(document), encoding="utf-8")
+            validate_stack(document, stack_path)
 
 
 if __name__ == "__main__":
