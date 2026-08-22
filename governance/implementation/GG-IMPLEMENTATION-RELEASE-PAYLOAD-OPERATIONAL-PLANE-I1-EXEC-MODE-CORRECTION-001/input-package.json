@@ -1,0 +1,34 @@
+{
+  "authorized_non_custody_paths": [
+    "tools/release_payload.py",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py"
+  ],
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "branch": "implementation/release-payload-operational-plane-i1-exec-mode-correction-001",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "explicit_non_goals": [
+    "FIND-TOCTOU-001 hardening",
+    "P1 successor release packaging",
+    "release-manifest.json or RELEASE_VERSION mutation",
+    "WPDC source mutation",
+    "consumer-lock schema mutation",
+    "PR or merge",
+    "tag/release/deploy/publication",
+    "adopter mutation"
+  ],
+  "issue": 22,
+  "known_bootstrap_state": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1",
+  "predecessor_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "predecessor_review": {
+    "closed_finding": "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B",
+    "material_finding": "FIND-EXEC-BIT-001",
+    "minor_finding": "FIND-TOCTOU-001",
+    "result_blob": "5f80509303e7025b7354d69390c57b7cb123e38a",
+    "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001-IR-001",
+    "uploaded_transcript_sha256": "d8e935bf123cb7f0532d77432b735047572a376cc6f426526a5c3f1c53dfecf5",
+    "verdict": "CHANGES_REQUIRED"
+  },
+  "required_terminal_before_independent_review": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "schema": "gg.i1-exec-mode-correction-input/0.1.0"
+}

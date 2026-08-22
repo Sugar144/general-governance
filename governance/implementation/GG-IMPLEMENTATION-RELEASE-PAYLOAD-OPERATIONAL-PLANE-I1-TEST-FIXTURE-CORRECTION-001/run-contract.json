@@ -1,0 +1,26 @@
+{
+  "schema": "gg.i1-test-fixture-correction-run-contract/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "predecessor_candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "branch": "implementation/release-payload-operational-plane-i1-test-fixture-correction-001",
+  "input_package_sha256": "33c50e9c98cd85f9ad647620f032758df42b40ea6b72f51baad31e7f03dfefa9",
+  "prompt": {"id": "GG-MP-0013", "version": "1.0.0"},
+  "role": "I1_TEST_FIXTURE_CORRECTION_IMPLEMENTER",
+  "mode": "BOUNDED_FINDING_CORRECTION",
+  "execution_allowance": {"permitted": 1, "consumed": false, "retry_or_replacement": "NONE"},
+  "authorized_non_custody_paths": [
+    "tests/test_release_payload_projection.py"
+  ],
+  "stop_conditions": [
+    "main drift before correction boundary",
+    "need to modify any additional non-custody path",
+    "fix requires production-code mutation",
+    "fix weakens stale-manifest fail-closed behavior",
+    "fix requires FIND-MANIFEST-MODE-001 or FIND-TOCTOU-001 remediation",
+    "fix requires P1 packaging or release manifest/version mutation",
+    "fix requires WPDC source or consumer-lock schema mutation"
+  ],
+  "terminal_success": "CORRECTED_PENDING_INDEPENDENT_REVIEW"
+}

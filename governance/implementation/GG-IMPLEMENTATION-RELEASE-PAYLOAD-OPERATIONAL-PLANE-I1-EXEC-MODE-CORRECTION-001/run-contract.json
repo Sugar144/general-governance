@@ -1,0 +1,28 @@
+{
+  "schema": "gg.i1-exec-mode-correction-run-contract/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-RUN-001",
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "predecessor_candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "branch": "implementation/release-payload-operational-plane-i1-exec-mode-correction-001",
+  "input_package_sha256": "0b2eb13e09aeacbf08716222377b2f3f9174565fb1d21fdb4d5a2403b9595d4b",
+  "prompt": {"id": "GG-MP-0012", "version": "1.0.0"},
+  "role": "I1_EXEC_MODE_CORRECTION_IMPLEMENTER",
+  "mode": "BOUNDED_FINDING_CORRECTION",
+  "execution_allowance": {"permitted": 1, "consumed": false, "retry_or_replacement": "NONE"},
+  "authorized_non_custody_paths": [
+    "tools/release_payload.py",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py"
+  ],
+  "stop_conditions": [
+    "main drift before correction boundary",
+    "need to modify any additional non-custody path",
+    "historical rc.7 digest cannot be preserved",
+    "fix weakens symlink/gitlink hardening or operational-plane decoupling",
+    "fix requires FIND-TOCTOU-001 hardening",
+    "fix requires P1 packaging or release manifest/version mutation",
+    "fix requires WPDC source or consumer-lock schema mutation"
+  ],
+  "terminal_success": "CORRECTED_PENDING_INDEPENDENT_REVIEW"
+}

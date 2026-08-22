@@ -1,0 +1,50 @@
+{
+  "accepted_proposal": {
+    "disposition": "IMPLEMENTATION_PACKAGE_READY_FOR_OWNER_AUTHORIZATION",
+    "issue": 19,
+    "owner_acceptance_comment_id": 5381260711,
+    "proposal_blob": "2b976113013e26237fa7191db400c1184c733f00",
+    "validated_head": "f513003468090c4e5d0d2e75041dc5dfe307767c",
+    "validation_blob": "19860c0a966474feaa97d955f8d70fda0a48fb3c"
+  },
+  "authority_comment_id": 5381274030,
+  "baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "branch": "implementation/release-payload-operational-plane-i1-001",
+  "exact_non_custody_write_surface": [
+    "tools/release_payload.py",
+    "contracts/release-manifest.schema.json",
+    "tools/validate_consumer.py",
+    ".github/workflows/conformance-ci.yml",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py",
+    "docs/consumer-contract.md",
+    "docs/architecture/release-payload-identity.md"
+  ],
+  "forbidden": [
+    "release-manifest.json mutation",
+    "RELEASE_VERSION mutation",
+    "tools/validate_work_packet.py mutation unless separately resolved STOP",
+    "consumer lock/config schema mutation",
+    "project operating contract mutation",
+    "provenance mutation unless separately resolved STOP",
+    "successor version selection or packaging",
+    "PR or merge",
+    "P1 packaging",
+    "PR #15/#16 mutation",
+    "Project State Integrity successor work",
+    "learning pilot successor work",
+    "adopter mutation",
+    "tag/release/deploy/publication"
+  ],
+  "implementation_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001",
+  "issue": 20,
+  "near_miss_control_evidence": {
+    "control": "protected main / required consumer-contract",
+    "event": "two accidental direct-main create attempts",
+    "http_status": 409,
+    "mutation_occurred": false,
+    "result": "REJECTED_BY_BRANCH_PROTECTION"
+  },
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-RUN-001",
+  "schema": "gg.i1-implementation-input/0.1.0"
+}

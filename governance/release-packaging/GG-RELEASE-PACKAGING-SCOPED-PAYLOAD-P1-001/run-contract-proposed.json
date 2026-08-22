@@ -1,0 +1,30 @@
+{
+  "schema": "gg.run-contract-proposal/0.1.0",
+  "run_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-001-RUN-001",
+  "status": "PROPOSED_BLOCKED_ON_OWNER_VERSION_AUTHORITY",
+  "repository": "Sugar144/general-governance",
+  "source_candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "branch": "release-packaging/release-payload-operational-plane-p1-001",
+  "role": "RELEASE_PACKAGING_AGENT",
+  "mode": "BOUNDED_RELEASE_PACKAGING",
+  "protocol": "GG-P1-RELEASE-PACKAGING-PROTOCOL-001/1.0.0",
+  "material_prompt": "GG-MP-0011/1.0.0",
+  "execution_allowance": 1,
+  "consumed": false,
+  "retry_or_replacement_authority": "NONE",
+  "successor_version": null,
+  "successor_version_required_before_execution": true,
+  "allowed_non_custody_paths": [
+    "RELEASE_VERSION",
+    "release-manifest.json"
+  ],
+  "custody_root": "governance/release-packaging/GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-001/",
+  "terminal_success": "P1_RELEASE_CANDIDATE_READY_FOR_OWNER_INTEGRATION_DISPOSITION",
+  "stop_on_unexpected_write_surface": true,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "tag_authorized": false,
+  "release_authorized": false,
+  "deploy_or_publication_authorized": false,
+  "adopter_mutation_authorized": false
+}

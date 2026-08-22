@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -25,15 +27,61 @@ jobs:
               print(f"PASS schema {path}")
           PY
       - name: Validate deterministic validator syntax
-        run: python3 -m py_compile tools/validate_capability_stack.py tools/validate_work_packet.py
+        run: >-
+          python3 -m py_compile
+          tools/release_payload.py
+          tools/validate_consumer.py
+          tools/validate_capability_stack.py
+          tools/validate_work_packet.py
       - name: Verify prospective extraction evolution
         run: python3 tools/verify_evolution.py
-      - name: Show release content digest
+      - name: Run release payload identity regressions
+        run: python3 -m unittest -v tests/test_release_payload_identity.py
+      - name: Run release payload projection regressions
+        run: python3 -m unittest -v tests/test_release_payload_projection.py
+      - name: Gate B — isolated release payload self-sufficiency
+        shell: bash
+        run: |
+          set -euo pipefail
+          METHOD="$(python3 - <<'PY'
+          from pathlib import Path
+          from tools.release_payload import identity_method, load_release_manifest
+          print(identity_method(load_release_manifest(Path('.').resolve())))
+          PY
+          )"
+          if [[ "$METHOD" != "SCOPED_TRACKED_FILES_V1" ]]; then
+            echo "Gate B not applicable to historical legacy manifest method: $METHOD"
+            exit 0
+          fi
+          PROJECTION="$RUNNER_TEMP/gg-release-payload"
+          rm -rf "$PROJECTION"
+          python3 tools/release_payload.py project . "$PROJECTION"
+          python3 tools/release_payload.py verify-projection "$PROJECTION"
+          cd "$PROJECTION"
+          export PYTHONDONTWRITEBYTECODE=1
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          for path in sorted(Path("contracts").glob("*.schema.json")):
+              Draft202012Validator.check_schema(json.loads(path.read_text()))
+              print(f"PASS isolated schema {path}")
+          PY
+          python3 -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py framework/core/l6/*.py
+          python3 tools/verify_evolution.py
+          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py
+      - name: Gate A — reproduce current checkout release identity
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          from tools.validate_consumer import release_content_digest
-          print(f"RELEASE_CONTENT_SHA256={release_content_digest(Path('.').resolve())}")
+          from tools.release_payload import load_release_manifest, release_content_digest
+          root = Path('.').resolve()
+          manifest = load_release_manifest(root)
+          reproduced = release_content_digest(root)
+          print(f"RELEASE_CONTENT_SHA256={reproduced}")
+          if manifest["content_sha256"] != reproduced:
+              raise SystemExit("FAIL: current checkout release content identity does not reproduce release-manifest.json")
+          print("PASS current checkout release identity")
           PY
       - name: Run WPDC contract regressions
         run: >-

@@ -1,0 +1,41 @@
+{
+  "correction_id": "GG-RELEASE-PAYLOAD-MODE-IDENTITY-CORRECTION-001",
+  "finding_id": "P1-FIND-EXECUTABLE-MODE-NOT-AUTHENTICATED-001",
+  "repository": "Sugar144/general-governance",
+  "protected_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "predecessor_pr": 27,
+  "predecessor_pr_head": "c787971f33c78d1d5b8cf57bdf1dc983acd22e53",
+  "validated_functional_predecessor": "a586cc7f5eb44f15c64d10da9e76f2b1db2b1705",
+  "framework_version": "0.1.0-rc.8",
+  "manifest_schema_version": "1.4.0",
+  "content_identity_method": "SCOPED_TRACKED_FILES_V1",
+  "authorized_non_custody_paths": [
+    "tools/release_payload.py",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py",
+    "docs/architecture/release-payload-identity.md",
+    "release-manifest.json"
+  ],
+  "required_regressions": [
+    "same bytes and path with Git mode 100644 -> 100755 changes scoped content digest",
+    "coordinated projected file chmod and projection-index mode tamper cannot reproduce manifest scoped digest",
+    "historical rc.7 legacy digest remains exact"
+  ],
+  "forbidden_effects": [
+    "RELEASE_VERSION mutation",
+    "manifest schema or method mutation",
+    "contracts/release-manifest.schema.json mutation",
+    "docs/consumer-contract.md mutation",
+    "tools/validate_consumer.py mutation",
+    "tools/validate_work_packet.py mutation",
+    "CI mutation",
+    "framework or provenance mutation",
+    "PR 27 review-thread resolution before validated independent PASS",
+    "merge",
+    "tag",
+    "GitHub Release",
+    "deployment/publication",
+    "PR 15/16 mutation",
+    "SVP/adopter mutation"
+  ]
+}

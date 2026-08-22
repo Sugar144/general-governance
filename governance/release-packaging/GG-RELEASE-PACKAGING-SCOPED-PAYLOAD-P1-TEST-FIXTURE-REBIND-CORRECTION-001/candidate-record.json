@@ -1,0 +1,21 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-REBIND-CORRECTION-001-CANDIDATE-001",
+  "record_type": "FUNCTIONAL_CANDIDATE_RECORD",
+  "status": "FROZEN_PENDING_EXPLICIT_GATE_A_GATE_B_EVIDENCE_AND_INDEPENDENT_REVIEW",
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "candidate": "a586cc7f5eb44f15c64d10da9e76f2b1db2b1705",
+  "framework_version": "0.1.0-rc.8",
+  "content_sha256": "8acff834197dbdc7a756274eb9291d3846b263cf3c43331e059ec3e56d8f3c18",
+  "functional_write_surface": [
+    "release-manifest.json",
+    "tests/test_work_packet_contract.py"
+  ],
+  "remote_diff_verified": true,
+  "full_suite_owner_reported": "77/77 PASS",
+  "gate_a_owner_output_received": false,
+  "gate_b_owner_output_received": false,
+  "independent_review": "PENDING",
+  "pr_authority": false,
+  "merge_authority": false,
+  "release_authority": false
+}

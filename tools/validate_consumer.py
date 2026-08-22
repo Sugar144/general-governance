@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -16,6 +15,8 @@ sys.path.insert(0, str(ROOT))
 
 from framework.core.l6.schemas import load_schema, validate as validate_schema
 from framework.core.l6.strict_yaml import StrictYAMLError, load as load_yaml
+from tools.release_payload import file_digest as digest
+from tools.release_payload import release_content_digest
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
@@ -23,15 +24,8 @@ PLACEHOLDER = re.compile(r"\{\{(configuration(?:\.[A-Za-z0-9_]+)+)\}\}")
 UNRESOLVED = re.compile(r"\{\{[^{}]+\}\}")
 PROMPT_NAMESPACE = re.compile(r"^[A-Za-z][A-Za-z0-9._-]{0,63}$")
 
-CURRENT_COMPATIBILITY = {
-    "framework_contract": "2.0.0",
-    "consumer_lock_schema": "2.0.0",
-    "consumer_configuration_schema": "1.0.0",
-}
-LEGACY_V1_COMPATIBILITY = {
-    "framework_contract": "1.0.0",
-    "consumer_lock_schema": "1.0.0",
-}
+CURRENT_COMPATIBILITY = {"framework_contract": "2.0.0", "consumer_lock_schema": "2.0.0", "consumer_configuration_schema": "1.0.0"}
+LEGACY_V1_COMPATIBILITY = {"framework_contract": "1.0.0", "consumer_lock_schema": "1.0.0"}
 
 REQUIRED = (
     "framework/core/project-operating-contract.md",
@@ -62,35 +56,12 @@ def load_json(path: Path) -> dict:
     return value
 
 
-def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def release_content_digest(framework: Path) -> str:
-    tracked = subprocess.check_output(
-        ["git", "-C", str(framework), "ls-files", "-z"], text=False
-    ).split(b"\0")
-    records = []
-    for raw_path in tracked:
-        relative = raw_path.decode("utf-8")
-        if relative and relative != "release-manifest.json":
-            records.append((relative, digest(framework / relative)))
-    encoded = "".join(
-        f"{path}\0{hash_value}\n" for path, hash_value in sorted(records)
-    )
-    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
-
-
 def _validate_framework_identity(framework: object) -> dict:
-    if not isinstance(framework, dict) or set(framework) != {
-        "repository", "version", "commit_sha", "release_manifest_sha256"
-    }:
+    if not isinstance(framework, dict) or set(framework) != {"repository", "version", "commit_sha", "release_manifest_sha256"}:
         fail("framework identity shape is invalid")
     if framework["repository"] != "Sugar144/general-governance":
         fail("framework repository identity is invalid")
-    if not isinstance(framework["version"], str) or not re.fullmatch(
-        r"0\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", framework["version"]
-    ):
+    if not isinstance(framework["version"], str) or not re.fullmatch(r"0\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", framework["version"]):
         fail("framework version is invalid")
     if not COMMIT.fullmatch(framework["commit_sha"]):
         fail("floating or non-immutable framework commit is invalid")
@@ -146,9 +117,7 @@ def validate_consumer_paths(consumer: Path) -> None:
 
 
 def git_head(repository: Path) -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
-    ).strip()
+    return subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip()
 
 
 def _get_nested(value: dict, dotted: str) -> Any:
@@ -193,9 +162,7 @@ def _declared_configuration_keys(framework: Path) -> set[str]:
     if not isinstance(contract, dict):
         fail("framework configuration contract must be a mapping")
     keys = contract.get("required_configuration_keys")
-    if not isinstance(keys, list) or not keys or any(
-        not isinstance(key, str) or not key.startswith("configuration.") for key in keys
-    ):
+    if not isinstance(keys, list) or not keys or any(not isinstance(key, str) or not key.startswith("configuration.") for key in keys):
         fail("framework required_configuration_keys is invalid")
     if len(keys) != len(set(keys)):
         fail("framework required_configuration_keys contains duplicates")
@@ -209,9 +176,7 @@ def _require_nonempty_string(config: dict, dotted: str) -> str:
     return value
 
 
-def validate_configuration(
-    framework: Path, consumer: Path, lock: dict
-) -> Path:
+def validate_configuration(framework: Path, consumer: Path, lock: dict) -> Path:
     relative = _safe_relative_consumer_path(lock["consumer"]["configuration_path"])
     path = (consumer / relative).resolve()
     try:
@@ -242,7 +207,6 @@ def validate_configuration(
     for dotted in sorted(placeholders):
         _get_nested(config, dotted)
     _walk_values(document, path.relative_to(consumer).as_posix())
-
     for dotted in (
         "configuration.correction_example.base_run_id",
         "configuration.correction_example.first_correction_id",
@@ -253,7 +217,6 @@ def validate_configuration(
         "configuration.identity_allocator.ledger_path",
     ):
         _require_nonempty_string(config, dotted)
-
     namespace = _require_nonempty_string(config, "configuration.prompt_identity.namespace")
     if not PROMPT_NAMESPACE.fullmatch(namespace):
         fail("configuration.prompt_identity.namespace is invalid")
@@ -263,16 +226,10 @@ def validate_configuration(
     return path
 
 
-def validate(
-    lock_path: Path,
-    framework: Path,
-    consumer: Path,
-    previous: Path | None = None,
-) -> None:
+def validate(lock_path: Path, framework: Path, consumer: Path, previous: Path | None = None) -> None:
     lock = load_json(lock_path)
     identity = validate_lock(lock)
     validate_consumer_paths(consumer)
-
     if git_head(framework) != identity["commit_sha"]:
         fail("framework checkout does not equal immutable locked commit")
     manifest_path = framework / "release-manifest.json"
@@ -285,22 +242,15 @@ def validate(
         fail("locked compatibility is not supported by release")
     if manifest.get("content_sha256") != release_content_digest(framework):
         fail("release manifest content identity does not reproduce framework content")
-
     for relative in REQUIRED:
         if not (framework / relative).is_file():
             fail(f"required framework surface is missing: {relative}")
-
     validate_configuration(framework, consumer, lock)
-
     if previous is not None:
         old_identity = validate_previous_lock(load_json(previous))
         if old_identity == identity:
             fail("controlled upgrade must change immutable framework identity")
-
-    print(
-        "PASS: immutable lock, release identity, compatibility, required consumer "
-        "configuration, core placeholder resolution, and ownership boundary"
-    )
+    print("PASS: immutable lock, release identity, compatibility, required consumer configuration, core placeholder resolution, and ownership boundary")
 
 
 def main() -> int:

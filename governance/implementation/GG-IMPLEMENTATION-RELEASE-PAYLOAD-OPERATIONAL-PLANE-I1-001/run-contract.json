@@ -1,0 +1,38 @@
+{
+  "baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "branch": "implementation/release-payload-operational-plane-i1-001",
+  "execution_allowance": {
+    "consumed": false,
+    "permitted": 1,
+    "retry_or_replacement": "NONE"
+  },
+  "implementation_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001",
+  "input_package_sha256": "e63a4a1a09e1696888979597306e2a20b76516aae1de56f4a040109f23f02a03",
+  "mode": "BOUNDED_IMPLEMENTATION",
+  "prompt": {
+    "id": "GG-MP-0010",
+    "version": "1.0.0"
+  },
+  "protocol": {
+    "id": "GG-I1-IMPLEMENTATION-PROTOCOL-001",
+    "version": "1.0.0"
+  },
+  "role": "IMPLEMENTATION_AGENT",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-RUN-001",
+  "schema": "gg.i1-implementation-run-contract/0.1.0",
+  "stop_conditions": [
+    "main drift before execution boundary",
+    "need to widen non-custody write surface",
+    "consumer-lock 2.0.0 becomes insufficient",
+    "production exact-commit bypass becomes necessary",
+    "hidden operational dependency cannot be removed within exact surface",
+    "historical rc.7 identity cannot be reproduced",
+    "tools/validate_work_packet.py source modification becomes necessary",
+    "provenance mutation becomes necessary",
+    "attempt to package/merge/release within I1"
+  ],
+  "terminal_success": {
+    "implementation_status": "IMPLEMENTED_PENDING_SUCCESSOR_RELEASE_PACKAGING",
+    "integration_status": "NON_INTEGRABLE_PENDING_SUCCESSOR_RELEASE_PACKAGING"
+  }
+}

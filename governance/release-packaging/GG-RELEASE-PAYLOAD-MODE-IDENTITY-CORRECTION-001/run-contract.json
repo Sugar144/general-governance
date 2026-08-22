@@ -1,0 +1,29 @@
+{
+  "run_id": "GG-RELEASE-PAYLOAD-MODE-IDENTITY-CORRECTION-001-RUN-001",
+  "role": "RELEASE_IDENTITY_CORRECTION_AGENT",
+  "mode": "BOUNDED_MODE_IDENTITY_CORRECTION",
+  "protocol": "GG-RELEASE-IDENTITY-CORRECTION-PROTOCOL-001/1.0.0",
+  "material_prompt": "GG-MP-0012/1.0.0",
+  "execution_allowance": 1,
+  "execution_boundary": "BEGIN_SCOPED_GIT_MODE_IDENTITY_CORRECTION",
+  "predecessor_pr_head": "c787971f33c78d1d5b8cf57bdf1dc983acd22e53",
+  "authorized_non_custody_paths": [
+    "tools/release_payload.py",
+    "tests/test_release_payload_identity.py",
+    "tests/test_release_payload_projection.py",
+    "docs/architecture/release-payload-identity.md",
+    "release-manifest.json"
+  ],
+  "custody_root": "governance/release-packaging/GG-RELEASE-PAYLOAD-MODE-IDENTITY-CORRECTION-001/",
+  "validation": [
+    "exact write-surface fence",
+    "historical rc.7 digest reproduction",
+    "scoped mode-identity regressions",
+    "Gate A",
+    "Gate B",
+    "full test suite",
+    "fresh independent semantic/security review"
+  ],
+  "terminal_success": "MODE_IDENTITY_CORRECTION_VALIDATED_PENDING_PR27_THREAD_DISPOSITION",
+  "retry_replacement_authority": "NONE"
+}
