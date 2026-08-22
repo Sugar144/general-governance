@@ -1,0 +1,110 @@
+{
+  "schema": "gg.cross-project-learning-pilot-package/0.2.0",
+  "package_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001-SVP-GA-PRE-RUN-002",
+  "pilot_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001",
+  "status": "CANDIDATE_PENDING_VALIDATION_AND_INDEPENDENT_REVIEW",
+  "normative_status": "NON_NORMATIVE_PILOT",
+  "historical_predecessor": {
+    "package_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001-SVP-GA-PRE-RUN-001",
+    "pull_request": 16,
+    "validated_head": "d3e1f0d96e23698e740511e7cd8d21d542e17741",
+    "disposition": "HISTORICAL_STOPPED_INTEGRATION_ATTEMPT_DO_NOT_RETRY"
+  },
+  "general_governance": {
+    "repository": "Sugar144/general-governance",
+    "baseline_commit": "b49ee80650bff951dd269f520c8220b481c53508",
+    "framework_version": "0.1.0-rc.8",
+    "manifest_schema_version": "1.4.0",
+    "content_identity_method": "SCOPED_TRACKED_FILES_V1",
+    "expected_content_sha256": "1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf",
+    "issue": 12,
+    "branch": "method/pilot-cross-project-learning-lifecycle-svp-ga-002"
+  },
+  "adopter_reference": {
+    "repository": "Sugar144/stakeholder-validation-portal",
+    "remote_main_at_preparation": "0d3bc042e3c1236efaff7ff2fbcf78eb2c7bb772",
+    "vertical_id": "SVP-STAGE2A-GUIDED-ANSWERING-001",
+    "vertical_status": "IMPLEMENTATION_AUTHORIZED_NOT_STARTED",
+    "next_gate": "BEGIN_GUIDED_ANSWERING_IMPLEMENTATION_ST_01",
+    "v1_status": "ACCEPTED_INTEGRATED_CLOSED",
+    "historical_pre_run_001_preparation_head": "280aab9c202394cca4107c3ac3df0885be6a9164",
+    "historical_head_status": "HISTORICAL_NOT_REMOTELY_RESOLVABLE_DO_NOT_BIND_AS_CURRENT",
+    "current_implementation_packet_binding": "REQUIRED_FROM_SVP_BEFORE_EXECUTION",
+    "current_packet_identity": null,
+    "current_packet_branch": null,
+    "current_packet_head": null,
+    "current_packet_report_path": null
+  },
+  "lifecycle": {
+    "event_time_capture": "MATERIAL_EVENTS_ONLY",
+    "packet_dispositions": [
+      "NO_MATERIAL_LEARNING",
+      "LOCAL_LEARNING_RECORDED",
+      "CROSS_PROJECT_SIGNAL_RECORDED"
+    ],
+    "vertical_closeout_dispositions": [
+      "NO_CROSS_PROJECT_SIGNALS",
+      "HARVEST_RECORDED"
+    ],
+    "full_harvest_rule": "REQUIRED_IFF_ONE_OR_MORE_PACKET_CROSS_PROJECT_SIGNALS",
+    "authority_transfer": "NONE"
+  },
+  "svp_adopter_projection": {
+    "required_before_relevant_st01_execution": true,
+    "separate_svp_authority_required": true,
+    "maximum_candidate_write_surface": [
+      "docs/governance/learning/README.md",
+      "docs/governance/learning/GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001.yaml",
+      "EXACT_CURRENT_GUIDED_ANSWERING_PACKET_REPORT_PATH_TO_BE_BOUND_BY_SVP",
+      "reports/work-packages/SVP-STAGE2A-GUIDED-ANSWERING-LEARNING-CLOSEOUT-001.md",
+      "reports/work-packages/SVP-STAGE2A-GUIDED-ANSWERING-CROSS-PROJECT-LEARNING-HARVEST-001.md"
+    ],
+    "widening_requires_new_authority": true
+  },
+  "measurements": [
+    "packet_learning_disposition",
+    "material_learning_record_count_and_type",
+    "cross_project_signal_count_and_targets",
+    "retrospective_only_discovery_count",
+    "owner_reminder_required",
+    "avoided_noise_or_duplicate_count_when_observable",
+    "lifecycle_friction_observation",
+    "materiality_ambiguity_observation",
+    "deterministic_check_usefulness_observation"
+  ],
+  "required_validation": [
+    "GG baseline/currentness exact",
+    "all writes confined to PRE-RUN-002 governance path",
+    "release-manifest and RELEASE_VERSION unchanged",
+    "scoped rc.8 content_sha256 remains exactly 1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf",
+    "PRE-RUN-001 and PR #16 treated as historical only",
+    "historical SVP SHA not rebound as current",
+    "packet disposition enum exact",
+    "vertical closeout enum exact",
+    "conditional harvest exact",
+    "authority transfer NONE",
+    "AET-P4/P5B/RUN-001 remain separate",
+    "SVP mutation remains unauthorized",
+    "fresh independent Claude review of exact candidate"
+  ],
+  "stop_conditions": [
+    "GG main drift before candidate disposition",
+    "any functional write outside PRE-RUN-002 governance path",
+    "rc.8 scoped content_sha256 changes",
+    "need to mutate release-manifest.json or RELEASE_VERSION",
+    "attempt to reuse PR #16 as execution vehicle",
+    "attempt to bind historical SVP preparation SHA as current",
+    "missing exact SVP packet binding before implementation",
+    "failed, stale, or indeterminate independent review",
+    "product or architecture scope drift",
+    "attempt to infer AET-P4, P5B, SVP mutation, or RUN-001 authority"
+  ],
+  "authority": {
+    "gg_pr_authorized": false,
+    "gg_merge_authorized": false,
+    "gg_tag_release_authorized": false,
+    "svp_mutation_authorized": false,
+    "st01_execution_authorized_by_this_package": false,
+    "claude_agent_sdk_run_001_authorized": false
+  }
+}
