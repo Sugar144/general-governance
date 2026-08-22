@@ -1,0 +1,22 @@
+{
+  "schema": "gg.i1-exec-mode-correction-terminal/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-RUN-001",
+  "functional_candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "status": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "integration_state": "NON_INTEGRABLE_PENDING_INDEPENDENT_REVIEW_AND_SUCCESSOR_RELEASE_PACKAGING",
+  "finding_disposition": {
+    "FIND-EXEC-BIT-001": "CORRECTION_IMPLEMENTED_PENDING_FRESH_CLAUDE_REVIEW",
+    "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B": "PREVIOUSLY_CLOSED_MUST_BE_RECONFIRMED",
+    "FIND-TOCTOU-001": "MINOR_OUT_OF_SCOPE_OPEN"
+  },
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-IR-001",
+  "run_allowance": "CONSUMED",
+  "retry_or_replacement_authority": "NONE",
+  "correction_authority": "NO_ADDITIONAL_AUTHORITY",
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "owner_gate_after_review": true
+}
