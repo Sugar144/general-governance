@@ -1,0 +1,10 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-EXECUTION-BOUNDARY-001",
+  "run_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "status": "EXECUTION_BOUNDARY_CROSSED",
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "execution_allowance_consumed": true,
+  "retry_replacement_authority": "NONE",
+  "authorized_functional_paths": ["tests/test_work_packet_contract.py"],
+  "forbidden_effects": ["production mutation", "release identity mutation", "PR", "merge", "tag", "release", "publication", "adopter mutation"]
+}
