@@ -86,6 +86,22 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_projection_excludes_operational_symlink_without_blocking(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            link = repo.root / "governance/evidence-link.md"
+            link.symlink_to("evidence.md")
+            git(repo.root, "add", "governance/evidence-link.md")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "governance/evidence-link.md").startswith("120000 "))
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                index = build_projection(repo.root, projection)
+                self.assertFalse((projection / "governance/evidence-link.md").exists())
+                self.assertNotIn("governance/evidence-link.md", [item["path"] for item in index["included"]])
+                verify_projection(projection, index)
+        finally:
+            repo.close()
+
     def test_projection_rejects_tracked_symlink_before_target_bytes_are_copied(self) -> None:
         repo = ProjectionRepo()
         try:
