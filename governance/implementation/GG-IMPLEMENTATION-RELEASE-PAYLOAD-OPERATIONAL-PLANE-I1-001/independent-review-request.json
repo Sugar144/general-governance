@@ -1,0 +1,21 @@
+{
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-IR-001",
+  "implementation_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001",
+  "reviewer": "CLAUDE",
+  "mode": "INDEPENDENT_READ_ONLY_SEMANTIC_SECURITY_REVIEW",
+  "candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "review_packet": "governance/implementation/GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001/claude-independent-review-packet.md",
+  "allowed_verdicts": [
+    "PASS",
+    "CHANGES_REQUIRED",
+    "INDETERMINATE"
+  ],
+  "write_authority": "NONE",
+  "correction_authority": "NONE",
+  "retry_authority": "NONE",
+  "packaging_authority": "NONE",
+  "merge_authority": "NONE",
+  "release_authority": "NONE",
+  "status": "READY_FOR_CLAUDE_EXECUTION"
+}
