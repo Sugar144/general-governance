@@ -1,0 +1,53 @@
+{
+  "schema": "gg.implementation-proposal-run-contract/0.1.0",
+  "proposal_id": "GG-IMPLEMENTATION-PROPOSAL-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001",
+  "run_id": "GG-IMPLEMENTATION-PROPOSAL-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001-RUN-001",
+  "role": "RELEASE_IDENTITY_IMPLEMENTATION_PLANNER",
+  "mode": "READ_ONLY_IMPLEMENTATION_PROPOSAL",
+  "protocol": "GG-IMPLEMENTATION-PROPOSAL-PROTOCOL-001",
+  "prompt_id": "GG-MP-0009",
+  "prompt_version": "1.0.0",
+  "input_package_sha256": "0f3ff2a6f6e29f4006d6efe4f3a9adf512d7b3aca904b988162d75c0a9d3e74e",
+  "permitted_execution_count": 1,
+  "execution_boundary": "BEGIN_SUBSTANTIVE_IMPLEMENTATION_PROPOSAL_ANALYSIS",
+  "output_contract": {
+    "path": "governance/implementation-proposals/GG-IMPLEMENTATION-PROPOSAL-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001/proposal.md",
+    "format": "markdown",
+    "required_sections": [
+      "Current state and currentness",
+      "Exact implementation write surface",
+      "Shared release identity API and ownership",
+      "Manifest and schema migration",
+      "Historical rc.7 dispatch",
+      "Isolated release-payload projection",
+      "Gate A and Gate B CI changes",
+      "Regression and counterexample matrix",
+      "Consumer-lock compatibility decision",
+      "Documentation and provenance effects",
+      "Implementation sequencing and bootstrap",
+      "Successor release packaging boundary",
+      "Frozen PR #15 and PR #16 successor strategy",
+      "SVP learning pilot resume path",
+      "Validation and review plan",
+      "Rollback and stop conditions",
+      "Final disposition"
+    ],
+    "allowed_dispositions": [
+      "IMPLEMENTATION_PACKAGE_READY_FOR_OWNER_AUTHORIZATION",
+      "DESIGN_REVISION_REQUIRED",
+      "COMPATIBILITY_REVIEW_REQUIRED",
+      "BLOCKED_BY_CURRENTNESS"
+    ]
+  },
+  "forbidden_effects": [
+    "modify main or rc.7",
+    "modify release-manifest RELEASE_VERSION schemas validators CI tests docs provenance POC or locks",
+    "modify retry rebase or merge PR15 or PR16",
+    "implement Project State Integrity or the learning pilot",
+    "mutate SVP Dopis or any adopter",
+    "create implementation PR or merge",
+    "package rc.8 or another successor release",
+    "tag release deploy or publish"
+  ],
+  "terminal_boundary": "VALIDATED_PROPOSAL_PENDING_PROJECT_OWNER_REVIEW"
+}
