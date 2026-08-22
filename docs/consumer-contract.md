@@ -21,9 +21,51 @@ closed when the configuration is absent, structurally invalid, incompatible,
 contains unresolved double-brace placeholders, omits a required key, or fails
 to resolve a declared reusable-core placeholder.
 
-The release manifest is deterministic and carries the hash of the complete
-release content set (excluding the manifest itself). It names the framework
-contract and schema compatibility supported by that release.
+## Repository revision identity and release payload identity
+
+The exact Git `commit_sha` binds the complete selected repository revision.
+Operational/evolution evidence is therefore never unbound merely because it is
+outside a prospective framework payload digest.
+
+Historical releases through `0.1.0-rc.7` use the legacy complete-tracked-files
+content identity: every tracked path except `release-manifest.json` contributes
+to `content_sha256`.
+
+A successor release may declare manifest schema `1.4.0` with
+`content_identity.method = SCOPED_TRACKED_FILES_V1`. Under that method,
+`content_sha256` binds the classified **Framework Release Payload** while the
+exact Git commit still binds the complete repository tree. Classification is
+fail-closed: any tracked path not explicitly recognized as operational is
+`RELEASE_INCLUDED`.
+
+`governance/**` is the reserved General Governance operational/evolution
+namespace for formal run custody, decisions, discovery, design, implementation
+process evidence, pilots, learning records, and release-process evidence. It
+must not contain reusable consumer-visible framework behavior.
+
+Method-v1 protected release surfaces include `framework/**`, `contracts/**`,
+`tools/**`, `tests/**`, `docs/**`, `provenance/**`, `RELEASE_VERSION`,
+`README.md`, and `.github/workflows/conformance-ci.yml`; manifest policy cannot
+exclude them. Additional repository controls may be operational only through
+the bounded exact-path policy declared by the release manifest.
+
+For scoped releases, conformance has two distinct gates:
+
+- **Gate A — full checkout identity:** exact commit, exact manifest hash,
+  payload digest reproduction, compatibility and release-facing regressions.
+- **Gate B — isolated payload self-sufficiency:** construct a fresh projection
+  containing only `RELEASE_INCLUDED` files plus `release-manifest.json`, with
+  operational files and `.git` physically absent, and run projection-safe
+  release-facing validation there.
+
+Gate B is not a substitute for the production exact-commit check. No
+`skip_git_check`, `ignore_commit`, or equivalent production bypass is valid.
+
+Later commits that change only `OPERATIONAL_EXCLUDED` bytes may be
+payload-equivalent to a published scoped release, but they are still distinct
+repository revisions because their exact commit SHAs differ. They do not become
+publication anchors implicitly. A consumer remains bound to the exact commit
+named in its lock.
 
 ## Material-prompt identity
 
@@ -46,6 +88,14 @@ Version `0.1.0-rc.7` uses framework contract `2.0.0`, consumer-lock schema
 contract/schema `1.0.0`, the `0.1.0-rc.4` bounded operational delegation
 authority model, and the `0.1.0-rc.5` bounded replacement-execution lifecycle
 semantics unchanged.
+
+The scoped release-payload identity mechanism does not itself add an
+adopter-owned value. The current consumer-lock schema `2.0.0` remains sufficient
+only while the adopter identity tuple stays
+`(repository, version, commit_sha, release_manifest_sha256)` and no new
+consumer-owned obligation is introduced. If implementation or packaging proves
+otherwise, compatibility review is required before changing schemas or
+compatibility declarations.
 
 rc.6 adds Work Packet Design & Dependency Closure (WPDC) as an optional reusable
 L2 capability. WPDC contract version `1.0.0` and adoption contract version
@@ -114,3 +164,9 @@ Consumer-owned surfaces are L3 projections, L5 evidence/history, configuration
 values, project state, capability-stack bindings, and provider-specific runtime
 bindings. Consumers reference framework normative semantics through their lock;
 they must not copy or override them under framework-owned paths.
+
+General Governance project-operational evidence may be referenced by an adopter
+using an exact GG commit/artifact identity independently of the adopter's
+framework lock. Such a reference is evidence only: it does not upgrade the
+framework lock and transfers no execution, mutation, acceptance, merge, release,
+deployment, or normative authority.

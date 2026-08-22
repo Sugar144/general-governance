@@ -1,0 +1,191 @@
+from __future__ import annotations
+
+import hashlib
+import json
+import subprocess
+import tempfile
+import unittest
+from pathlib import Path
+
+from jsonschema import Draft202012Validator
+
+from tools.release_payload import LEGACY_METHOD, OPERATIONAL_EXCLUDED, RELEASE_INCLUDED, build_projection, classify_path, content_digest, file_digest, identity_method, load_release_manifest, release_content_digest, validate_release_manifest
+from tools.validate_work_packet import verify_locked_framework_identity
+
+ROOT = Path(__file__).resolve().parents[1]
+RC7_COMMIT = "22a1d5e2f759fda53574884e1056a3a56baa211a"
+RC7_CONTENT_SHA256 = "14fceee7fb261fee6c2b515cbd81e39c91daaaaa3aa8dc431d3c1beac754d15e"
+RC7_MANIFEST_SHA256 = "a3df71d9f46c5477389458225f08ee3ce51d552a67aeffcfa0ca25fce71d9bdd"
+
+
+def git(root: Path, *args: str) -> str:
+    return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
+
+
+def scoped_manifest(content_sha256: str = "0" * 64) -> dict:
+    return {
+        "manifest_schema_version": "1.4.0",
+        "repository": "Sugar144/general-governance",
+        "framework_version": "0.1.0-rc.test",
+        "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
+        "compatibility": {"framework_contract": "2.0.0", "consumer_lock_schema": "2.0.0", "consumer_configuration_schema": "1.0.0"},
+        "capability_composition": {"contract_version": "1.0.0", "stack_schema": "1.0.0", "optional": True},
+        "work_packet_design": {"contract_version": "1.0.0", "adoption_contract_version": "1.0.0", "binding_schema_version": "1.0.0", "manifest_schema_version": "1.0.0", "optional": True},
+        "content_sha256": content_sha256,
+        "content_identity": {"method": "SCOPED_TRACKED_FILES_V1", "default_classification": "RELEASE_INCLUDED", "manifest_self_excluded": True, "reserved_operational_prefixes": ["governance/"], "operational_exact_paths": [".gitignore", "PROJECT_STATE.yaml", ".github/workflows/project-state-integrity.yml"]},
+        "extraction_provenance": "provenance/extraction-manifest.json",
+        "evolution_provenance": "provenance/evolution-manifest.json",
+        "required_framework_surfaces": ["tools/release_payload.py", "contracts/release-manifest.schema.json"],
+    }
+
+
+class TempScopedRepo:
+    def __init__(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        git(self.root, "init", "-q")
+        git(self.root, "config", "user.email", "tests@example.invalid")
+        git(self.root, "config", "user.name", "GG Tests")
+        self.write("README.md", "test\n")
+        self.write("RELEASE_VERSION", "0.1.0-rc.test\n")
+        self.write("tools/example.py", "VALUE = 1\n")
+        self.write("contracts/example.schema.json", "{}\n")
+        self.write("governance/discovery/evidence.md", "operational\n")
+        self.write("PROJECT_STATE.yaml", "status: TEST\n")
+        self.write(".github/workflows/conformance-ci.yml", "name: test\non: [push]\njobs: {}\n")
+        self.write("release-manifest.json", json.dumps(scoped_manifest(), indent=2) + "\n")
+        git(self.root, "add", ".")
+        git(self.root, "commit", "-qm", "initial")
+        manifest = scoped_manifest()
+        manifest["content_sha256"] = content_digest(self.root, manifest)
+        self.write("release-manifest.json", json.dumps(manifest, indent=2) + "\n")
+        git(self.root, "add", "release-manifest.json")
+        git(self.root, "commit", "-qm", "bind scoped manifest")
+
+    def write(self, relative: str, text: str) -> None:
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    def close(self) -> None:
+        self.temp.cleanup()
+
+
+class ReleasePayloadIdentityTests(unittest.TestCase):
+    def test_current_rc7_manifest_matches_new_schema_legacy_branch(self) -> None:
+        schema = json.loads((ROOT / "contracts/release-manifest.schema.json").read_text())
+        manifest = json.loads((ROOT / "release-manifest.json").read_text())
+        errors = list(Draft202012Validator(schema).iter_errors(manifest))
+        self.assertEqual(errors, [], [error.message for error in errors])
+        self.assertEqual(identity_method(manifest), LEGACY_METHOD)
+
+    def test_exact_historical_rc7_identity_is_reproduced(self) -> None:
+        if not (ROOT / ".git").exists():
+            self.skipTest("historical Git regression requires a Git checkout")
+        subprocess.check_call(["git", "-C", str(ROOT), "cat-file", "-e", f"{RC7_COMMIT}^{{commit}}"])
+        with tempfile.TemporaryDirectory() as temp:
+            worktree = Path(temp) / "rc7"
+            subprocess.check_call(["git", "-C", str(ROOT), "worktree", "add", "--quiet", "--detach", str(worktree), RC7_COMMIT])
+            try:
+                self.assertEqual(file_digest(worktree / "release-manifest.json"), RC7_MANIFEST_SHA256)
+                self.assertEqual(release_content_digest(worktree), RC7_CONTENT_SHA256)
+            finally:
+                subprocess.check_call(["git", "-C", str(ROOT), "worktree", "remove", "--force", str(worktree)])
+
+    def test_legacy_extra_tracked_file_changes_digest(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            legacy = json.loads((ROOT / "release-manifest.json").read_text())
+            repo.write("release-manifest.json", json.dumps(legacy, indent=2) + "\n")
+            git(repo.root, "add", "release-manifest.json")
+            before = content_digest(repo.root, legacy)
+            repo.write("extra-operational-looking.md", "new\n")
+            git(repo.root, "add", "extra-operational-looking.md")
+            after = content_digest(repo.root, legacy)
+            self.assertNotEqual(before, after)
+        finally:
+            repo.close()
+
+    def test_governance_file_is_operational_and_does_not_change_scoped_digest(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            manifest = load_release_manifest(repo.root)
+            before = release_content_digest(repo.root)
+            self.assertEqual(classify_path("governance/discovery/evidence.md", manifest), OPERATIONAL_EXCLUDED)
+            repo.write("governance/learning/new.md", "new evidence\n")
+            git(repo.root, "add", "governance/learning/new.md")
+            self.assertEqual(release_content_digest(repo.root), before)
+        finally:
+            repo.close()
+
+    def test_unknown_root_file_is_included_and_changes_scoped_digest(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            manifest = load_release_manifest(repo.root)
+            before = release_content_digest(repo.root)
+            self.assertEqual(classify_path("surprise.txt", manifest), RELEASE_INCLUDED)
+            repo.write("surprise.txt", "surprise\n")
+            git(repo.root, "add", "surprise.txt")
+            self.assertNotEqual(release_content_digest(repo.root), before)
+        finally:
+            repo.close()
+
+    def test_protected_surface_cannot_be_excluded(self) -> None:
+        manifest = scoped_manifest()
+        manifest["content_identity"]["operational_exact_paths"].append("tools/release_payload.py")
+        with self.assertRaisesRegex(ValueError, "unsupported operational exact-path exclusion"):
+            validate_release_manifest(manifest)
+
+    def test_arbitrary_operational_prefix_is_rejected(self) -> None:
+        manifest = scoped_manifest()
+        manifest["content_identity"]["reserved_operational_prefixes"] = ["tools/"]
+        with self.assertRaisesRegex(ValueError, "reserved_operational_prefixes"):
+            validate_release_manifest(manifest)
+
+    def test_arbitrary_glob_exclusion_is_rejected(self) -> None:
+        manifest = scoped_manifest()
+        manifest["content_identity"]["operational_exact_paths"].append("*.md")
+        with self.assertRaisesRegex(ValueError, "unsupported operational exact-path exclusion"):
+            validate_release_manifest(manifest)
+
+    def test_unknown_manifest_method_fails_closed(self) -> None:
+        manifest = scoped_manifest()
+        manifest["content_identity"]["method"] = "FUTURE_UNKNOWN"
+        with self.assertRaisesRegex(ValueError, "unsupported scoped release identity method"):
+            validate_release_manifest(manifest)
+
+    def test_policy_change_changes_manifest_hash(self) -> None:
+        first = scoped_manifest()
+        second = scoped_manifest()
+        second["content_identity"]["operational_exact_paths"].append("ROADMAP.md")
+        first_bytes = (json.dumps(first, sort_keys=True) + "\n").encode()
+        second_bytes = (json.dumps(second, sort_keys=True) + "\n").encode()
+        self.assertNotEqual(hashlib.sha256(first_bytes).hexdigest(), hashlib.sha256(second_bytes).hexdigest())
+
+    def test_consumer_lock_2_schema_shape_requires_no_new_identity_field(self) -> None:
+        schema = json.loads((ROOT / "contracts/consumer-lock.schema.json").read_text())
+        self.assertEqual(schema["properties"]["framework"]["required"], ["repository", "version", "commit_sha", "release_manifest_sha256"])
+
+    def test_wpdc_uses_compatibility_wrapper_without_source_change(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            manifest_path = repo.root / "release-manifest.json"
+            manifest = load_release_manifest(repo.root)
+            lock = {"schema_version": "2.0.0", "framework": {"repository": "Sugar144/general-governance", "version": manifest["framework_version"], "commit_sha": git(repo.root, "rev-parse", "HEAD"), "release_manifest_sha256": file_digest(manifest_path)}, "consumer": {"configuration_path": "governance/adopter/configuration.yaml"}, "compatibility": manifest["compatibility"]}
+            verify_locked_framework_identity(lock, repo.root)
+        finally:
+            repo.close()
+
+    def test_build_projection_uses_scoped_method(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            with tempfile.TemporaryDirectory() as temp:
+                destination = Path(temp) / "projection"
+                index = build_projection(repo.root, destination)
+                self.assertEqual(index["content_sha256"], load_release_manifest(repo.root)["content_sha256"])
+        finally:
+            repo.close()
+
+
+if __name__ == "__main__":
+    unittest.main()
