@@ -9,7 +9,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from tools.release_payload import LEGACY_METHOD, OPERATIONAL_EXCLUDED, RELEASE_INCLUDED, build_projection, classify_path, content_digest, file_digest, identity_method, load_release_manifest, release_content_digest, validate_release_manifest
+from tools.release_payload import LEGACY_METHOD, OPERATIONAL_EXCLUDED, RELEASE_INCLUDED, ReleasePayloadError, build_projection, classify_path, content_digest, file_digest, identity_method, load_release_manifest, release_content_digest, validate_release_manifest
 from tools.validate_work_packet import verify_locked_framework_identity
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,6 +72,13 @@ class TempScopedRepo:
 
 
 class ReleasePayloadIdentityTests(unittest.TestCase):
+    def test_release_payload_error_preserves_consumer_and_wpdc_error_contracts(self) -> None:
+        self.assertTrue(issubclass(ReleasePayloadError, ValueError))
+        self.assertTrue(issubclass(ReleasePayloadError, OSError))
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(OSError):
+                file_digest(Path(temp) / "missing")
+
     def test_current_rc7_manifest_matches_new_schema_legacy_branch(self) -> None:
         schema = json.loads((ROOT / "contracts/release-manifest.schema.json").read_text())
         manifest = json.loads((ROOT / "release-manifest.json").read_text())

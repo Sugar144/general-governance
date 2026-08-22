@@ -56,6 +56,10 @@ SCOPED_V1_OPERATIONAL_EXACT_ALLOWLIST = frozenset(
 )
 
 
+class ReleasePayloadError(ValueError, OSError):
+    """Fail-closed identity error compatible with consumer and WPDC callers."""
+
+
 @dataclass(frozen=True)
 class Classification:
     included: tuple[str, ...]
@@ -64,7 +68,7 @@ class Classification:
 
 
 def fail(message: str) -> None:
-    raise ValueError(message)
+    raise ReleasePayloadError(message)
 
 
 def file_digest(path: Path) -> str:
