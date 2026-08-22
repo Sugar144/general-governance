@@ -1,0 +1,46 @@
+{
+  "schema": "gg.method-discovery-run-contract/0.1.0",
+  "discovery_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001",
+  "run_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001-RUN-001",
+  "role": "RELEASE_IDENTITY_DISCOVERY_ANALYST",
+  "mode": "READ_ONLY_SYNTHESIS",
+  "protocol": "GG-METHOD-DISCOVERY-PROTOCOL-001",
+  "prompt_id": "GG-MP-0007",
+  "prompt_version": "1.0.0",
+  "input_package_sha256": "2457e3f0e1b12af74e91697bedd91550d59c7c16828006ac203e10bdc27ecc41",
+  "permitted_execution_count": 1,
+  "execution_boundary": "BEGIN_SUBSTANTIVE_RELEASE_IDENTITY_SYNTHESIS",
+  "output_contract": {
+    "path": "governance/discovery/GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001/result.md",
+    "format": "markdown",
+    "required_sections": [
+      "Evidence and facts",
+      "Identity invariant analysis",
+      "Alternatives and trade-offs",
+      "Recommended ownership and content-plane model",
+      "Consumer and adopter compatibility impact",
+      "Migration strategy",
+      "Disposition of PR #15 and PR #16",
+      "Required prospective normative and tooling surfaces",
+      "Non-goals and stop conditions",
+      "Final disposition"
+    ],
+    "allowed_dispositions": [
+      "NO_CHANGE_RECOMMENDED",
+      "RELEASE_LIFECYCLE_CLARIFICATION_CANDIDATE",
+      "RELEASE_IDENTITY_ARCHITECTURE_CHANGE_CANDIDATE",
+      "INSUFFICIENT_EVIDENCE"
+    ]
+  },
+  "forbidden_effects": [
+    "modify main or rc.7",
+    "modify release-manifest or digest logic",
+    "modify POC schemas validators or consumer locks",
+    "repair retry or mutate PR15 or PR16",
+    "create PR or merge this discovery branch",
+    "authorize or package rc.8",
+    "tag release deploy or publish",
+    "mutate SVP Dopis or another adopter"
+  ],
+  "terminal_boundary": "VALIDATED_RESULT_PENDING_PROJECT_OWNER_REVIEW"
+}
