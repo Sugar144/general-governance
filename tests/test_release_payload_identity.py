@@ -139,6 +139,60 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_tracked_symlink_into_governance_fails_closed(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            link = repo.root / "tools/evil.py"
+            link.symlink_to("../governance/discovery/evidence.md")
+            git(repo.root, "add", "tools/evil.py")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/evil.py").startswith("120000 "))
+            with self.assertRaisesRegex(ReleasePayloadError, r"unsupported tracked Git mode 120000.*tools/evil.py"):
+                release_content_digest(repo.root)
+        finally:
+            repo.close()
+
+    def test_tracked_broken_symlink_fails_by_git_mode_before_target_lookup(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            link = repo.root / "tools/broken.py"
+            link.symlink_to("../governance/does-not-exist.txt")
+            git(repo.root, "add", "tools/broken.py")
+            with self.assertRaisesRegex(ReleasePayloadError, r"unsupported tracked Git mode 120000.*tools/broken.py"):
+                release_content_digest(repo.root)
+        finally:
+            repo.close()
+
+    def test_embedded_gitlink_mode_fails_closed(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            nested = repo.root / "vendor/component"
+            nested.mkdir(parents=True)
+            git(nested, "init", "-q")
+            git(nested, "config", "user.email", "tests@example.invalid")
+            git(nested, "config", "user.name", "GG Tests")
+            (nested / "README.md").write_text("component\n", encoding="utf-8")
+            git(nested, "add", "README.md")
+            git(nested, "commit", "-qm", "nested")
+            git(repo.root, "add", "vendor/component")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "vendor/component").startswith("160000 "))
+            with self.assertRaisesRegex(ReleasePayloadError, r"unsupported tracked Git mode 160000.*vendor/component"):
+                release_content_digest(repo.root)
+        finally:
+            repo.close()
+
+    def test_regular_and_executable_git_modes_remain_supported(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            self.assertTrue(git(repo.root, "ls-files", "-s", "README.md").startswith("100644 "))
+            repo.write("tools/executable.py", "print('ok')\n")
+            git(repo.root, "add", "tools/executable.py")
+            git(repo.root, "update-index", "--chmod=+x", "tools/executable.py")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/executable.py").startswith("100755 "))
+            digest = release_content_digest(repo.root)
+            self.assertRegex(digest, r"^[0-9a-f]{64}$")
+        finally:
+            repo.close()
+
     def test_protected_surface_cannot_be_excluded(self) -> None:
         manifest = scoped_manifest()
         manifest["content_identity"]["operational_exact_paths"].append("tools/release_payload.py")
