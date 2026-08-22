@@ -683,7 +683,7 @@ class WorkPacketContractTests(unittest.TestCase):
         )
         (fake / "content.txt").write_text("framework content\n", encoding="utf-8")
         release = {
-            "manifest_schema_version": "1.2.0",
+            "manifest_schema_version": "1.3.0",
             "repository": "Sugar144/general-governance",
             "framework_version": "0.1.0-rc.5",
             "release_status": "TEST",
@@ -693,6 +693,7 @@ class WorkPacketContractTests(unittest.TestCase):
                 "consumer_configuration_schema": "1.0.0",
             },
             "content_sha256": "0" * 64,
+            "content_identity_method": "TEST_LEGACY_COMPLETE_TRACKED_FILES_V1",
         }
         release_path = fake / "release-manifest.json"
         release_path.write_text(

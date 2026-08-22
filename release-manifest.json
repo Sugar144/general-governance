@@ -20,7 +20,7 @@
     "manifest_schema_version": "1.0.0",
     "optional": true
   },
-  "content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86",
+  "content_sha256": "8acff834197dbdc7a756274eb9291d3846b263cf3c43331e059ec3e56d8f3c18",
   "content_identity": {
     "method": "SCOPED_TRACKED_FILES_V1",
     "default_classification": "RELEASE_INCLUDED",
