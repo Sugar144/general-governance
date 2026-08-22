@@ -1,0 +1,44 @@
+{
+  "schema": "gg.independent-review-record/0.1.0",
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-IR-001",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "reviewer": "CLAUDE",
+  "mode": "INDEPENDENT_READ_ONLY_SEMANTIC_SECURITY_REVIEW",
+  "candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "verdict": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "FIND-EXEC-MODE-TEST-001",
+      "severity": "MATERIAL",
+      "classification": "VALIDATION_EVIDENCE_DEFECT",
+      "production_code_defect": false,
+      "status": "OPEN"
+    },
+    {
+      "id": "FIND-MANIFEST-MODE-001",
+      "severity": "MINOR",
+      "classification": "MODE_VERIFICATION_ASYMMETRY",
+      "production_code_defect": false,
+      "status": "OPEN_NON_BLOCKING"
+    }
+  ],
+  "previous_findings": {
+    "FIND-001_TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B": "CLOSED",
+    "FIND-EXEC-BIT-001": "CLOSED_AT_PRODUCTION_CODE_LEVEL",
+    "FIND-TOCTOU-001": "OPEN_MINOR_NON_BLOCKING"
+  },
+  "targeted_suite": {
+    "tests": 37,
+    "pass": 35,
+    "errors": 2,
+    "errors_attributed_to": "FIND-EXEC-MODE-TEST-001"
+  },
+  "full_suite": {
+    "tests": 77,
+    "known_bootstrap_failures_or_errors": 11,
+    "new_errors": 2,
+    "new_errors_attributed_to": "FIND-EXEC-MODE-TEST-001"
+  },
+  "independent_adversarial_exec_mode_fixture": "12/12 PASS",
+  "authority_granted": []
+}
