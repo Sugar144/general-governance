@@ -1,0 +1,35 @@
+{
+  "authorized_non_custody_paths": [
+    "tests/test_release_payload_projection.py"
+  ],
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001",
+  "explicit_non_goals": [
+    "production-code mutation",
+    "FIND-MANIFEST-MODE-001 remediation",
+    "FIND-TOCTOU-001 remediation",
+    "P1 successor release packaging",
+    "release-manifest.json or RELEASE_VERSION mutation in the real repository",
+    "WPDC source mutation",
+    "consumer-lock schema mutation",
+    "PR or merge",
+    "tag/release/deploy/publication",
+    "adopter mutation"
+  ],
+  "issue": 23,
+  "known_bootstrap_state": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1",
+  "predecessor_candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "predecessor_review": {
+    "material_finding": "FIND-EXEC-MODE-TEST-001",
+    "minor_findings": [
+      "FIND-MANIFEST-MODE-001",
+      "FIND-TOCTOU-001"
+    ],
+    "production_finding": "FIND-EXEC-BIT-001",
+    "production_finding_status": "CLOSED_AT_PRODUCTION_CODE_LEVEL",
+    "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-IR-001",
+    "verdict": "CHANGES_REQUIRED"
+  },
+  "required_terminal_before_independent_review": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "schema": "gg.i1-test-fixture-correction-input/0.1.0"
+}
