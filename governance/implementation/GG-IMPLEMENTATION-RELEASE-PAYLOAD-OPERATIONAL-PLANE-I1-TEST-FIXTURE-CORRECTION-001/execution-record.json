@@ -1,0 +1,26 @@
+{
+  "schema": "gg.i1-test-fixture-correction-execution-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "baseline_main": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "predecessor_candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "functional_candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "execution_allowance": {
+    "permitted": 1,
+    "consumed": true,
+    "remaining": 0,
+    "retry_or_replacement": "NONE"
+  },
+  "functional_paths_modified": [
+    "tests/test_release_payload_projection.py"
+  ],
+  "production_paths_modified": [],
+  "finding_target": "FIND-EXEC-MODE-TEST-001",
+  "implementation_summary": [
+    "added ProjectionRepo.rebind_manifest() to recompute and bind fixture content_sha256 after tracked RELEASE_INCLUDED mutations",
+    "rebound the executable-fidelity fixture before build_projection",
+    "rebound the executable-downgrade fixture before build_projection",
+    "preserved stale-manifest fail-closed behavior and production code unchanged"
+  ],
+  "status": "EXECUTED_PENDING_INDEPENDENT_REVIEW"
+}
