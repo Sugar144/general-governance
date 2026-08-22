@@ -1,0 +1,54 @@
+{
+  "record_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-001-LOCAL-VALIDATION-001",
+  "record_type": "OWNER_LOCAL_VALIDATION_EVIDENCE",
+  "status": "GATES_PARTIAL_PASS_FULL_SUITE_ERROR",
+  "reported_by": "PROJECT_OWNER",
+  "exact_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "release_version": "0.1.0-rc.8",
+  "manifest_schema_version": "1.4.0",
+  "content_identity_method": "SCOPED_TRACKED_FILES_V1",
+  "content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86",
+  "gate_a": {
+    "result": "PASS",
+    "manifest_content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86",
+    "reproduced_content_sha256": "61a702a078db3eb81d1701d9302ae31d4c2562f6b19f93ddeb72e3f5c1664f86"
+  },
+  "targeted_identity_projection_tests": {
+    "result": "PASS",
+    "tests_run": 37,
+    "failures": 0,
+    "errors": 0
+  },
+  "gate_b": {
+    "result": "PASS",
+    "projection_integrity": "PASS",
+    "isolated_schema_validation": "PASS",
+    "evolution_verification": "PASS",
+    "isolated_regressions": {
+      "result": "PASS",
+      "tests_run": 21,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  "full_suite": {
+    "result": "ERROR",
+    "tests_run": 77,
+    "failures": 0,
+    "errors": 1,
+    "failing_test": "test_work_packet_contract.WorkPacketContractTests.test_locked_release_must_advertise_wpdc",
+    "exception": "tools.release_payload.ReleasePayloadError: unsupported release manifest schema version: '1.2.0'"
+  },
+  "final_fence": {
+    "head": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+    "candidate_unchanged": true
+  },
+  "diagnostic": {
+    "classification": "STALE_TEST_FIXTURE_SUSPECTED",
+    "surface": "tests/test_work_packet_contract.py::test_locked_release_must_advertise_wpdc",
+    "observed_fixture_manifest_schema_version": "1.2.0",
+    "current_supported_manifest_schema_versions": ["1.3.0", "1.4.0"],
+    "note": "The test constructs a fake 1.2.0 release and calls release_content_digest before reaching its intended assertion that a locked release lacking WPDC advertisement is rejected. This record does not authorize or implement a correction."
+  },
+  "evidence_limit": "Preserves the Project Owner's pasted local command output and subsequent read-only repository inspection. No correction, retry, PR, merge, release, publication, deployment, or adopter action is authorized by this record."
+}
