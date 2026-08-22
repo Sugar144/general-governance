@@ -162,6 +162,20 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_symlinked_parent_directory_cannot_smuggle_operational_bytes(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            repo.write("governance/example.py", "SMUGGLED = True\n")
+            git(repo.root, "add", "governance/example.py")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/example.py").startswith("100644 "))
+            (repo.root / "tools/example.py").unlink()
+            (repo.root / "tools").rmdir()
+            (repo.root / "tools").symlink_to("governance", target_is_directory=True)
+            with self.assertRaisesRegex(ReleasePayloadError, r"path component must not be a symlink: .*tools"):
+                release_content_digest(repo.root)
+        finally:
+            repo.close()
+
     def test_embedded_gitlink_mode_fails_closed(self) -> None:
         repo = TempScopedRepo()
         try:
