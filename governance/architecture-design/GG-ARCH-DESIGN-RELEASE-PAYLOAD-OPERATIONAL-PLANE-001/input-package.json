@@ -1,0 +1,92 @@
+{
+  "accepted_discovery": {
+    "disposition": "RELEASE_IDENTITY_ARCHITECTURE_CHANGE_CANDIDATE",
+    "issue": 17,
+    "owner_acceptance_comment_id": 5381140620,
+    "result_blob": "706285b3a4e0ecc6c3ec950972aab8ac8fd25ad6",
+    "result_commit": "baf788ee2cba3b6c1ef3d63a1ad98060b3a04006",
+    "validated_head": "cacba2edf4bed31fb0f3009f42819952b1a50d14",
+    "validation": "22/22 PASS",
+    "validation_blob": "5e8c50c0d6f85e3c2dc393dc62bc39d4ac9c81bd"
+  },
+  "authority": {
+    "comment_id": 5381160461,
+    "issue": 18,
+    "permitted_execution_count": 1
+  },
+  "constraints": [
+    "preserve rc.7 historical semantics",
+    "exact commit binding remains mandatory",
+    "unknown path defaults to release included",
+    "operational exclusions are explicit and governed",
+    "excluded operational bytes cannot influence release behavior",
+    "no implementation or release effects",
+    "stop at Owner review"
+  ],
+  "design_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001",
+  "empirical_blocked_candidates": {
+    "learning_pilot": {
+      "conformance_job": 97049184633,
+      "conformance_run": 32580573924,
+      "head": "d3e1f0d96e23698e740511e7cd8d21d542e17741",
+      "package_validation": "17/17 PASS",
+      "pr": 16,
+      "release_content_sha256": "07bf76879f79b0071398f903404ed7bb626fd7fac6c1ebd700f70473014f7ab3",
+      "synthetic_merge": "7eaeb410ae03fdf924e6d3ed1d6e1fdc5760b780"
+    },
+    "project_state_integrity": {
+      "conformance_job": 97046643376,
+      "conformance_run": 32579503131,
+      "head": "b5ea02b74a04457ddffbe03caa81818903484a83",
+      "pr": 15,
+      "release_content_sha256": "d0fda78cc3f459e6b33340c5e1e373035fc1d03d257b5410b79ad5685a3a108e",
+      "synthetic_merge": "d242459f05e02ddbbf2cc2eb9f8a46577db6acc7"
+    }
+  },
+  "framework_version": "0.1.0-rc.7",
+  "gg_baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "issue": 18,
+  "release_identity_evidence": {
+    "consumer_contract": {
+      "blob_sha": "4424b1080b0b5157ce3bf9a45a723a58c039b88e",
+      "path": "docs/consumer-contract.md"
+    },
+    "project_operating_contract": {
+      "blob_sha": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+      "path": "framework/core/project-operating-contract.md",
+      "version": "0.5.0"
+    },
+    "release_manifest": {
+      "blob_sha": "2f400cb80a10bea2c5c69bc37017f393e72c7555",
+      "content_sha256": "14fceee7fb261fee6c2b515cbd81e39c91daaaaa3aa8dc431d3c1beac754d15e",
+      "manifest_schema_version": "1.3.0",
+      "path": "release-manifest.json"
+    },
+    "validate_consumer": {
+      "blob_sha": "816a94685726bd6aa1d265da18bf7b26cf24754c",
+      "path": "tools/validate_consumer.py"
+    },
+    "validate_work_packet": {
+      "blob_sha": "8f3377282629b845a26378a9220d73fa6aa810bd",
+      "path": "tools/validate_work_packet.py"
+    }
+  },
+  "required_design_topics": [
+    "content-plane taxonomy and ownership",
+    "fail-closed path classification",
+    "manifest/schema representation",
+    "deterministic release-payload projection",
+    "isolated validation",
+    "historical rc.7 compatibility",
+    "consumer-lock compatibility",
+    "main versus release-anchor lifecycle",
+    "future implementation write surface",
+    "regression and counterexample matrix",
+    "migration and release packaging",
+    "PR15/PR16 successor disposition",
+    "SVP learning pilot impact",
+    "non-goals and stop conditions"
+  ],
+  "run_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001-RUN-001",
+  "schema": "gg.architecture-design-input/0.1.0"
+}
