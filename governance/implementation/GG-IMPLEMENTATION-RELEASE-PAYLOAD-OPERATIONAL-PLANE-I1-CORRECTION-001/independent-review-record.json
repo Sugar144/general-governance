@@ -1,0 +1,43 @@
+{
+  "schema": "gg.independent-review-record/1.0.0",
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001-IR-001",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-CORRECTION-001",
+  "reviewer": "CLAUDE",
+  "mode": "INDEPENDENT_READ_ONLY_SEMANTIC_SECURITY_REVIEW",
+  "candidate": "2567fbd67e7fff50383d347913cf6442fbdebc61",
+  "predecessor_candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "historical_baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "verdict": "CHANGES_REQUIRED",
+  "original_finding_find_001": "CLOSED_INDEPENDENTLY_VERIFIED",
+  "material_findings": [
+    "FIND-EXEC-BIT-001"
+  ],
+  "minor_findings": [
+    "FIND-TOCTOU-001"
+  ],
+  "find_exec_bit_001": {
+    "severity": "MATERIAL",
+    "status": "OPEN",
+    "summary": "100755 is declared supported but isolated projection drops executable mode and verification does not detect the loss"
+  },
+  "find_toctou_001": {
+    "severity": "MINOR",
+    "status": "OPEN_NON_BLOCKING",
+    "summary": "lstat/check then read is not atomic against a concurrent local writer"
+  },
+  "identity_projection_tests": "34_OF_34_PASS",
+  "historical_rc7_reproduction": "PASS",
+  "exact_commit_preservation": "PASS",
+  "consumer_lock_2_0_0_sufficiency": "PASS",
+  "wpdc_source_unchanged_compatibility": "PASS",
+  "write_surface_compliance": "PASS",
+  "bootstrap_failures": "EXPECTED_BOOTSTRAP_FAIL_PENDING_P1_UNCHANGED_FROM_PREDECESSOR",
+  "correction_authority": false,
+  "retry_authority": false,
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false,
+  "release_authorized": false,
+  "adopter_mutation_authorized": false,
+  "next_gate": "PROJECT_OWNER_DISPOSITION_OF_FIND_EXEC_BIT_001_AND_ANY_PROSPECTIVE_SUCCESSOR_CORRECTION_AUTHORITY"
+}
