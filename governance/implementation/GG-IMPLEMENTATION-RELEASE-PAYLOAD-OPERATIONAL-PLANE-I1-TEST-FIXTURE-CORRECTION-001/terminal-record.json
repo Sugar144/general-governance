@@ -1,0 +1,20 @@
+{
+  "schema": "gg.i1-test-fixture-correction-terminal-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001",
+  "candidate": "201a4566bfff7c35c56ad112f203c46f19d70385",
+  "run_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "run_allowance": "CONSUMED",
+  "retry_or_replacement_authority": "NONE",
+  "target_finding": "FIND-EXEC-MODE-TEST-001",
+  "status": "CORRECTED_PENDING_INDEPENDENT_REVIEW",
+  "integration_state": "NON_INTEGRABLE_PENDING_INDEPENDENT_REVIEW_AND_SUCCESSOR_RELEASE_PACKAGING",
+  "independent_review": {
+    "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-TEST-FIXTURE-CORRECTION-001-IR-001",
+    "reviewer": "CLAUDE",
+    "status": "PENDING"
+  },
+  "production_code_modified": false,
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false
+}
