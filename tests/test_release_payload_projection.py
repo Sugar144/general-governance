@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.release_payload import PROJECTION_INDEX, build_projection, content_digest, load_release_manifest, verify_projection
+from tools.release_payload import PROJECTION_INDEX, ReleasePayloadError, build_projection, content_digest, load_release_manifest, verify_projection
 from tools.validate_capability_stack import component_set_sha256, validate_stack
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,6 +86,20 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_projection_rejects_tracked_symlink_before_target_bytes_are_copied(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            link = repo.root / "tools/evil.py"
+            link.symlink_to("../governance/evidence.md")
+            git(repo.root, "add", "tools/evil.py")
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                with self.assertRaisesRegex(ReleasePayloadError, r"unsupported tracked Git mode 120000.*tools/evil.py"):
+                    build_projection(repo.root, projection)
+                self.assertFalse(projection.exists())
+        finally:
+            repo.close()
+
     def test_projection_missing_included_file_fails(self) -> None:
         repo = ProjectionRepo()
         try:
@@ -94,6 +108,23 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 index = build_projection(repo.root, projection)
                 (projection / "tools/check.py").unlink()
                 with self.assertRaises(ValueError):
+                    verify_projection(projection, index)
+        finally:
+            repo.close()
+
+    def test_projection_included_file_replaced_by_symlink_fails(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                projection = root / "projection"
+                index = build_projection(repo.root, projection)
+                included = projection / "tools/check.py"
+                same_bytes_outside_projection = root / "outside-check.py"
+                same_bytes_outside_projection.write_bytes(included.read_bytes())
+                included.unlink()
+                included.symlink_to(same_bytes_outside_projection)
+                with self.assertRaisesRegex(ValueError, "must not be a symlink"):
                     verify_projection(projection, index)
         finally:
             repo.close()
@@ -107,6 +138,20 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 injected = projection / "governance/evidence.md"
                 injected.parent.mkdir(parents=True)
                 injected.write_text("injected\n", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "operationally excluded"):
+                    verify_projection(projection, index)
+        finally:
+            repo.close()
+
+    def test_projection_injected_broken_symlink_at_excluded_path_fails(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                index = build_projection(repo.root, projection)
+                injected = projection / "governance/evidence.md"
+                injected.parent.mkdir(parents=True)
+                injected.symlink_to("missing-target")
                 with self.assertRaisesRegex(ValueError, "operationally excluded"):
                     verify_projection(projection, index)
         finally:
