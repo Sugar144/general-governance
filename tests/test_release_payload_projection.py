@@ -100,6 +100,23 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_projection_rejects_symlinked_source_parent_directory(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            repo.write("governance/check.py", "print('smuggled')\n")
+            git(repo.root, "add", "governance/check.py")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/check.py").startswith("100644 "))
+            (repo.root / "tools/check.py").unlink()
+            (repo.root / "tools").rmdir()
+            (repo.root / "tools").symlink_to("governance", target_is_directory=True)
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                with self.assertRaisesRegex(ReleasePayloadError, r"path component must not be a symlink: .*tools"):
+                    build_projection(repo.root, projection)
+                self.assertFalse(projection.exists())
+        finally:
+            repo.close()
+
     def test_projection_missing_included_file_fails(self) -> None:
         repo = ProjectionRepo()
         try:
@@ -124,7 +141,26 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 same_bytes_outside_projection.write_bytes(included.read_bytes())
                 included.unlink()
                 included.symlink_to(same_bytes_outside_projection)
-                with self.assertRaisesRegex(ValueError, "must not be a symlink"):
+                with self.assertRaisesRegex(ValueError, "path component must not be a symlink"):
+                    verify_projection(projection, index)
+        finally:
+            repo.close()
+
+    def test_projection_included_parent_directory_replaced_by_symlink_fails(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                projection = root / "projection"
+                index = build_projection(repo.root, projection)
+                included = projection / "tools/check.py"
+                outside_tools = root / "outside-tools"
+                outside_tools.mkdir()
+                (outside_tools / "check.py").write_bytes(included.read_bytes())
+                included.unlink()
+                (projection / "tools").rmdir()
+                (projection / "tools").symlink_to(outside_tools, target_is_directory=True)
+                with self.assertRaisesRegex(ValueError, r"path component must not be a symlink: .*tools"):
                     verify_projection(projection, index)
         finally:
             repo.close()
@@ -152,7 +188,7 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
                 injected = projection / "governance/evidence.md"
                 injected.parent.mkdir(parents=True)
                 injected.symlink_to("missing-target")
-                with self.assertRaisesRegex(ValueError, "operationally excluded"):
+                with self.assertRaisesRegex(ValueError, "path component must not be a symlink"):
                     verify_projection(projection, index)
         finally:
             repo.close()
