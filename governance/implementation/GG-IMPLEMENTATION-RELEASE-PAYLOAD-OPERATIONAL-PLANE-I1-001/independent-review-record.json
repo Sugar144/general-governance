@@ -1,0 +1,47 @@
+{
+  "schema": "gg.i1-independent-review-record/0.1.0",
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-IR-001",
+  "implementation_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001",
+  "reviewer": "CLAUDE",
+  "mode": "INDEPENDENT_READ_ONLY_SEMANTIC_SECURITY_REVIEW",
+  "baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "verdict": "CHANGES_REQUIRED",
+  "review_result_path": "governance/implementation/GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001/claude-independent-review-result.md",
+  "review_result_sha256": "271bf480c42be957963115c116e2e140bf3dedf56b218632ddbad8ec56a25449",
+  "findings": [
+    {
+      "id": "FIND-001",
+      "severity": "BLOCKING",
+      "classification": "TRACKED_SYMLINK_CONTENT_SMUGGLING_DEFEATS_GATE_B",
+      "status": "OPEN"
+    },
+    {
+      "id": "FIND-002",
+      "severity": "MATERIAL",
+      "classification": "EXPECTED_BOOTSTRAP_GATE_A_AND_REGRESSION_FAILURE_UNDER_DISCLOSED",
+      "status": "OPEN_DOCUMENTATION_DISCLOSURE"
+    }
+  ],
+  "failed_invariants": [
+    "protected exclusion boundaries at byte level",
+    "isolated payload Gate B",
+    "hidden-dependency detection for symlink content smuggling"
+  ],
+  "passed_invariants": [
+    "fail-closed classification for unknown paths",
+    "scoped manifest/schema enforcement",
+    "exact-commit preservation",
+    "legacy rc.7 reproduction",
+    "consumer-lock 2.0.0 sufficiency",
+    "WPDC source-unchanged compatibility",
+    "I1 write-surface compliance",
+    "non-integrable bootstrap state"
+  ],
+  "authority_effect": "NONE",
+  "correction_authority": "NONE",
+  "retry_or_replacement_authority": "NONE",
+  "packaging_authority": "NONE",
+  "pr_merge_release_authority": "NONE",
+  "next_gate": "PROJECT_OWNER_DISPOSITION_OF_INDEPENDENT_REVIEW_CHANGES_REQUIRED"
+}
