@@ -1,0 +1,13 @@
+{
+  "review_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-001-IR-001",
+  "candidate": "b8766d5f316b1a4c05f1bbeebd5ef148bf45e7ea",
+  "reviewer": "CLAUDE",
+  "verdict": "PENDING_EXTERNAL_REVIEW",
+  "result_evidence": null,
+  "accepted_verdicts": [
+    "PASS",
+    "CHANGES_REQUIRED",
+    "INDETERMINATE"
+  ],
+  "note": "Replace only after receiving the complete external Claude reviewer output and separately authorizing evidence binding. This placeholder is not review evidence."
+}
