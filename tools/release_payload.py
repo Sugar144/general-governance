@@ -83,6 +83,23 @@ def _require_regular_file(path: Path, label: str) -> None:
         fail(f"{label} is missing or not a regular file: {path}")
 
 
+def _repo_path_without_symlinks(root: Path, relative: str, label: str) -> Path:
+    relative = _normalized_repo_path(relative, label)
+    current = root.resolve()
+    for part in PurePosixPath(relative).parts:
+        current = current / part
+        if current.is_symlink():
+            fail(f"{label} path component must not be a symlink: {current}")
+    return current
+
+
+def _require_regular_repo_file(root: Path, relative: str, label: str) -> Path:
+    path = _repo_path_without_symlinks(root, relative, label)
+    if not path.is_file():
+        fail(f"{label} is missing or not a regular file: {relative}")
+    return path
+
+
 def file_digest(path: Path) -> str:
     _require_regular_file(path, "release content path")
     try:
@@ -91,10 +108,16 @@ def file_digest(path: Path) -> str:
         fail(f"cannot read release content path {path}: {exc}")
 
 
+def _repo_file_digest(root: Path, relative: str, label: str = "release content path") -> str:
+    path = _require_regular_repo_file(root, relative, label)
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as exc:
+        fail(f"cannot read {label} {relative}: {exc}")
+
+
 def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, object]) -> None:
-    schema_path = root / MANIFEST_SCHEMA_PATH
-    if schema_path.is_symlink():
-        fail(f"release-manifest schema must not be a symlink: {schema_path}")
+    schema_path = _repo_path_without_symlinks(root, MANIFEST_SCHEMA_PATH, "release-manifest schema")
     if not schema_path.is_file():
         if manifest.get("manifest_schema_version") == SCOPED_SCHEMA_VERSION:
             fail("scoped release manifest requires contracts/release-manifest.schema.json")
@@ -115,8 +138,7 @@ def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, objec
 
 
 def load_release_manifest(root: Path) -> dict:
-    path = root / MANIFEST_PATH
-    _require_regular_file(path, "release manifest")
+    path = _require_regular_repo_file(root, MANIFEST_PATH, "release manifest")
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -235,7 +257,7 @@ def tracked_paths(root: Path) -> tuple[str, ...]:
             mode = fields[0].decode("ascii")
             stage = fields[2].decode("ascii")
             path = path_bytes.decode("utf-8")
-        except (UnicodeDecodeError, UnicodeError) as exc:
+        except UnicodeError as exc:
             fail(f"tracked index entry encoding is invalid: {exc}")
         _normalized_repo_path(path, "tracked path")
         if stage != "0":
@@ -296,9 +318,7 @@ def _digest_paths(root: Path, paths: Iterable[str]) -> str:
     records: list[tuple[str, str]] = []
     for path in paths:
         _normalized_repo_path(path, "release content path")
-        target = root / path
-        _require_regular_file(target, "release content path")
-        records.append((path, file_digest(target)))
+        records.append((path, _repo_file_digest(root, path)))
     encoded = "".join(
         f"{path}\0{hash_value}\n" for path, hash_value in sorted(records)
     )
@@ -337,21 +357,25 @@ def build_projection(source: Path, destination: Path) -> dict:
     if destination.exists():
         fail("projection destination must not already exist")
     classification = classify_tracked_paths(tracked_paths(source), manifest)
-    destination.mkdir(parents=True)
+    source_paths: dict[str, Path] = {}
     for relative in classification.included + (MANIFEST_PATH,):
-        source_path = source / relative
-        _require_regular_file(source_path, "projection source path")
+        source_paths[relative] = _require_regular_repo_file(source, relative, "projection source path")
+    destination.mkdir(parents=True)
+    for relative, source_path in source_paths.items():
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(source_path.read_bytes())
+        try:
+            target.write_bytes(source_path.read_bytes())
+        except OSError as exc:
+            fail(f"cannot copy projection source path {relative}: {exc}")
     included_records = [
-        {"path": path, "sha256": file_digest(source / path)}
+        {"path": path, "sha256": _repo_file_digest(source, path)}
         for path in classification.included
     ]
     index = {
         "schema": "gg.release-payload-projection-index/1.0.0",
         "source_commit": _git_head_or_none(source),
-        "release_manifest_sha256": file_digest(source / MANIFEST_PATH),
+        "release_manifest_sha256": _repo_file_digest(source, MANIFEST_PATH, "release manifest"),
         "content_sha256": manifest["content_sha256"],
         "included": included_records,
         "operational_excluded": list(classification.operational_excluded),
@@ -392,7 +416,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
         fail("projection index schema is unsupported")
     _validate_sha256(index["release_manifest_sha256"], "projection manifest hash")
     _validate_sha256(index["content_sha256"], "projection content hash")
-    manifest_path = projection / MANIFEST_PATH
+    manifest_path = _require_regular_repo_file(projection, MANIFEST_PATH, "projection release manifest")
     if file_digest(manifest_path) != index["release_manifest_sha256"]:
         fail("projection release manifest hash mismatch")
     manifest = load_release_manifest(projection)
@@ -410,7 +434,8 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
             fail("projection included record shape is invalid")
         path = _normalized_repo_path(item["path"], "projection included path")
         _validate_sha256(item["sha256"], f"projection included hash for {path}")
-        if file_digest(projection / path) != item["sha256"]:
+        projection_path = _require_regular_repo_file(projection, path, "projection included path")
+        if file_digest(projection_path) != item["sha256"]:
             fail(f"projection included file hash mismatch: {path}")
         included_paths.append(path)
     if len(included_paths) != len(set(included_paths)):
@@ -418,7 +443,8 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
     excluded_paths: list[str] = []
     for raw in excluded_raw:
         path = _normalized_repo_path(raw, "projection excluded path")
-        if (projection / path).exists() or (projection / path).is_symlink():
+        candidate = _repo_path_without_symlinks(projection, path, "projection excluded path")
+        if candidate.exists() or candidate.is_symlink():
             fail(f"projection contains operationally excluded path: {path}")
         excluded_paths.append(path)
     if len(excluded_paths) != len(set(excluded_paths)):
