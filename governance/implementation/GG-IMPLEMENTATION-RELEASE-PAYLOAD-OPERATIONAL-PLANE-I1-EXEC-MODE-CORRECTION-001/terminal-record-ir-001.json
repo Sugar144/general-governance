@@ -1,0 +1,23 @@
+{
+  "schema": "gg.terminal-record/0.1.0",
+  "correction_id": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001",
+  "candidate": "8da3499f08119a886df63f2267af8c2cb906146d",
+  "independent_review": "GG-IMPLEMENTATION-RELEASE-PAYLOAD-OPERATIONAL-PLANE-I1-EXEC-MODE-CORRECTION-001-IR-001",
+  "independent_review_verdict": "CHANGES_REQUIRED",
+  "blocking_or_material_findings": [
+    "FIND-EXEC-MODE-TEST-001"
+  ],
+  "minor_findings": [
+    "FIND-MANIFEST-MODE-001",
+    "FIND-TOCTOU-001"
+  ],
+  "production_exec_mode_logic": "INDEPENDENTLY_DEMONSTRATED_CORRECT",
+  "status": "INDEPENDENT_REVIEW_CHANGES_REQUIRED",
+  "integration_state": "NON_INTEGRABLE_BLOCKED_BY_INDEPENDENT_REVIEW",
+  "run_allowance": "CONSUMED",
+  "retry_replacement_authority": "NONE",
+  "correction_authority": "NO",
+  "p1_authorized": false,
+  "pr_authorized": false,
+  "merge_authorized": false
+}
