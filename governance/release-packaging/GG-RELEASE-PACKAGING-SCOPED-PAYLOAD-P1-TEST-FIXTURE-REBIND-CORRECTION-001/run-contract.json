@@ -1,0 +1,17 @@
+{
+  "run_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-REBIND-CORRECTION-001-RUN-001",
+  "role": "CORRECTION_IMPLEMENTATION_AGENT",
+  "mode": "BOUNDED_CORRECTION_IMPLEMENTATION",
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "branch": "release-packaging/release-payload-operational-plane-p1-test-fixture-rebind-correction-001",
+  "execution_allowance": 1,
+  "consumed_on_boundary_crossing": true,
+  "retry_replacement_authority": "NONE",
+  "functional_write_surface": [
+    "tests/test_work_packet_contract.py",
+    "release-manifest.json"
+  ],
+  "release_version_must_remain": "0.1.0-rc.8",
+  "stop_on_third_functional_path": true,
+  "required_local_observation": "recompute SCOPED_TRACKED_FILES_V1 content_sha256 after exact test change before manifest rebind"
+}
