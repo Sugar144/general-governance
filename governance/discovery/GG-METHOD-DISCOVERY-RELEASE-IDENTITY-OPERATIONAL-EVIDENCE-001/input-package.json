@@ -1,0 +1,60 @@
+{
+  "constraints": [
+    "preserve rc.7 immutable",
+    "no repair/retry of PR15 or PR16",
+    "no normative/tooling/release/adopter mutation",
+    "no rc.8 authorization",
+    "stop at Owner review"
+  ],
+  "discovery_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001",
+  "evidence": {
+    "consumer_contract": {
+      "blob_sha": "4424b1080b0b5157ce3bf9a45a723a58c039b88e",
+      "path": "docs/consumer-contract.md"
+    },
+    "pr15": {
+      "conformance_job_failure": 97046643376,
+      "conformance_run_failure": 32579503131,
+      "head": "b5ea02b74a04457ddffbe03caa81818903484a83",
+      "number": 15,
+      "observed_release_content_sha256": "d0fda78cc3f459e6b33340c5e1e373035fc1d03d257b5410b79ad5685a3a108e",
+      "psi_run_success": 32580172678,
+      "synthetic_merge": "d242459f05e02ddbbf2cc2eb9f8a46577db6acc7"
+    },
+    "pr16": {
+      "conformance_job_failure": 97049184633,
+      "conformance_run_failure": 32580573924,
+      "head": "d3e1f0d96e23698e740511e7cd8d21d542e17741",
+      "number": 16,
+      "observed_release_content_sha256": "07bf76879f79b0071398f903404ed7bb626fd7fac6c1ebd700f70473014f7ab3",
+      "package_validation": "17/17 PASS",
+      "synthetic_merge": "7eaeb410ae03fdf924e6d3ed1d6e1fdc5760b780"
+    },
+    "project_operating_contract": {
+      "blob_sha": "9abe903e6c045fd67c1a061e8dff79fbb076fdd3",
+      "path": "framework/core/project-operating-contract.md",
+      "version": "0.5.0"
+    },
+    "release_manifest": {
+      "blob_sha": "2f400cb80a10bea2c5c69bc37017f393e72c7555",
+      "content_sha256": "14fceee7fb261fee6c2b515cbd81e39c91daaaaa3aa8dc431d3c1beac754d15e",
+      "path": "release-manifest.json"
+    },
+    "validate_consumer": {
+      "blob_sha": "816a94685726bd6aa1d265da18bf7b26cf24754c",
+      "path": "tools/validate_consumer.py"
+    }
+  },
+  "framework_version": "0.1.0-rc.7",
+  "gg_baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "issue": 17,
+  "required_alternatives": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E-hybrid"
+  ],
+  "run_id": "GG-METHOD-DISCOVERY-RELEASE-IDENTITY-OPERATIONAL-EVIDENCE-001-RUN-001",
+  "schema": "gg.method-discovery-input/0.1.0"
+}
