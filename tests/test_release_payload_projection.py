@@ -145,6 +145,38 @@ class ReleasePayloadProjectionTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_projection_rejects_mode_and_index_tamper_with_same_bytes(self) -> None:
+        repo = ProjectionRepo()
+        try:
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/check.py").startswith("100644 "))
+            with tempfile.TemporaryDirectory() as temp:
+                projection = Path(temp) / "projection"
+                build_projection(repo.root, projection)
+                projected = projection / "tools/check.py"
+                before_bytes = projected.read_bytes()
+                projected.chmod(0o755)
+                self.assertEqual(projected.read_bytes(), before_bytes)
+
+                index_path = projection / PROJECTION_INDEX
+                tampered = json.loads(index_path.read_text(encoding="utf-8"))
+                record = next(
+                    item for item in tampered["included"]
+                    if item["path"] == "tools/check.py"
+                )
+                record["mode"] = "100755"
+                index_path.write_text(
+                    json.dumps(tampered, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "projection content digest does not reproduce manifest content identity",
+                ):
+                    verify_projection(projection)
+        finally:
+            repo.close()
+
     def test_projection_excludes_operational_symlink_without_blocking(self) -> None:
         repo = ProjectionRepo()
         try:

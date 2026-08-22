@@ -367,14 +367,33 @@ def classify_tracked_paths(paths: Sequence[str], manifest: Mapping[str, object])
     )
 
 
-def _digest_paths(root: Path, paths: Iterable[str]) -> str:
-    records: list[tuple[str, str]] = []
+def _digest_paths(
+    root: Path,
+    paths: Iterable[str],
+    mode_by_path: Mapping[str, str] | None = None,
+) -> str:
+    records: list[tuple[str, str, str]] = []
     for path in paths:
         _normalized_repo_path(path, "release content path")
-        records.append((path, _repo_file_digest(root, path)))
-    encoded = "".join(
-        f"{path}\0{hash_value}\n" for path, hash_value in sorted(records)
-    )
+        hash_value = _repo_file_digest(root, path)
+        if mode_by_path is None:
+            records.append((path, "", hash_value))
+            continue
+        mode = mode_by_path.get(path)
+        if mode not in SUPPORTED_TRACKED_FILE_MODES:
+            fail(f"unsupported tracked Git mode {mode!r} for release content path: {path}")
+        records.append((path, mode, hash_value))
+
+    if mode_by_path is None:
+        encoded = "".join(
+            f"{path}\0{hash_value}\n"
+            for path, _mode, hash_value in sorted(records)
+        )
+    else:
+        encoded = "".join(
+            f"{path}\0{mode}\0{hash_value}\n"
+            for path, mode, hash_value in sorted(records)
+        )
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
@@ -388,7 +407,8 @@ def content_digest(root: Path, manifest: Mapping[str, object]) -> str:
         return _digest_paths(root, included)
     classification = classify_tracked_paths(paths, manifest)
     _validate_supported_tracked_modes(entries, classification.included + (MANIFEST_PATH,))
-    return _digest_paths(root, classification.included)
+    mode_by_path = {entry.path: entry.mode for entry in entries}
+    return _digest_paths(root, classification.included, mode_by_path)
 
 
 def release_content_digest(root: Path) -> str:
@@ -495,6 +515,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
     if not isinstance(included_raw, list) or not isinstance(excluded_raw, list):
         fail("projection index path sets are invalid")
     included_paths: list[str] = []
+    included_modes: dict[str, str] = {}
     for item in included_raw:
         if not isinstance(item, dict) or set(item) != {"path", "sha256", "mode"}:
             fail("projection included record shape is invalid")
@@ -508,6 +529,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
             fail(f"projection included file hash mismatch: {path}")
         _verify_projected_mode(projection_path, mode, path)
         included_paths.append(path)
+        included_modes[path] = mode
     if len(included_paths) != len(set(included_paths)):
         fail("projection included paths contain duplicates")
     excluded_paths: list[str] = []
@@ -531,7 +553,7 @@ def verify_projection(projection: Path, index: Mapping[str, object] | None = Non
         fail(f"projection file-set mismatch: missing={missing} extra={extra}")
     if (projection / ".git").exists():
         fail("projection must not contain .git")
-    reproduced = _digest_paths(projection, included_paths)
+    reproduced = _digest_paths(projection, included_paths, included_modes)
     if reproduced != index["content_sha256"]:
         fail("projection content digest does not reproduce manifest content identity")
 

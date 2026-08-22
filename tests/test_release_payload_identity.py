@@ -219,6 +219,21 @@ class ReleasePayloadIdentityTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_scoped_digest_changes_when_included_git_mode_changes(self) -> None:
+        repo = TempScopedRepo()
+        try:
+            path = repo.root / "tools/example.py"
+            before_bytes = path.read_bytes()
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/example.py").startswith("100644 "))
+            before = release_content_digest(repo.root)
+            git(repo.root, "update-index", "--chmod=+x", "tools/example.py")
+            self.assertTrue(git(repo.root, "ls-files", "-s", "tools/example.py").startswith("100755 "))
+            self.assertEqual(path.read_bytes(), before_bytes)
+            after = release_content_digest(repo.root)
+            self.assertNotEqual(before, after)
+        finally:
+            repo.close()
+
     def test_protected_surface_cannot_be_excluded(self) -> None:
         manifest = scoped_manifest()
         manifest["content_identity"]["operational_exact_paths"].append("tools/release_payload.py")

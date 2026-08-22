@@ -81,11 +81,22 @@ unsupported.
 
 ## 4. Scoped digest algorithm
 
-For `SCOPED_TRACKED_FILES_V1`, validate the manifest, enumerate tracked paths,
-classify every path, omit only the manifest and operational exclusions, hash the
-exact bytes of every included path, build the historical sorted
-`<path>\0<file-sha256>\n` records, and require the resulting SHA-256 to equal
-manifest `content_sha256`.
+Historical `LEGACY_COMPLETE_TRACKED_FILES_V1` keeps its existing record encoding
+unchanged:
+
+`<path>\0<file-sha256>\n`
+
+For `SCOPED_TRACKED_FILES_V1`, validate the manifest, enumerate tracked entries,
+classify every path, omit only the manifest and operational exclusions, and
+authenticate each included path, its supported tracked Git mode, and the
+SHA-256 of its exact file bytes. The sorted scoped record encoding is:
+
+`<path>\0<git-mode>\0<file-sha256>\n`
+
+Supported regular-file modes are `100644` and `100755`; unsupported tracked
+modes fail closed. The SHA-256 of the concatenated scoped record stream must
+equal manifest `content_sha256`. A chmod-only change of an included file
+therefore changes the scoped payload identity even when its bytes are unchanged.
 
 ## 5. Isolated payload projection
 
