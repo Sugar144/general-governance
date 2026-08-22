@@ -1,0 +1,27 @@
+{
+  "schema": "gg.architecture-design-execution-record/0.1.0",
+  "design_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001",
+  "run_id": "GG-ARCH-DESIGN-RELEASE-PAYLOAD-OPERATIONAL-PLANE-001-RUN-001",
+  "execution_status": "EXECUTED",
+  "execution_boundary_crossed": true,
+  "execution_allowance_consumed": true,
+  "permitted_execution_count": 1,
+  "replacement_or_retry_authority": "NONE",
+  "authority_comment_id": 5381160461,
+  "prompt_snapshot": {
+    "prompt_id": "GG-MP-0008",
+    "version": "1.0.0",
+    "blob_sha": "ada7cb1ce8a3a5646f2f9575b23e6539b6cb06ff"
+  },
+  "input_package": {
+    "blob_sha": "2fd815ae96af592e52e8bf514e3dceb5d183741f",
+    "sha256": "4d847d44e76ab73ec853b76466e59625d991a0303c82e80d3c95f7a7315e55f2"
+  },
+  "run_contract_blob_sha": "1fe6658f7b583cfc6b921ce8948dac3557be6375",
+  "result": {
+    "commit_sha": "6a3542c310c07de040fb04e0d49113740a9b6fbd",
+    "blob_sha": "e82dca5ccf3d907b41105b13ec59565fb4f24aee",
+    "disposition": "ARCHITECTURE_READY_FOR_IMPLEMENTATION_PROPOSAL"
+  },
+  "note": "RUN-001 crossed the substantive architecture-design boundary and consumed its sole allowance. No implementation, release, PR, merge or adopter authority is created."
+}
