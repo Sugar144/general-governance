@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+project_id: general_governance
+project_name: General Governance
+phase: RC7_OWNER_DISPOSITION
+position: RC7_INTEGRATED_IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION
+status: IN_PROGRESS
+next_gate: OWNER_DISPOSITION_ON_0_1_0_RC_7
+next_action: REVIEW_EXACT_RC7_AND_RECORD_OWNER_DISPOSITION
+
+current_main:
+  commit: 22a1d5e2f759fda53574884e1056a3a56baa211a
+  framework_version: 0.1.0-rc.7
+  release_status: IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION
+
+roadmap:
+  path: ROADMAP.md
+  current_stage: RC7_OWNER_DISPOSITION
+
+boundaries:
+  tag: NOT_AUTHORIZED_BY_RC7_INTEGRATION
+  github_release: NOT_AUTHORIZED_BY_RC7_INTEGRATION
+  deployment: NOT_AUTHORIZED_BY_RC7_INTEGRATION
+  adopter_mutation: NOT_AUTHORIZED_BY_RC7_INTEGRATION
+  owner_acceptance: PENDING
