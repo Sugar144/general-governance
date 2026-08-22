@@ -1,0 +1,36 @@
+{
+  "package_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-INPUT-001",
+  "status": "BOUND",
+  "issue": 25,
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "release_version": "0.1.0-rc.8",
+  "manifest_schema_version": "1.4.0",
+  "finding": "P1-FIND-TEST-FIXTURE-SCHEMA-001",
+  "observed_validation": {
+    "gate_a": "PASS",
+    "gate_b": "PASS",
+    "targeted_identity_projection": "37/37 PASS",
+    "full_suite": "77 tests; 0 failures; 1 error",
+    "error_test": "tests.test_work_packet_contract.WorkPacketContractTests.test_locked_release_must_advertise_wpdc",
+    "error": "unsupported release manifest schema version: '1.2.0'"
+  },
+  "authorized_functional_paths": [
+    "tests/test_work_packet_contract.py"
+  ],
+  "forbidden_non_custody_paths": [
+    "tools/**",
+    "RELEASE_VERSION",
+    "release-manifest.json",
+    "contracts/**",
+    "framework/**",
+    "docs/**",
+    "provenance/**"
+  ],
+  "required_semantics": [
+    "fixture uses supported legacy manifest schema 1.3.0",
+    "fixture supplies non-empty content_identity_method",
+    "fixture omits work_packet_design",
+    "test still asserts INVALID_ADOPTION_BINDING and does not advertise",
+    "no production validation is weakened"
+  ]
+}
