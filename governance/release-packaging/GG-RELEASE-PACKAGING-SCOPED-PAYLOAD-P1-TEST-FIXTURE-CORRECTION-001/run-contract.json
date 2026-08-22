@@ -1,0 +1,25 @@
+{
+  "run_id": "GG-RELEASE-PACKAGING-SCOPED-PAYLOAD-P1-TEST-FIXTURE-CORRECTION-001-RUN-001",
+  "status": "PREPARED_NOT_EXECUTED",
+  "role": "CORRECTION_IMPLEMENTATION_AGENT",
+  "mode": "BOUNDED_TEST_FIXTURE_CORRECTION",
+  "predecessor_candidate": "9c4cc94bdc9f271e5389931c2feb73488584580e",
+  "issue": 25,
+  "authority_record": "authorization.md",
+  "input_package": "input-package.json",
+  "material_prompt": "material-prompt.md",
+  "execution_allowance": 1,
+  "consumed": false,
+  "retry_replacement_authority": "NONE",
+  "authorized_functional_paths": [
+    "tests/test_work_packet_contract.py"
+  ],
+  "stop_conditions": [
+    "any required modification outside authorized path",
+    "production/schema/release identity mutation required",
+    "targeted or full-suite failure after correction",
+    "Gate A or Gate B failure",
+    "candidate/currentness drift"
+  ],
+  "terminal_success_before_independent_review": "CORRECTED_PENDING_INDEPENDENT_REVIEW"
+}
