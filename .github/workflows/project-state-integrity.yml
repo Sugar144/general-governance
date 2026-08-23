@@ -25,11 +25,29 @@ jobs:
           set -euo pipefail
           printf '%s\n' "${PSI_PR_BODY:-}" > "${RUNNER_TEMP}/psi-pr-body.txt"
           PSI_MERGE_BASE="$(git merge-base "${PSI_BASE_SHA}" "${PSI_HEAD_SHA}")"
+          printf '%s\n' "${PSI_MERGE_BASE}" > "${RUNNER_TEMP}/psi-merge-base.txt"
           git diff --no-renames --name-only "${PSI_MERGE_BASE}" "${PSI_HEAD_SHA}" > "${RUNNER_TEMP}/psi-changed-files.txt"
 
-      - name: Validate project state impact
+          if git cat-file -e "${PSI_MERGE_BASE}:project-state-integrity.json" 2>/dev/null; then
+            git show "${PSI_MERGE_BASE}:project-state-integrity.json" > "${RUNNER_TEMP}/psi-base-config.json"
+          fi
+
+      - name: Validate project state impact against candidate contract
         run: |
           python scripts/project_state_integrity.py \
             --config project-state-integrity.json \
             --pr-body-file "${RUNNER_TEMP}/psi-pr-body.txt" \
             --changed-files-file "${RUNNER_TEMP}/psi-changed-files.txt"
+
+      - name: Validate project state impact against accepted base contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f "${RUNNER_TEMP}/psi-base-config.json" ]]; then
+            python scripts/project_state_integrity.py \
+              --config "${RUNNER_TEMP}/psi-base-config.json" \
+              --pr-body-file "${RUNNER_TEMP}/psi-pr-body.txt" \
+              --changed-files-file "${RUNNER_TEMP}/psi-changed-files.txt"
+          else
+            echo "PROJECT_STATE_INTEGRITY: first adoption; no accepted base contract exists yet"
+          fi
