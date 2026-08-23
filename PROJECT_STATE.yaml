@@ -1,0 +1,42 @@
+schema_version: 0.1.0
+project_id: general_governance
+project_name: General Governance
+phase: RC8_OPERATIONALIZATION
+position: RC8_INTEGRATED_SCOPED_RELEASE_IDENTITY_WITH_PROJECT_STATE_INTEGRITY
+status: IN_PROGRESS
+next_gate: OWNER_DISPOSITION_ON_0_1_0_RC_8
+next_action: REVIEW_EXACT_RC8_RELEASE_CANDIDATE_AND_RECORD_OWNER_DISPOSITION
+
+framework_release:
+  framework_version: 0.1.0-rc.8
+  release_status: IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION
+  release_candidate_commit: 1cef52e616b22602862ab828160ae1c5f2e93f25
+  integration_merge_commit: b49ee80650bff951dd269f520c8220b481c53508
+  manifest_schema_version: 1.4.0
+  content_identity_method: SCOPED_TRACKED_FILES_V1
+  scoped_content_sha256: 1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf
+
+operational_plane:
+  release_payload_separation: INTEGRATED
+  project_state_integrity: ADOPTED
+  learning_lifecycle_pre_run_002: INTEGRATED_NON_NORMATIVE
+  learning_lifecycle_pre_run_002_merge: 486a6826685635eff0b4098fd33c4dfd826fb7ed
+
+governance_controls:
+  project_state_integrity: ADOPTED
+  state_path: PROJECT_STATE.yaml
+  roadmap_path: ROADMAP.md
+  pr_impact_contract: Project-State-Impact
+
+roadmap:
+  path: ROADMAP.md
+  current_stage: RC8_OPERATIONALIZATION
+
+boundaries:
+  tag: SEPARATELY_GOVERNED
+  github_release: SEPARATELY_GOVERNED
+  deployment: SEPARATELY_GOVERNED
+  adopter_mutation: SEPARATELY_GOVERNED
+  owner_acceptance: PENDING
+  historical_pr_15: FROZEN_RC7_EVIDENCE
+  historical_pr_16: FROZEN_RC7_EVIDENCE
