@@ -42,8 +42,15 @@ def load_config(path: pathlib.Path) -> tuple[str, tuple[str, ...], tuple[str, ..
     if not isinstance(project_id, str) or not project_id.strip():
         raise IntegrityError("project_id must be a non-empty string")
 
-    state_paths = normalize_paths(raw.get("state_paths", []))
-    roadmap_paths = normalize_paths(raw.get("roadmap_paths", []))
+    raw_state_paths = raw.get("state_paths", [])
+    raw_roadmap_paths = raw.get("roadmap_paths", [])
+    if not isinstance(raw_state_paths, list):
+        raise IntegrityError("state_paths must be an array of strings")
+    if not isinstance(raw_roadmap_paths, list):
+        raise IntegrityError("roadmap_paths must be an array of strings")
+
+    state_paths = normalize_paths(raw_state_paths)
+    roadmap_paths = normalize_paths(raw_roadmap_paths)
     if not state_paths:
         raise IntegrityError("at least one state path is required")
     if not roadmap_paths:
