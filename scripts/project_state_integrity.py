@@ -11,22 +11,31 @@ from typing import Iterable
 IMPACT_RE = re.compile(
     r"(?im)^\s*Project-State-Impact\s*:\s*(none|state|roadmap|both)\s*$"
 )
+CONFIG_KEYS = {"schema_version", "project_id", "state_paths", "roadmap_paths"}
 
 
 class IntegrityError(RuntimeError):
     pass
 
 
-def normalize_paths(values: Iterable[str]) -> tuple[str, ...]:
-    normalized: list[str] = []
-    for value in values:
-        if not isinstance(value, str) or not value.strip():
-            raise IntegrityError("configured paths must be non-empty strings")
-        path = value.strip().lstrip("./")
-        if path.startswith("../") or path == "..":
-            raise IntegrityError("configured paths must stay inside the repository")
-        normalized.append(path)
-    return tuple(dict.fromkeys(normalized))
+def normalize_repo_path(value: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise IntegrityError("configured paths must be non-empty strings")
+
+    path = value.strip()
+    while path.startswith("./"):
+        path = path[2:]
+    pure = pathlib.PurePosixPath(path)
+    if not path or pure.is_absolute() or ".." in pure.parts:
+        raise IntegrityError("configured paths must stay inside the repository")
+    return pure.as_posix()
+
+
+def normalize_paths(values: list[str]) -> tuple[str, ...]:
+    normalized = tuple(normalize_repo_path(value) for value in values)
+    if len(set(normalized)) != len(normalized):
+        raise IntegrityError("configured paths must be unique")
+    return normalized
 
 
 def load_config(path: pathlib.Path) -> tuple[str, tuple[str, ...], tuple[str, ...]]:
@@ -35,6 +44,13 @@ def load_config(path: pathlib.Path) -> tuple[str, tuple[str, ...], tuple[str, ..
     except (OSError, json.JSONDecodeError) as exc:
         raise IntegrityError(f"cannot read config: {exc}") from exc
 
+    if not isinstance(raw, dict):
+        raise IntegrityError("config must be a JSON object")
+    unknown = set(raw) - CONFIG_KEYS
+    if unknown:
+        raise IntegrityError(
+            "unsupported config keys: " + ", ".join(sorted(str(item) for item in unknown))
+        )
     if raw.get("schema_version") != "0.1.0":
         raise IntegrityError("unsupported schema_version; expected 0.1.0")
 
@@ -42,8 +58,8 @@ def load_config(path: pathlib.Path) -> tuple[str, tuple[str, ...], tuple[str, ..
     if not isinstance(project_id, str) or not project_id.strip():
         raise IntegrityError("project_id must be a non-empty string")
 
-    raw_state_paths = raw.get("state_paths", [])
-    raw_roadmap_paths = raw.get("roadmap_paths", [])
+    raw_state_paths = raw.get("state_paths")
+    raw_roadmap_paths = raw.get("roadmap_paths")
     if not isinstance(raw_state_paths, list):
         raise IntegrityError("state_paths must be an array of strings")
     if not isinstance(raw_roadmap_paths, list):
@@ -68,13 +84,22 @@ def parse_impact(pr_body: str) -> str:
     return matches[0].lower()
 
 
+def normalize_changed_path(value: str) -> str:
+    path = value.strip()
+    while path.startswith("./"):
+        path = path[2:]
+    return path
+
+
 def validate(
     state_paths: tuple[str, ...],
     roadmap_paths: tuple[str, ...],
     impact: str,
     changed_files: Iterable[str],
 ) -> list[str]:
-    changed = {item.strip().lstrip("./") for item in changed_files if item.strip()}
+    changed = {
+        normalize_changed_path(item) for item in changed_files if item.strip()
+    }
     state_changed = any(path in changed for path in state_paths)
     roadmap_changed = any(path in changed for path in roadmap_paths)
 
