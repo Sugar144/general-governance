@@ -3,7 +3,8 @@ disposition_id: GG-RC8-DOPIS-ADOPTION-DISPOSITION-001
 record_type: PROJECT_OWNER_DISPOSITION
 status: ACCEPTED
 disposition_date: 2026-08-28
-owner_authorization_source: project_conversation
+owner_authorization_prompt_id: GG-MP-0008
+owner_authorization_source: governance/releases/GG-RELEASE-PACKAGE-0.1.0-RC.8-001/material-prompt.md
 target_release: 0.1.0-rc.8
 candidate_commit_sha: 486a6826685635eff0b4098fd33c4dfd826fb7ed
 release_content_sha256: 1ab4589a24a9e8a8bd8dce96931d4d7e2468a5644fad853bcdab411808b0cecf
@@ -15,6 +16,8 @@ adopter_plan: DOPIS-PLAN-005
 # General Governance rc.8 — bounded Dopis adoption disposition
 
 The Project Owner accepts the exact General Governance `0.1.0-rc.8` immutable candidate identified above for bounded external-consumer adoption by `Sugar144/dopis` under `DOPIS-PLAN-005`.
+
+The exact Owner instruction authorizing this bounded route is preserved under prompt identity `GG-MP-0008` at the repository-custodied source identified in the front matter.
 
 This disposition closes the Owner-decision boundary for Dopis to pin that exact immutable framework identity and explicitly activate the optional Work Packet Design & Dependency Closure capability, subject to Dopis-owned consumer conformance, capability binding, capability-stack compatibility evidence, and its own authority model.
 
