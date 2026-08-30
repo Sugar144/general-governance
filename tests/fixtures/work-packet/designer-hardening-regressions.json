@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "source_incident": "GG-WPDC-DESIGNER-HARDENING-001",
+  "cases": [
+    {
+      "case_id": "local_external_seam_split",
+      "failure_mode": "Owner/external authoritative state is represented, but packet-local adapter/ledger/schema work required to consume it is omitted.",
+      "required_role_marker": "Local/external seam split"
+    },
+    {
+      "case_id": "surface_to_node_closure",
+      "failure_mode": "An execution, effect, persistence, or validation surface is declared without a prerequisite node that produces or enables it.",
+      "required_role_marker": "Surface-to-node closure"
+    },
+    {
+      "case_id": "integration_edge_closure",
+      "failure_mode": "Bound sources establish a client/frontend-to-runtime/API dependency but the graph omits the edge.",
+      "required_role_marker": "Integration-edge closure"
+    },
+    {
+      "case_id": "validation_reachability_closure",
+      "failure_mode": "A validation method requires runtime/frontend/persistence surfaces that the validation prerequisite cannot reach in the graph.",
+      "required_role_marker": "Validation-reachability closure"
+    }
+  ]
+}
