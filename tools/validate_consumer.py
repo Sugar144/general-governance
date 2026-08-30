@@ -17,6 +17,7 @@ from framework.core.l6.schemas import load_schema, validate as validate_schema
 from framework.core.l6.strict_yaml import StrictYAMLError, load as load_yaml
 from tools.release_payload import file_digest as digest
 from tools.release_payload import release_content_digest
+from tools.validate_hierarchical_work_graph import validate_selected_consumer_bundle
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
@@ -245,12 +246,17 @@ def validate(lock_path: Path, framework: Path, consumer: Path, previous: Path | 
     for relative in REQUIRED:
         if not (framework / relative).is_file():
             fail(f"required framework surface is missing: {relative}")
-    validate_configuration(framework, consumer, lock)
+    configuration_path = validate_configuration(framework, consumer, lock)
+    hwg_result = validate_selected_consumer_bundle(configuration_path, consumer)
     if previous is not None:
         old_identity = validate_previous_lock(load_json(previous))
         if old_identity == identity:
             fail("controlled upgrade must change immutable framework identity")
-    print("PASS: immutable lock, release identity, compatibility, required consumer configuration, core placeholder resolution, and ownership boundary")
+    optional = "HWG=ABSENT" if hwg_result is None else f"HWG={hwg_result['status']}"
+    print(
+        "PASS: immutable lock, release identity, compatibility, required consumer configuration, "
+        f"core placeholder resolution, optional capability conformance ({optional}), and ownership boundary"
+    )
 
 
 def main() -> int:
