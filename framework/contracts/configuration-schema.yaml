@@ -1,9 +1,10 @@
 document_id: GOV-CORE-CONFIGURATION-SCHEMA-001
-version: 0.2.0
+version: 0.3.0
 status: ACTIVE_REUSABLE_CONFIGURATION_CONTRACT
 purpose: >-
   Declares the project-owned values that reusable core semantics may consume
-  without embedding an adopter's paths, run identities, or material-prompt namespace.
+  without embedding an adopter's paths, run identities, material-prompt namespace,
+  or optional capability instance paths.
 consumer_instance:
   path_source: framework-lock.json#consumer.configuration_path
   machine_schema: contracts/consumer-configuration.schema.json
@@ -18,11 +19,16 @@ required_configuration_keys:
   - configuration.identity_allocator.ledger_path
   - configuration.prompt_identity.namespace
   - configuration.prompt_identity.sequence_width
+optional_capability_discovery_keys:
+  - configuration.capabilities.work_packet_design.binding_path
+  - configuration.capabilities.hierarchical_work_graph.bundle_path
 invariants:
   - The current consumer lock names exactly one adopter-owned configuration instance.
-  - Core documents may contain only declared configuration placeholders for these values.
-  - An adopter configuration owns every placeholder value.
+  - Core documents may contain only declared configuration placeholders for required core values.
+  - An adopter configuration owns every placeholder and optional capability discovery value.
   - Every declared core placeholder must resolve to a concrete adopter value before conformance can pass.
+  - Optional capability discovery keys activate only the capability contract that owns that key.
+  - Absence of an optional capability discovery key means that capability is not adopted; it is not a conformance failure.
   - Configuration values containing unresolved double-brace placeholders are invalid.
   - Material-prompt namespaces are adopter-owned and are not inferred from framework or repository history.
   - Resolving a compatibility binding must preserve the adopter's established semantics.
