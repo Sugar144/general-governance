@@ -22,6 +22,8 @@ python -m unittest -v governance/design/hierarchical-work-graph/tests/test_valid
 
 Requires `jsonschema`, already used by the current General Governance validation toolchain.
 
+These candidate tests are deliberately not wired into the current release conformance workflow because `governance/**` is design/evolution custody and HWG has not been promoted into the current reusable release payload.
+
 ## Validate an adopter bundle
 
 ```text
