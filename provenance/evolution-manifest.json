@@ -20,8 +20,8 @@
       "path": "framework/contracts/configuration-schema.yaml",
       "semantic_layer": "L1",
       "baseline_sha256": "8f0434f47cac97bbc133550206c8db8cfdbed307745c24a0375e8f709e45b398",
-      "candidate_sha256": "bbc95a96bc782eb3a30d0ac3ef3587fe1a76ee2a4e9b1bc9b46c3cf68c40befe",
-      "reason": "make the consumer configuration instance mandatory and declare material-prompt identity values"
+      "candidate_sha256": "ba180712f0955e0e1cf5212b2b9ff8f09beeab5afcc92be0531ed4beaeef8e78",
+      "reason": "make the consumer configuration instance mandatory and declare material-prompt identity values; preserve those required core values while declaring optional capability discovery keys for WPDC and HWG so framework availability does not imply adopter activation"
     }
   ]
 }
