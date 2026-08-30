@@ -27,7 +27,7 @@
     "graph_schema_version": "1.0.0",
     "optional": true
   },
-  "content_sha256": "f808abbf0e6a3ff5a52e90f984180cb1e6c58325a1d738222ef50548c3ba1b6c",
+  "content_sha256": "753f50c6b80d3fdc0b6f2494d5775a94f306ff4779e767f5222e41337499f969",
   "content_identity": {
     "method": "SCOPED_TRACKED_FILES_V1",
     "default_classification": "RELEASE_INCLUDED",
