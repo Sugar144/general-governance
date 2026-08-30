@@ -69,7 +69,7 @@ jobs:
           PY
           python3 -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py framework/core/l6/*.py
           python3 tools/verify_evolution.py
-          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py
+          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py tests/test_work_packet_designer_hardening.py
       - name: Gate A — reproduce current checkout release identity
         run: |
           python3 - <<'PY'
@@ -89,5 +89,6 @@ jobs:
           tests/test_work_packet_contract.py
           tests/test_work_packet_control_declarations.py
           tests/test_work_packet_evidence_contexts.py
+          tests/test_work_packet_designer_hardening.py
       - name: Run consumer conformance tests
         run: python3 -m unittest -v tests/test_consumer_contract.py
