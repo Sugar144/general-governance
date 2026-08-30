@@ -39,6 +39,13 @@ jobs:
         run: python3 -m unittest -v tests/test_release_payload_identity.py
       - name: Run release payload projection regressions
         run: python3 -m unittest -v tests/test_release_payload_projection.py
+      - name: Report prospective release identity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from tools.release_payload import release_content_digest
+          print(f"PROSPECTIVE_RELEASE_CONTENT_SHA256={release_content_digest(Path('.').resolve())}")
+          PY
       - name: Gate B — isolated release payload self-sufficiency
         shell: bash
         run: |
