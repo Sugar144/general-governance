@@ -1,7 +1,7 @@
 {
   "manifest_schema_version": "1.4.0",
   "repository": "Sugar144/general-governance",
-  "framework_version": "0.1.0-rc.8",
+  "framework_version": "0.1.0-rc.9",
   "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
   "compatibility": {
     "framework_contract": "2.0.0",
