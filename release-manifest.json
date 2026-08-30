@@ -27,7 +27,7 @@
     "graph_schema_version": "1.0.0",
     "optional": true
   },
-  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content_sha256": "f808abbf0e6a3ff5a52e90f984180cb1e6c58325a1d738222ef50548c3ba1b6c",
   "content_identity": {
     "method": "SCOPED_TRACKED_FILES_V1",
     "default_classification": "RELEASE_INCLUDED",
