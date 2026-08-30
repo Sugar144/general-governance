@@ -33,8 +33,11 @@ jobs:
           tools/validate_consumer.py
           tools/validate_capability_stack.py
           tools/validate_work_packet.py
+          tools/validate_hierarchical_work_graph.py
       - name: Verify prospective extraction evolution
         run: python3 tools/verify_evolution.py
+      - name: Run HWG contract regressions
+        run: python3 -m unittest -v tests/test_hierarchical_work_graph.py
       - name: Run release payload identity regressions
         run: python3 -m unittest -v tests/test_release_payload_identity.py
       - name: Run release payload projection regressions
@@ -74,9 +77,9 @@ jobs:
               Draft202012Validator.check_schema(json.loads(path.read_text()))
               print(f"PASS isolated schema {path}")
           PY
-          python3 -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py framework/core/l6/*.py
+          python3 -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py tools/validate_hierarchical_work_graph.py framework/core/l6/*.py
           python3 tools/verify_evolution.py
-          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py tests/test_work_packet_designer_hardening.py
+          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py tests/test_work_packet_designer_hardening.py tests/test_hierarchical_work_graph.py
       - name: Gate A — reproduce current checkout release identity
         run: |
           python3 - <<'PY'
