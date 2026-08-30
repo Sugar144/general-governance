@@ -52,6 +52,17 @@ Discover every prerequisite known to the Designer's available bound sources to b
 
 **Recurse.** Every prerequisite discovered at this stage may itself have its own `REACH`/`VALIDATE`/`COMPLETE` prerequisites. Apply this same discovery question to each newly discovered prerequisite node, not only to the top-level included outcomes, until no further prerequisite is discoverable from bound sources (WPDC-004, transitive closure; an `IN_PACKET` prerequisite does not terminate traversal). A Designer that discovers only first-order prerequisites and stops has not performed dependency discovery under WPDC-003/WPDC-004.
 
+#### Mandatory discovery cross-checks
+
+Recursive traversal is necessary but not sufficient. Before leaving Stage 2, and again whenever the graph or execution boundary changes, the Designer MUST perform all four cross-checks below against the bound sources:
+
+1. **Local/external seam split.** When an outcome consumes authoritative data, state, or a resource owned outside the packet, distinguish the owner/external truth from any packet-local adapter, interface, projection, ledger, record, schema, invariant, or other prerequisite work required to consume it. Do not collapse both sides into one `UNRESOLVED` external/owner node when bound sources require local work to expose or consume that seam. The local work receives its own prerequisite node and resolution; the authoritative owner/external truth receives its own node and truth-class-appropriate resolution.
+2. **Surface-to-node closure.** For every declared or source-required execution, write, effect, persistence, resource, and validation surface, identify the prerequisite node or included outcome that produces, enables, or truthfully accounts for that surface. A surface with no producing/enabling node is an orphan-surface signal and MUST be treated as a missing-prerequisite defect until resolved or explicitly shown not to be required by the bound sources.
+3. **Integration-edge closure.** Where bound sources establish that one declared component or surface reaches another — for example client/frontend → runtime/API, runtime → persistence, adapter → authoritative source, or ledger → schema invariant — represent the dependency edge explicitly. Co-location inside one packet is not a substitute for the edge when the dependency is semantically required.
+4. **Validation-reachability closure.** For each validation method or validation-environment prerequisite, trace what runtime, client/frontend, persistence/schema, fixture/adapter, concurrency, and other surfaces must be reachable for that validation to execute truthfully. Represent the required edges rather than assuming the validation environment implicitly contains everything named by the acceptance source.
+
+Failure of any cross-check is a Stage 2 discovery defect, not a machine-schema detail. The Designer corrects the semantic graph before treating prerequisite discovery as ready for resolution selection or machine projection.
+
 Throughout discovery, distinguish three different strengths of basis for a claimed prerequisite or its properties:
 
 - an **observed/supported fact** — directly stated or directly derivable from a bound authoritative source;
@@ -72,6 +83,8 @@ For each discovered prerequisite, select exactly one of `IN_PACKET`, `PREEXISTIN
 
 Shape the packet's included-outcome set to the smallest coherent result-producing boundary that can be made dependency-closed and truthfully completable, without absorbing materially independent outcomes not required by dependency closure or another explicit governing constraint (WPDC-012). An outcome that is merely nearby, or that would be convenient to bundle, is not automatically part of the coherent cut. One closed included outcome does not excuse bundling another whose dependency model is blocked, contradictory, or incomplete.
 
+Before freezing the cut, repeat the Stage 2 Surface-to-node closure check against the proposed execution boundary and exclusions. Boundary prose must not claim work or effects for which the graph has no producing/enabling node, and exclusions must not hide a live prerequisite edge.
+
 ### Stage 5 — Evidence/context binding and truth-class discipline
 
 For every `PREEXISTING_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` resolution, bind durable evidence to the immutable canonical-base identity and/or the applicable state evaluation context and currentness boundary (WPDC §3.5, §3.6, WPDC-006, WPDC-011). See §4 "Truth classes" for the required distinction between immutable adopter truth, mutable adopter state, and external truth — this stage is where that distinction is applied and bound into evidence.
@@ -82,6 +95,8 @@ The Designer MUST NOT treat an immutable repository SHA as proof of mutable or e
 
 Where a machine projection is produced, project only the bounded claim set defined by `contracts/work-packet-manifest.schema.json` (WPDC §11). The Designer MUST NOT copy full requirements/architecture prose, chain-of-thought, or synthetic authorization booleans into it. The machine projection is a bounded projection of claims needed for deterministic conformance, not a second canonical requirements/architecture/state/authorization store.
 
+Before emitting the machine projection, verify that every node and edge established by the four Stage 2 mandatory discovery cross-checks is represented and that the execution boundary contains no orphan surface.
+
 ### Stage 7 — Deterministic validation
 
 Invoke `tools/validate_work_packet.py` against the produced packet/manifest through its governed discovery/binding path — the exact `--manifest`, `--binding`, `--configuration`, and `--repository-root` inputs resolved from the adopter's declared configuration and binding, not an ad hoc or hand-picked binding chosen to make the packet pass. Treat its result as authoritative for every claim it is designed to check; a deterministic failure is not overridden by Designer confidence (WPDC §7, final paragraph).
@@ -91,6 +106,12 @@ Interpret the returned disposition (`WPDC_ABSENT`, `PACKET_INVALID`, `VALID_BUT_
 ### Stage 8 — Final adversarial missing-dependency check
 
 Before declaring the packet complete, perform one explicit self-adversarial pass asking: "what prerequisite would make this outcome unreachable, unvalidatable, or dishonestly complete that I have not represented?" Focus specifically on missing prerequisite nodes and missing dependency edges, since WPDC-003 explicitly forbids deterministic tooling from proving the absence of an undeclared edge — this stage is a designed compensating control for that structural gap, not a formal guarantee.
+
+The Stage 8 pass MUST deliberately re-run the four Stage 2 mandatory discovery cross-checks from an adversarial posture: Local/external seam split, Surface-to-node closure, Integration-edge closure, and Validation-reachability closure. Challenge both the top-level outcome and every recursively declared prerequisite, including `IN_PACKET` nodes.
+
+If Stage 8 finds a material missing node, edge, resolution-boundary error, or orphan surface, return to Stages 2–6, correct the candidate prospectively, repeat Stage 7 against the corrected bytes, and only then repeat Stage 8. A prior deterministic PASS over the earlier declared model does not survive a semantic correction by implication.
+
+If Stage 8 finds no issue, its output is **bounded self-challenge evidence** only. The result may state that the self-challenge completed with no findings, but it must never be worded as proof that no material dependency is missing, that discovery is complete, or that the graph is semantically exhaustive. WPDC-003 continues to govern the strength of the claim.
 
 This self-check does not substitute for independent Reviewer challenge when one is required. See `agent/contract.md` §5: if independent review is mandated by an applicable governing boundary, Stage 8 is necessary but not sufficient; if the packet instead falls within a governed proportional-judgment space, Stage 8 may stand alone.
 
@@ -116,7 +137,7 @@ An exclusion is a scope statement: it declares a node, work surface, or effect s
 
 When a real prerequisite cannot be truthfully resolved from bound sources, the Designer stops and represents it as `UNRESOLVED`. It never fabricates a resolution to reach `VALID_DEPENDENCY_CLOSED` (WPDC §4.4, WPDC-007). `VALID_BUT_BLOCKED` is a legitimate, coherent terminal state for this packet at this time; it is not a failure of the Designer's process.
 
-The Designer never claims deterministic completeness of its own semantic dependency discovery. Stage 2's recursive discovery and Stage 8's adversarial check are compensating controls, not proof that no undiscovered edge exists (WPDC-003).
+The Designer never claims deterministic completeness of its own semantic dependency discovery. Stage 2's recursive discovery, the mandatory discovery cross-checks, and Stage 8's adversarial check are compensating controls, not proof that no undiscovered edge exists (WPDC-003).
 
 ## 5. Stop and escalation
 
@@ -136,12 +157,13 @@ A completed Designer pass produces:
 - the candidate work packet (outcomes, completion conditions, prerequisites, dependency edges, resolutions, exclusions, evidence bindings, execution boundary, stop conditions, terminal boundary) as required by WPDC §3–§4 and §10.1;
 - where applicable, its machine projection conforming to `contracts/work-packet-manifest.schema.json`;
 - the deterministic validator's exact invocation and returned disposition (Stage 7);
-- the Stage 8 self-adversarial note;
+- the Stage 8 self-adversarial note, labelled as bounded self-challenge evidence rather than semantic-completeness proof;
 - for every `PREEXISTING_SATISFIED` or `BOUND_EXTERNAL_SATISFIED` resolution, its bound evidence and, where applicable, state evaluation context.
 
 ## 7. What the Designer must never claim
 
 - that the packet's dependency graph is provably complete (WPDC-003);
+- that a Stage 8 no-finding result proves no material dependency is missing or that semantic discovery is complete (WPDC-003);
 - that a `VALID_DEPENDENCY_CLOSED` or any other WPDC disposition grants execution, publication, merge, release, acceptance, retry, or replacement authority (WPDC-009);
 - that an immutable canonical-base identity proves mutable or external state (WPDC-006);
 - that its own Stage 8 self-check substitutes for a governance-mandated independent Reviewer pass (`agent/contract.md` §5);
