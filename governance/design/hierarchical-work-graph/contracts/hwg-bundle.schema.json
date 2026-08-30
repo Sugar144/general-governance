@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://general-governance.local/candidates/hwg-bundle.schema.json",
+  "title": "HierarchicalWorkGraph Candidate Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "bundle_id", "profile", "root_graph_ref", "graph_refs", "safety"],
+  "properties": {
+    "schema_version": {"const": "0.1.0-candidate"},
+    "kind": {"const": "HierarchicalWorkGraphBundle"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "levels"],
+      "properties": {
+        "profile_id": {"type": "string", "minLength": 1},
+        "levels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["level_id", "order"],
+            "properties": {
+              "level_id": {"type": "string", "minLength": 1},
+              "order": {"type": "integer", "minimum": 1}
+            }
+          }
+        }
+      }
+    },
+    "root_graph_ref": {"$ref": "#/$defs/fileRef"},
+    "graph_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/fileRef"}
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["graph_validity_grants_authority", "missing_dependency_proves_parallel_safety", "cross_level_dependency_edges_allowed"],
+      "properties": {
+        "graph_validity_grants_authority": {"const": false},
+        "missing_dependency_proves_parallel_safety": {"const": false},
+        "cross_level_dependency_edges_allowed": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
