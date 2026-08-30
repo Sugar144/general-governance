@@ -1,41 +1,31 @@
-# HWG candidate workspace
+# HWG design provenance
 
-This directory is General Governance design-process custody for the non-normative `GG-HWG-ARCH-001` candidate.
+This directory preserves the General Governance design-process custody that produced `GG-HWG-ARCH-001`.
 
-It is intentionally outside the current General Governance release payload.
+The empirical candidate has now been promoted on this branch into the prospective reusable `0.1.0-rc.10` release. The duplicate candidate schemas, validator and tests were removed after promotion so there is only one live machine contract.
 
-## Surfaces
+## Preserved design artifact
 
-- `GG_HWG_ARCHITECTURE_CANDIDATE_001.md` — architecture and candidate invariants;
-- `contracts/hwg-bundle.schema.json` — bundle/profile/graph-file reference schema;
-- `contracts/work-graph.schema.json` — WorkGraph/WorkNode schema;
-- `validate_hwg_candidate.py` — deterministic structural validator;
-- `tests/test_validate_hwg_candidate.py` — synthetic positive/negative tests.
+- `GG_HWG_ARCHITECTURE_CANDIDATE_001.md` — design rationale, candidate invariants, empirical adoption reasoning and scope boundaries that preceded normative promotion.
 
-## Candidate self-test
+## Normative rc.10 surfaces
 
-From the General Governance repository root:
+The current reusable implementation is owned exclusively by release-included paths:
 
-```text
-python -m unittest -v governance/design/hierarchical-work-graph/tests/test_validate_hwg_candidate.py
-```
+- `framework/capabilities/hierarchical-work-graph/contract.md`;
+- `framework/capabilities/hierarchical-work-graph/adoption-contract.md`;
+- `contracts/hierarchical-work-graph-bundle.schema.json`;
+- `contracts/work-graph.schema.json`;
+- `tools/validate_hierarchical_work_graph.py`;
+- `tests/test_hierarchical_work_graph.py`;
+- `docs/architecture/hierarchical-work-graph.md`.
 
-Requires `jsonschema`, already used by the current General Governance validation toolchain.
+The design provenance under `governance/**` remains outside the reusable release payload and is not an alternative contract.
 
-These candidate tests are deliberately not wired into the current release conformance workflow because `governance/**` is design/evolution custody and HWG has not been promoted into the current reusable release payload.
+## Empirical basis
 
-## Validate an adopter bundle
+The pre-promotion generic candidate passed eight positive/negative structural tests, including the three-level hierarchy case, cycle rejection, cross-graph dependency rejection, reciprocal parent binding, adjacent-level expansion, single-parent enforcement, orphan rejection and graph-digest rejection.
 
-```text
-python governance/design/hierarchical-work-graph/validate_hwg_candidate.py \
-  /path/to/hwg/bundle.json \
-  --source-root /path/to/adopter/repository
-```
+Dopis supplied the first adopter evidence by deterministically projecting its accepted vertical-slice topology and the already-established Ordering work-packet expansion without duplicating product truth.
 
-`--source-root` is optional. When supplied, `SHA256` and `GIT_BLOB_SHA1` source references are checked against the current adopter bytes. `OPAQUE_EXACT` references remain structural exact labels and are not externally resolved by this candidate.
-
-A `VALID` structural result proves neither authority nor concurrent safety.
-
-## First empirical adopter
-
-Dopis branch `planning/hwg-pilot-001` contains a non-normative deterministic materializer that projects the exact accepted vertical-slice DAG into Level 1 and materializes only the already-established `VS-ORDERING-001 → DOPIS-WP-VS-ORDERING-001-005` Level-2 expansion. Dopis Governance conformance run `#462` passed the project-local materialization tests. Cross-repository validation with this candidate validator remains a separate explicit check until HWG is promoted into a reusable GG release.
+Normative rc.10 conformance subsequently exercises the promoted schemas/validator under both the full-checkout and isolated release-payload gates.
