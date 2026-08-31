@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tools import validate_hierarchical_work_graph as hwg
 
@@ -180,6 +181,39 @@ class HWGValidatorTests(unittest.TestCase):
                 hwg.validate_bundle(bundle_path)
             self.assertEqual(captured.exception.code, "GRAPH_DIGEST_MISMATCH")
 
+    def test_graph_bytes_are_read_once_for_digest_and_parse(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bundle_path = self.build_bundle(root, self.valid_graphs())
+            original_read_bytes = Path.read_bytes
+            reads: dict[Path, int] = {}
+
+            def counted_read_bytes(path: Path) -> bytes:
+                resolved = path.resolve()
+                if resolved.parent == root.resolve() and resolved.name.startswith("g-"):
+                    reads[resolved] = reads.get(resolved, 0) + 1
+                return original_read_bytes(path)
+
+            with mock.patch.object(Path, "read_bytes", counted_read_bytes):
+                result = hwg.validate_bundle(bundle_path)
+
+            self.assertEqual(result["status"], "VALID_HIERARCHICAL_WORK_GRAPH")
+            self.assertEqual(len(reads), 3)
+            self.assertTrue(all(count == 1 for count in reads.values()), reads)
+
+    def test_long_dependency_chain_does_not_depend_on_python_recursion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            chain = []
+            for index in range(1500):
+                node_id = f"n-{index:04d}"
+                deps = (f"n-{index - 1:04d}",) if index else ()
+                chain.append(node(node_id, deps=deps))
+            bundle = self.build_bundle(root, [graph("g-vs", "OUTCOME", None, chain)])
+            result = hwg.validate_bundle(bundle)
+            self.assertEqual(result["status"], "VALID_HIERARCHICAL_WORK_GRAPH")
+            self.assertEqual(result["node_count"], 1500)
+
     def test_absent_discovery_key_means_capability_absent(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -192,7 +226,7 @@ class HWGValidatorTests(unittest.TestCase):
             root = Path(tmp)
             hwg_dir = root / "hwg"
             hwg_dir.mkdir()
-            bundle = self.build_bundle(hwg_dir, self.valid_graphs())
+            self.build_bundle(hwg_dir, self.valid_graphs())
             config = root / "configuration.yaml"
             config.write_text(
                 "configuration:\n"
