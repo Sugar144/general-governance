@@ -42,18 +42,30 @@ def fail(code: str, message: str) -> None:
     raise ValidationFailure(code, message)
 
 
-def load_json(path: Path, label: str) -> dict[str, Any]:
+def load_json_bytes(data: bytes, label: str, path: Path) -> dict[str, Any]:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         fail("SCHEMA_INVALID", f"invalid {label} JSON {path}: {exc}")
     if not isinstance(value, dict):
         fail("SCHEMA_INVALID", f"{label} must be a JSON object")
     return value
 
 
+def load_json(path: Path, label: str) -> dict[str, Any]:
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        fail("SCHEMA_INVALID", f"cannot read {label} JSON {path}: {exc}")
+    return load_json_bytes(data, label, path)
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return sha256_bytes(path.read_bytes())
 
 
 def validate_schema(document: dict[str, Any], schema_path: Path, label: str) -> None:
@@ -91,22 +103,27 @@ def unique_by(items: list[dict[str, Any]], field: str, label: str) -> dict[str, 
 
 
 def assert_dag(graph_id: str, nodes: dict[str, dict[str, Any]]) -> None:
-    visiting: set[str] = set()
-    visited: set[str] = set()
-
-    def visit(node_id: str) -> None:
-        if node_id in visited:
-            return
-        if node_id in visiting:
-            fail("DEPENDENCY_CYCLE", f"dependency cycle in graph {graph_id} at node {node_id}")
-        visiting.add(node_id)
-        for dependency in nodes[node_id]["dependencies"]:
-            visit(dependency)
-        visiting.remove(node_id)
-        visited.add(node_id)
-
-    for node_id in nodes:
-        visit(node_id)
+    """Reject dependency cycles without depending on Python recursion depth."""
+    state: dict[str, int] = {}
+    for start in nodes:
+        if state.get(start, 0) == 2:
+            continue
+        state[start] = 1
+        stack: list[tuple[str, Any]] = [(start, iter(nodes[start]["dependencies"]))]
+        while stack:
+            node_id, dependencies = stack[-1]
+            try:
+                dependency = next(dependencies)
+            except StopIteration:
+                state[node_id] = 2
+                stack.pop()
+                continue
+            dependency_state = state.get(dependency, 0)
+            if dependency_state == 1:
+                fail("DEPENDENCY_CYCLE", f"dependency cycle in graph {graph_id} at node {dependency}")
+            if dependency_state == 0:
+                state[dependency] = 1
+                stack.append((dependency, iter(nodes[dependency]["dependencies"])))
 
 
 def verify_source_identity(source: dict[str, Any], source_root: Path | None) -> None:
@@ -165,29 +182,35 @@ def validate_bundle(bundle_path: Path, *, source_root: Path | None = None) -> di
     level_order = {level["level_id"]: level["order"] for level in levels}
 
     bundle_dir = bundle_path.parent
-    graph_ref_paths: dict[Path, dict[str, Any]] = {}
+    graph_payloads: dict[Path, tuple[dict[str, Any], bytes]] = {}
     for ref in bundle["graph_refs"]:
         path = bounded_path(bundle_dir, ref["path"], "graph_ref.path")
-        if path in graph_ref_paths:
+        if path in graph_payloads:
             fail("DUPLICATE_REFERENCE", f"graph file referenced more than once: {ref['path']}")
         if not path.is_file():
             fail("GRAPH_NOT_FOUND", f"referenced graph does not exist: {ref['path']}")
-        actual = sha256(path)
+        try:
+            graph_bytes = path.read_bytes()
+        except OSError as exc:
+            fail("GRAPH_NOT_FOUND", f"cannot read referenced graph {ref['path']}: {exc}")
+        actual = sha256_bytes(graph_bytes)
         if actual != ref["sha256"]:
             fail("GRAPH_DIGEST_MISMATCH", f"graph digest mismatch for {ref['path']}: expected {ref['sha256']}, got {actual}")
-        graph_ref_paths[path] = ref
+        graph_payloads[path] = (ref, graph_bytes)
 
     root_path = bounded_path(bundle_dir, bundle["root_graph_ref"]["path"], "root_graph_ref.path")
-    if root_path not in graph_ref_paths:
+    if root_path not in graph_payloads:
         fail("ROOT_NOT_LISTED", "root_graph_ref must also appear exactly once in graph_refs")
-    if sha256(root_path) != bundle["root_graph_ref"]["sha256"]:
+    root_actual = sha256_bytes(graph_payloads[root_path][1])
+    if root_actual != bundle["root_graph_ref"]["sha256"]:
         fail("GRAPH_DIGEST_MISMATCH", "root_graph_ref digest does not match root graph bytes")
 
     graphs: dict[str, dict[str, Any]] = {}
     node_indexes: dict[str, dict[str, dict[str, Any]]] = {}
+    graph_ids_by_path: dict[Path, str] = {}
 
-    for path in graph_ref_paths:
-        graph = load_json(path, "WorkGraph")
+    for path, (_ref, graph_bytes) in graph_payloads.items():
+        graph = load_json_bytes(graph_bytes, "WorkGraph", path)
         validate_schema(graph, GRAPH_SCHEMA, "WorkGraph")
         graph_id = graph["graph_id"]
         if graph_id in graphs:
@@ -215,11 +238,9 @@ def validate_bundle(bundle_path: Path, *, source_root: Path | None = None) -> di
 
         graphs[graph_id] = graph
         node_indexes[graph_id] = nodes
+        graph_ids_by_path[path] = graph_id
 
-    root_graph = load_json(root_path, "root WorkGraph")
-    root_id = root_graph["graph_id"]
-    if root_id not in graphs:
-        fail("ROOT_NOT_LISTED", "root graph identity is not present in loaded graph set")
+    root_id = graph_ids_by_path[root_path]
     if graphs[root_id]["parent_binding"] is not None:
         fail("INVALID_ROOT_PARENT", "root graph must have parent_binding = null")
     if level_order[graphs[root_id]["level_id"]] != 1:
@@ -253,23 +274,42 @@ def validate_bundle(bundle_path: Path, *, source_root: Path | None = None) -> di
         if graph_id not in child_claims:
             fail("ORPHAN_GRAPH", f"non-root graph {graph_id} is not referenced by a MATERIALIZED parent expansion")
 
-    visiting_graphs: set[str] = set()
-    visited_graphs: set[str] = set()
+    graph_state: dict[str, int] = {root_id: 1}
+    stack: list[tuple[str, Any]] = [
+        (
+            root_id,
+            iter(
+                node["expansion"]["child_graph_id"]
+                for node in node_indexes[root_id].values()
+                if node["expansion"]["state"] == "MATERIALIZED"
+            ),
+        )
+    ]
+    while stack:
+        graph_id, children = stack[-1]
+        try:
+            child_id = next(children)
+        except StopIteration:
+            graph_state[graph_id] = 2
+            stack.pop()
+            continue
+        child_state = graph_state.get(child_id, 0)
+        if child_state == 1:
+            fail("EXPANSION_CYCLE", f"hierarchy expansion cycle detected at graph {child_id}")
+        if child_state == 0:
+            graph_state[child_id] = 1
+            stack.append(
+                (
+                    child_id,
+                    iter(
+                        node["expansion"]["child_graph_id"]
+                        for node in node_indexes[child_id].values()
+                        if node["expansion"]["state"] == "MATERIALIZED"
+                    ),
+                )
+            )
 
-    def walk(graph_id: str) -> None:
-        if graph_id in visited_graphs:
-            return
-        if graph_id in visiting_graphs:
-            fail("EXPANSION_CYCLE", f"hierarchy expansion cycle detected at graph {graph_id}")
-        visiting_graphs.add(graph_id)
-        for node in node_indexes[graph_id].values():
-            expansion = node["expansion"]
-            if expansion["state"] == "MATERIALIZED":
-                walk(expansion["child_graph_id"])
-        visiting_graphs.remove(graph_id)
-        visited_graphs.add(graph_id)
-
-    walk(root_id)
+    visited_graphs = {graph_id for graph_id, state in graph_state.items() if state == 2}
     unreachable = sorted(set(graphs) - visited_graphs)
     if unreachable:
         fail("ORPHAN_GRAPH", f"bundle contains graphs unreachable from root: {unreachable}")
