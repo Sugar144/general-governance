@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Sugar144/general-governance/contracts/work-graph.schema.json",
+  "title": "General Governance WorkGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "graph_id", "profile_id", "level_id", "parent_binding", "source_refs", "nodes"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "WorkGraph"},
+    "graph_id": {"type": "string", "minLength": 1},
+    "profile_id": {"type": "string", "minLength": 1},
+    "level_id": {"type": "string", "minLength": 1},
+    "parent_binding": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["parent_graph_id", "parent_node_id"],
+          "properties": {
+            "parent_graph_id": {"type": "string", "minLength": 1},
+            "parent_node_id": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/sourceRef"}
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/node"}
+    }
+  },
+  "$defs": {
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "locator", "identity"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"enum": ["SHA256", "GIT_BLOB_SHA1", "OPAQUE_EXACT"]},
+            "value": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "expansion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state"],
+          "properties": {"state": {"const": "NOT_MATERIALIZED"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "child_graph_id"],
+          "properties": {
+            "state": {"const": "MATERIALIZED"},
+            "child_graph_id": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "source_ref_ids", "dependencies", "expansion"],
+      "properties": {
+        "node_id": {"type": "string", "minLength": 1},
+        "source_ref_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "expansion": {"$ref": "#/$defs/expansion"}
+      }
+    }
+  }
+}

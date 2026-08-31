@@ -1,7 +1,7 @@
 {
-  "manifest_schema_version": "1.4.0",
+  "manifest_schema_version": "1.5.0",
   "repository": "Sugar144/general-governance",
-  "framework_version": "0.1.0-rc.9",
+  "framework_version": "0.1.0-rc.10",
   "release_status": "IMMUTABLE_RELEASE_CANDIDATE_PENDING_OWNER_DISPOSITION",
   "compatibility": {
     "framework_contract": "2.0.0",
@@ -20,7 +20,14 @@
     "manifest_schema_version": "1.0.0",
     "optional": true
   },
-  "content_sha256": "8ee5329e806de07d7db0d9cf642a2a52496de6dc9f4ce3e567e9ac92c4849c86",
+  "hierarchical_work_graph": {
+    "contract_version": "1.0.0",
+    "adoption_contract_version": "1.0.0",
+    "bundle_schema_version": "1.0.0",
+    "graph_schema_version": "1.0.0",
+    "optional": true
+  },
+  "content_sha256": "6d9c44c437fb8c34782d7935e1fd6e25310cb5c896df5296a01a6e63441b9733",
   "content_identity": {
     "method": "SCOPED_TRACKED_FILES_V1",
     "default_classification": "RELEASE_INCLUDED",
@@ -52,6 +59,8 @@
     "framework/capabilities/work-packet-design/agent/work-packet-designer/SKILL.md",
     "framework/capabilities/work-packet-design/agent/work-packet-reviewer/role.md",
     "framework/capabilities/work-packet-design/agent/work-packet-reviewer/SKILL.md",
+    "framework/capabilities/hierarchical-work-graph/contract.md",
+    "framework/capabilities/hierarchical-work-graph/adoption-contract.md",
     "contracts/consumer-lock.schema.json",
     "contracts/consumer-lock-v1.schema.json",
     "contracts/consumer-configuration.schema.json",
@@ -59,13 +68,17 @@
     "contracts/capability-stack.schema.json",
     "contracts/work-packet-capability-binding.schema.json",
     "contracts/work-packet-manifest.schema.json",
+    "contracts/hierarchical-work-graph-bundle.schema.json",
+    "contracts/work-graph.schema.json",
     "docs/architecture/capability-composition.md",
     "docs/architecture/work-packet-design-dependency-closure.md",
+    "docs/architecture/hierarchical-work-graph.md",
     "provenance/extraction-manifest.json",
     "provenance/evolution-manifest.json",
     "tools/validate_consumer.py",
     "tools/validate_capability_stack.py",
     "tools/validate_work_packet.py",
+    "tools/validate_hierarchical_work_graph.py",
     "tools/verify_evolution.py"
   ]
 }

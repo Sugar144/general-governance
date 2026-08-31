@@ -24,7 +24,8 @@ PROJECTION_INDEX_SCHEMA = "gg.release-payload-projection-index/1.1.0"
 
 LEGACY_SCHEMA_VERSION = "1.3.0"
 LEGACY_METHOD = "LEGACY_COMPLETE_TRACKED_FILES_V1"
-SCOPED_SCHEMA_VERSION = "1.4.0"
+SCOPED_SCHEMA_VERSION = "1.5.0"
+SUPPORTED_SCOPED_SCHEMA_VERSIONS = frozenset({"1.4.0", "1.5.0"})
 SCOPED_METHOD = "SCOPED_TRACKED_FILES_V1"
 
 RELEASE_INCLUDED = "RELEASE_INCLUDED"
@@ -159,7 +160,7 @@ def _repo_file_digest(root: Path, relative: str, label: str = "release content p
 def _validate_manifest_schema_from_root(root: Path, manifest: Mapping[str, object]) -> None:
     schema_path = _repo_path_without_symlinks(root, MANIFEST_SCHEMA_PATH, "release-manifest schema")
     if not schema_path.is_file():
-        if manifest.get("manifest_schema_version") == SCOPED_SCHEMA_VERSION:
+        if manifest.get("manifest_schema_version") in SUPPORTED_SCOPED_SCHEMA_VERSIONS:
             fail("scoped release manifest requires contracts/release-manifest.schema.json")
         return
     try:
@@ -230,7 +231,7 @@ def validate_release_manifest(manifest: Mapping[str, object]) -> None:
             fail("legacy release manifest cannot declare scoped content_identity")
         return
 
-    if schema_version != SCOPED_SCHEMA_VERSION:
+    if schema_version not in SUPPORTED_SCOPED_SCHEMA_VERSIONS:
         fail(f"unsupported release manifest schema version: {schema_version!r}")
 
     if "content_identity_method" in manifest:

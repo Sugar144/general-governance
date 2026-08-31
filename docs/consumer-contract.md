@@ -21,6 +21,10 @@ closed when the configuration is absent, structurally invalid, incompatible,
 contains unresolved double-brace placeholders, omits a required key, or fails
 to resolve a declared reusable-core placeholder.
 
+Required core configuration values remain mandatory. Optional capability
+discovery keys do not become required merely because a framework release makes
+the capability available.
+
 ## Repository revision identity and release payload identity
 
 The exact Git `commit_sha` binds the complete selected repository revision.
@@ -31,12 +35,17 @@ Historical releases through `0.1.0-rc.7` use the legacy complete-tracked-files
 content identity: every tracked path except `release-manifest.json` contributes
 to `content_sha256`.
 
-A successor release may declare manifest schema `1.4.0` with
+A successor release may declare a scoped manifest with
 `content_identity.method = SCOPED_TRACKED_FILES_V1`. Under that method,
 `content_sha256` binds the classified **Framework Release Payload** while the
 exact Git commit still binds the complete repository tree. Classification is
 fail-closed: any tracked path not explicitly recognized as operational is
 `RELEASE_INCLUDED`.
+
+Manifest schema `1.4.0` remains supported for historical scoped releases.
+`0.1.0-rc.10` uses manifest schema `1.5.0`, which adds the advertised HWG
+capability identity without changing the `SCOPED_TRACKED_FILES_V1`
+classification method.
 
 `governance/**` is the reserved General Governance operational/evolution
 namespace for formal run custody, decisions, discovery, design, implementation
@@ -82,22 +91,20 @@ change and is outside framework authority.
 
 ## Compatibility
 
-Version `0.1.0-rc.7` uses framework contract `2.0.0`, consumer-lock schema
+Version `0.1.0-rc.10` uses framework contract `2.0.0`, consumer-lock schema
 `2.0.0`, and consumer-configuration schema `1.0.0`, unchanged from
-`0.1.0-rc.2`. It preserves the `0.1.0-rc.3` optional capability-composition
-contract/schema `1.0.0`, the `0.1.0-rc.4` bounded operational delegation
-authority model, and the `0.1.0-rc.5` bounded replacement-execution lifecycle
-semantics unchanged.
+`0.1.0-rc.2`. It preserves the optional capability-composition contract/schema
+`1.0.0`, the bounded operational delegation authority model, the bounded
+replacement-execution lifecycle semantics, and the existing WPDC
+contract/adoption/machine versions `1.0.0`.
 
 The scoped release-payload identity mechanism does not itself add an
 adopter-owned value. The current consumer-lock schema `2.0.0` remains sufficient
-only while the adopter identity tuple stays
+while the adopter identity tuple stays
 `(repository, version, commit_sha, release_manifest_sha256)` and no new
-consumer-owned obligation is introduced. If implementation or packaging proves
-otherwise, compatibility review is required before changing schemas or
-compatibility declarations.
+consumer-owned identity obligation is introduced.
 
-rc.6 adds Work Packet Design & Dependency Closure (WPDC) as an optional reusable
+rc.6 added Work Packet Design & Dependency Closure (WPDC) as an optional reusable
 L2 capability. WPDC contract version `1.0.0` and adoption contract version
 `1.0.0` define explicit outcomes, completion conditions, prerequisite relations
 (`REACH`, `VALIDATE`, `COMPLETE`), transitive closure, and the resolution set
@@ -108,36 +115,81 @@ adopter-owned satisfaction is distinct from separately bound external
 satisfaction, and immutable repository identity never proves mutable state by
 itself.
 
-The rc.6 machine projection uses `contracts/work-packet-capability-binding.schema.json`
-and `contracts/work-packet-manifest.schema.json`, both schema version `1.0.0`,
-with dedicated deterministic validator `tools/validate_work_packet.py`. The
-validator checks represented graph/reference integrity, resolution/evidence and
-currentness bindings, cycles, exclusion contradictions, validation coverage,
-required authority/control declarations, and derives WPDC packet dispositions.
-It does not infer undeclared semantic dependencies and does not grant execution,
+The WPDC machine projection uses
+`contracts/work-packet-capability-binding.schema.json` and
+`contracts/work-packet-manifest.schema.json`, both schema version `1.0.0`, with
+dedicated deterministic validator `tools/validate_work_packet.py`. The validator
+checks represented graph/reference integrity, resolution/evidence and currentness
+bindings, cycles, exclusion contradictions, validation coverage, required
+authority/control declarations, and derives WPDC packet dispositions. It does
+not infer undeclared semantic dependencies and does not grant execution,
 mutation, merge, release, publication, or acceptance authority.
 
-WPDC is absent unless explicitly adopted by the consumer. The reserved optional
-discovery key is `configuration.capabilities.work_packet_design.binding_path`.
-A consumer that does not adopt WPDC requires no configuration migration from
-rc.5. A consumer that does adopt WPDC must provide a supported exact adoption
-binding and conforming work-packet projection; framework availability alone does
-not activate the capability or retroactively re-evaluate historical packets.
+WPDC is absent unless explicitly adopted by the consumer. Its reserved optional
+discovery key is
+`configuration.capabilities.work_packet_design.binding_path`. A consumer that
+does not adopt WPDC requires no WPDC configuration migration. A consumer that
+does adopt WPDC must provide a supported exact adoption binding and conforming
+work-packet projection; framework availability alone does not activate the
+capability or retroactively re-evaluate historical packets.
+
+### Hierarchical Work Graph in rc.10
+
+rc.10 adds Hierarchical Work Graph (HWG) as an optional reusable L2 capability.
+HWG contract version `1.0.0`, adoption contract version `1.0.0`, bundle schema
+version `1.0.0`, and graph schema version `1.0.0` define:
+
+- finite ordered work-hierarchy profiles;
+- sibling-only DAG dependencies;
+- exact reciprocal parent/child graph expansion;
+- progressive/JIT expansion;
+- exact graph and source lineage;
+- structural completion eligibility distinct from acceptance;
+- explicit separation of graph validity from authority and concurrent safety.
+
+HWG is absent unless explicitly adopted through:
+
+`configuration.capabilities.hierarchical_work_graph.bundle_path`
+
+A consumer that leaves this key absent requires no HWG bundle and remains a
+conforming consumer. If the key is present, the selected adopter-owned bundle
+must resolve inside the consumer repository and pass
+`tools/validate_hierarchical_work_graph.py` against the normative schemas.
+
+The HWG validator proves represented structural integrity only. It does not
+infer undeclared dependencies, prove semantic boundary sufficiency, grant
+execution authority, or infer that missing dependency edges make work safe to
+run concurrently.
+
+For a software adopter the profile may be:
+
+```text
+PRODUCT_OUTCOME
+  -> WORK_PACKET
+    -> EXECUTION_UNIT
+```
+
+These level labels are adopter-profile semantics, not universal GG ontology.
+The capability does not assume one product outcome equals one work packet. When
+an executable child graph depends materially on current repository/runtime
+context, the execution expansion is produced or revalidated under the
+designated execution-decomposition contract; in the current AI Software Factory
+software profile, AEA D1/D2 is that producer for `WORK_PACKET -> EXECUTION_UNIT`.
 
 The current `framework-lock.json` remains a General Governance lock only. A
 consumer that composes additional independently governed systems uses the
 separate adopter-owned capability-stack contract. That stack pins exact
 component commits and preserves each component's own authority/conformance
-boundary; General Governance conformance does not imply CWG, AET, or other
-capability conformance.
+boundary; General Governance conformance does not imply CWG, AET, AO, AEA, or
+other capability conformance.
 
 Schema `contracts/consumer-lock-v1.schema.json` is retained only so a controlled
 upgrade can validate a prior `0.1.0-rc.1` lock. It is not accepted as a current
 lock by the current validator.
 
 Optional capabilities are absent unless explicitly bound by the adopter. A
-project remains responsible for its own L3/L5 semantics; framework conformance
-is not a project semantic review.
+project remains responsible for its own project-specific semantics; framework
+conformance is not a project semantic review.
 
 ## Controlled upgrade
 
@@ -150,20 +202,22 @@ unverifiable, or configuration-incomplete transition. Consumers never follow a
 moving branch automatically.
 
 See `docs/upgrades/0.1.0-rc.1-to-0.1.0-rc.2.md` for adopter #1 and adopter #2
-migration requirements. Moving from rc.2 to rc.3, rc.3 to rc.4, rc.4 to rc.5,
-or rc.5 to rc.6 requires a new immutable GG lock identity. The rc.5 -> rc.6
-transition requires no configuration migration when WPDC remains unadopted; an
-adopter enabling WPDC supplies its optional binding as a separate adopter-owned
-change.
+migration requirements. Every later release transition requires a new immutable
+GG lock identity even when compatibility schemas remain unchanged.
+
+The rc.9 -> rc.10 transition requires no HWG configuration migration when HWG
+remains unadopted. An adopter enabling HWG supplies its optional bundle path and
+project-owned hierarchy artifacts as an explicit adopter change.
 
 ## Ownership boundary
 
 Framework-owned surfaces are L0, the L1 configuration contract, selected L2
 modules if separately released, reusable L6 helpers, and generic contracts.
-Consumer-owned surfaces are L3 projections, L5 evidence/history, configuration
-values, project state, capability-stack bindings, and provider-specific runtime
-bindings. Consumers reference framework normative semantics through their lock;
-they must not copy or override them under framework-owned paths.
+Consumer-owned surfaces are project-specific projections, evidence/history,
+configuration values, project state, capability-stack bindings, and
+provider-specific runtime bindings. Consumers reference framework normative
+semantics through their lock; they must not copy or override them under
+framework-owned paths.
 
 General Governance project-operational evidence may be referenced by an adopter
 using an exact GG commit/artifact identity independently of the adopter's
