@@ -1,0 +1,42 @@
+{
+  "schema": "gg.cross-project-learning-pilot-validation/0.1.0",
+  "package_id": "GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001-SVP-GA-PRE-RUN-001",
+  "status": "PASS",
+  "terminal_status": "VALIDATED_PENDING_PROJECT_OWNER_INTEGRATION_DECISION",
+  "gg_baseline": "22a1d5e2f759fda53574884e1056a3a56baa211a",
+  "candidate_commit": "133a091582288ad243f14ff627de4327b698157c",
+  "artifacts": {
+    "authorization_blob": "780a9ce50ad14d1b9fa16154bf1be536505d624d",
+    "material_prompt_blob": "7e21fe52850e99bef13d7f6f3f4d98f1b41e47a8",
+    "package_blob": "0145d25d9a6790240d620cc391f4abe26aaef499",
+    "adopter_contract_blob": "0b8b4aaa94979c8ff58c1ecfcfa47ca4b65aaea1"
+  },
+  "checks": [
+    {"id":"VAL-001","name":"gg_main_currentness","expected":"22a1d5e2f759fda53574884e1056a3a56baa211a","observed":"22a1d5e2f759fda53574884e1056a3a56baa211a","result":"PASS"},
+    {"id":"VAL-002","name":"resume_wpdc_core_integrated","expected":"09d678374c310d67a7ce56ef536dce6d94caef01 reachable predecessor of current GG main","observed":"rc.6 WPDC integration confirmed and current rc.7 main descends from it","result":"PASS"},
+    {"id":"VAL-003","name":"resume_wpdc_agent_layer_integrated","expected":"accepted provider-neutral Designer/Reviewer layer integrated","observed":"rc.7 merge 22a1d5e2f759fda53574884e1056a3a56baa211a contains the agent-layer contract/roles","result":"PASS"},
+    {"id":"VAL-004","name":"material_prompt_custody","expected":"exact Owner handoff preserved before terminal validation","observed":"GG-MP-0006 v1.0.0 blob 7e21fe52850e99bef13d7f6f3f4d98f1b41e47a8","result":"PASS"},
+    {"id":"VAL-005","name":"authorized_gg_write_surface","expected":"only files under governance/pilots/GG-METHOD-PILOT-CROSS-PROJECT-LEARNING-LIFECYCLE-001/SVP-GUIDED-ANSWERING-PRE-RUN-001/**","observed":"four candidate artifacts added there before this validation record; no pre-existing file modified","result":"PASS"},
+    {"id":"VAL-006","name":"non_normative_status","expected":"pilot does not amend rc.7 normative surfaces","observed":"NON_NORMATIVE_PILOT / NON_NORMATIVE_PILOT_CANDIDATE","result":"PASS"},
+    {"id":"VAL-007","name":"separate_pre_run_authorities","expected":"AET-P4 and P5B excluded","observed":"both are explicit forbidden surfaces/separate gates","result":"PASS"},
+    {"id":"VAL-008","name":"future_run_authority","expected":"C2 Claude Agent SDK RUN-001 remains unauthorized","observed":"future_run_001_authorized=false and explicit stop condition","result":"PASS"},
+    {"id":"VAL-009","name":"svp_baseline_evidence_honesty","expected":"local unpublished C2 SHA not represented as remote verified","observed":"280aab9c202394cca4107c3ac3df0885be6a9164 classified OWNER_REPORTED_LOCAL_UNPUBLISHED / remote_verification NOT_AVAILABLE","result":"PASS"},
+    {"id":"VAL-010","name":"packet_disposition_enum","expected":"exactly NO_MATERIAL_LEARNING, LOCAL_LEARNING_RECORDED, CROSS_PROJECT_SIGNAL_RECORDED","observed":"exact set present","result":"PASS"},
+    {"id":"VAL-011","name":"vertical_closeout_enum","expected":"exactly NO_CROSS_PROJECT_SIGNALS or HARVEST_RECORDED","observed":"exact set present","result":"PASS"},
+    {"id":"VAL-012","name":"conditional_harvest","expected":"full harvest iff one or more packet cross-project signals exist","observed":"REQUIRED_IFF_ONE_OR_MORE_PACKET_CROSS_PROJECT_SIGNALS","result":"PASS"},
+    {"id":"VAL-013","name":"authority_transfer","expected":"cross-project signals create no target authority","observed":"authority_transfer NONE and explicit no-authority-transfer clauses","result":"PASS"},
+    {"id":"VAL-014","name":"proportionality","expected":"material-only capture, existing reports allowed, no artificial/retrofit evidence","observed":"non-triggers and no-retrofit rules present; dedicated per-event files not required","result":"PASS"},
+    {"id":"VAL-015","name":"svp_write_surface_bounded","expected":"learning index/binding, C2 report learning fields, one vertical closeout, conditional harvest only","observed":"five exact candidate SVP paths bound; adopter may narrow but not widen without new authority","result":"PASS"},
+    {"id":"VAL-016","name":"cross_repository_effect_boundary","expected":"this GG package performs no SVP mutation","observed":"svp_mutation_authorized_by_this_gg_package=false; no SVP write performed","result":"PASS"},
+    {"id":"VAL-017","name":"gg_integration_authority","expected":"PR/merge not inferred","observed":"gg_pull_request_authorized=false; gg_merge_authorized=false","result":"PASS"}
+  ],
+  "validation_summary": "17/17 PASS",
+  "blockers": [
+    "GG candidate is not yet integrated into main",
+    "SVP adopter projection has not yet been materialized under separate SVP authority",
+    "C2 local preparation HEAD must be proven locally current or explicitly rebound before use",
+    "AET-P4 and P5B pre-run dependencies remain separate gates",
+    "future RUN-001 exact component set and authority remain unresolved by design"
+  ],
+  "note": "Validation creates no PR, merge, SVP mutation, AET-P4/P5B work, or RUN-001 authority."
+}
