@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "CONTRACT_ID",
+  "generation": "GENERATION_ID",
+  "producerStream": "PRODUCER_STREAM_ID",
+  "consumerStreams": ["CONSUMER_STREAM_ID"],
+  "trackedSurface": ["PATH_OR_SEMANTIC_SURFACE"],
+  "semanticChangeRule": "Advance generation when a change can invalidate assumptions made by any bound consumer.",
+  "consumerRule": "A consumer must bind an exact generation and revalidate before activation/resume when the producer advances it.",
+  "status": "ACTIVE"
+}
