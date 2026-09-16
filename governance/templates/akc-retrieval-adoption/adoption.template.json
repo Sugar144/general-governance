@@ -30,6 +30,7 @@
   },
   "qualification": {
     "status": "ADOPTION_DECLARED",
-    "evidence": null
+    "evidence": null,
+    "project_evidence": null
   }
 }
