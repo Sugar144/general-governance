@@ -34,10 +34,10 @@ contracts/repository-retrieval-adoption-v1.json
 Consumers should use the following order:
 
 1. exact deterministic lookup when an ID/path is already known;
-2. AKC bounded retrieval when relevant evidence must be discovered in a large repository corpus;
+2. AKC bounded retrieval when relevant evidence must be discovered in a large repository corpus and the adopter has the required qualification for that use;
 3. full-file or full-corpus inspection only when the task explicitly requires completeness.
 
-Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact Git revision before admission.
+Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact Git revision before admission. A `CAPABILITY_AVAILABLE` adopter may run bounded doctor/qualification work, but ordinary governed work must not make AKC retrieval mandatory until the adopter reaches the qualification state required by its local policy.
 
 ## Provider-free baseline
 
@@ -46,10 +46,11 @@ The v1 baseline is `lexical_v1`, using AKC BM25/FTS discovery plus exact Git re-
 Recommended conformance command from an AKC checkout pinned to the manifest revision:
 
 ```bash
+CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
 python -m akc.repository_consumer doctor \
   --repo /path/to/adopter \
   --adoption /path/to/adopter/.governance/capabilities/akc-retrieval.json \
-  --workspace "$XDG_CACHE_HOME/akc/<project>/doctor"
+  --workspace "$CACHE_ROOT/akc/<project>/doctor"
 ```
 
 A green doctor establishes capability availability only. Project qualification requires a separate retrieval-quality fixture and evidence record.
