@@ -1,0 +1,27 @@
+{
+  "packetVersion": "1.0",
+  "packetId": "PROJECT-STREAM-ID",
+  "streamId": "STREAM_ID",
+  "status": "PLANNED",
+  "branch": "feature/stream-branch",
+  "readScope": "repository-wide",
+  "writableTargets": ["TARGET_ID"],
+  "forbiddenTargets": ["coordination-admin"],
+  "conflictDomain": "DOMAIN_ID",
+  "coordination": {
+    "intraStreamDefault": "EXCLUSIVE_EFFECT",
+    "branchRefEffect": "EXCLUSIVE_EFFECT",
+    "integrationToMain": "ORDERED_EFFECT"
+  },
+  "contractGenerations": {},
+  "base": {
+    "mainAtAdoption": "0000000000000000000000000000000000000000",
+    "branchHeadAtAdoption": null,
+    "ownershipEnforcementBaseSha": null,
+    "requiresReanchorBeforeMainIntegration": true
+  },
+  "notes": [
+    "Replace all placeholder values before activation.",
+    "Add only contract generations that this stream actually consumes."
+  ]
+}
