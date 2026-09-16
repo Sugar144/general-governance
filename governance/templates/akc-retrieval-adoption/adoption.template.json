@@ -8,7 +8,8 @@
   "source": {
     "source_id": "REPLACE_PROJECT_SOURCE_ID",
     "repository_id": "REPLACE_OWNER_REPOSITORY",
-    "revision_policy": "EXACT_CURRENT_HEAD"
+    "revision": "0000000000000000000000000000000000000000",
+    "revision_policy": "PINNED_EXACT_REVISION"
   },
   "retrieval": {
     "mode": "lexical_v1",
