@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://general-governance.local/templates/concurrency-work-packet-v1.json",
+  "title": "Generic concurrency work packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packetVersion",
+    "packetId",
+    "streamId",
+    "status",
+    "branch",
+    "readScope",
+    "writableTargets",
+    "conflictDomain",
+    "coordination",
+    "base"
+  ],
+  "properties": {
+    "packetVersion": {"const": "1.0"},
+    "packetId": {"type": "string", "minLength": 1},
+    "streamId": {"type": "string", "minLength": 1},
+    "status": {"enum": ["ACTIVE", "PLANNED", "PAUSED", "CLOSED"]},
+    "branch": {"type": "string", "minLength": 1, "not": {"const": "main"}},
+    "readScope": {"const": "repository-wide"},
+    "writableTargets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "forbiddenTargets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "conflictDomain": {"type": "string", "minLength": 1},
+    "coordination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intraStreamDefault", "branchRefEffect", "integrationToMain"],
+      "properties": {
+        "intraStreamDefault": {"enum": ["EXCLUSIVE_EFFECT", "ORDERED_EFFECT", "SHARED_COMPATIBLE_EFFECT"]},
+        "branchRefEffect": {"const": "EXCLUSIVE_EFFECT"},
+        "integrationToMain": {"const": "ORDERED_EFFECT"}
+      }
+    },
+    "contractGenerations": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["mainAtAdoption", "requiresReanchorBeforeMainIntegration"],
+      "properties": {
+        "mainAtAdoption": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "branchHeadAtAdoption": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "ownershipEnforcementBaseSha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "requiresReanchorBeforeMainIntegration": {"type": "boolean"}
+      }
+    },
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
