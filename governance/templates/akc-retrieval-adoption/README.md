@@ -11,9 +11,13 @@ Authority boundaries:
 
 ## Adoption states
 
-`CAPABILITY_AVAILABLE` means the adopter can invoke the pinned AKC capability and the provider-free doctor passes. It does **not** mean retrieval quality is qualified for that project.
+`ADOPTION_DECLARED` means the project has created an adopter manifest and pinned an exact AKC revision, but the capability has not yet been proven usable against that exact project revision. This is the template's initial state.
 
-`PROJECT_QUALIFIED` requires adopter-specific qualification evidence. A project must not promote itself to this state merely because another repository qualified the same AKC revision.
+`CAPABILITY_AVAILABLE` requires provider-free doctor evidence bound to the exact pinned AKC revision and adopter revision. It proves the consumer can execute its configured smoke checks; it does **not** mean retrieval quality is qualified for ordinary project work.
+
+`PROJECT_QUALIFIED` requires separate adopter-specific retrieval-quality evidence. A project must not promote itself to this state merely because another repository qualified the same AKC revision.
+
+Both `CAPABILITY_AVAILABLE` and `PROJECT_QUALIFIED` must reference non-empty evidence in the adopter manifest. State transitions are explicit; a successful command does not mutate the adopter manifest automatically.
 
 ## Minimum adopter surface
 
@@ -29,6 +33,8 @@ The manifest should pin an exact AKC Git revision and use the runtime schema own
 contracts/repository-retrieval-adoption-v1.json
 ```
 
+The v1 runtime is expected to execute from that exact Git-backed AKC checkout; it verifies both provider repository identity and provider HEAD before retrieval.
+
 ## Context policy
 
 Consumers should use the following order:
@@ -37,7 +43,7 @@ Consumers should use the following order:
 2. AKC bounded retrieval when relevant evidence must be discovered in a large repository corpus and the adopter has the required qualification for that use;
 3. full-file or full-corpus inspection only when the task explicitly requires completeness.
 
-Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact Git revision before admission. A `CAPABILITY_AVAILABLE` adopter may run bounded doctor/qualification work, but ordinary governed work must not make AKC retrieval mandatory until the adopter reaches the qualification state required by its local policy.
+Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact Git revision before admission. An `ADOPTION_DECLARED` or `CAPABILITY_AVAILABLE` adopter may run bounded doctor/qualification work, but ordinary governed work must not make AKC retrieval mandatory until the adopter reaches the qualification state required by its local policy.
 
 ## Provider-free baseline
 
@@ -53,7 +59,7 @@ python -m akc.repository_consumer doctor \
   --workspace "$CACHE_ROOT/akc/<project>/doctor"
 ```
 
-A green doctor establishes capability availability only. Project qualification requires a separate retrieval-quality fixture and evidence record.
+A green doctor is evidence that may support an explicit promotion from `ADOPTION_DECLARED` to `CAPABILITY_AVAILABLE`; it does not perform that promotion itself. Project qualification requires a separate retrieval-quality fixture and evidence record.
 
 ## Index custody
 
