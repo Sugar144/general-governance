@@ -31,6 +31,8 @@
   "qualification": {
     "status": "ADOPTION_DECLARED",
     "evidence": null,
-    "project_evidence": null
+    "evidence_sha256": null,
+    "project_evidence": null,
+    "project_evidence_sha256": null
   }
 }
