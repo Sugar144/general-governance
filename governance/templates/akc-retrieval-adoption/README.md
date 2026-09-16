@@ -13,18 +13,18 @@ Authority boundaries:
 
 `ADOPTION_DECLARED` means the project has created an adopter manifest and pinned both an exact AKC provider revision and an exact adopter source revision, but the capability has not yet been proven usable against that exact pair. This is the template's initial state.
 
-`CAPABILITY_AVAILABLE` requires provider-free doctor evidence bound to the exact pinned AKC revision and exact pinned adopter source revision. It proves the consumer can execute its configured smoke checks; it does **not** mean retrieval quality is qualified for ordinary project work.
+`CAPABILITY_AVAILABLE` requires provider-free doctor evidence bound to the exact pinned AKC revision, exact pinned adopter source revision, adopter `source_id`, and deterministic fingerprint of the complete adoption/retrieval identity. It proves the consumer can execute its configured smoke checks; it does **not** mean retrieval quality is qualified for ordinary project work.
 
-`PROJECT_QUALIFIED` retains the same doctor proof and additionally requires separate adopter-specific retrieval-quality evidence bound to that exact provider/source revision pair. A project must not promote itself to this state merely because another repository or another revision qualified the same AKC runtime.
+`PROJECT_QUALIFIED` retains the same doctor proof and additionally requires separate adopter-specific retrieval-quality evidence bound to that same complete adoption identity. A project must not promote itself to this state merely because another repository, another revision, another source identity, or another retrieval policy qualified the same AKC runtime.
 
 The manifest distinguishes the two evidence layers explicitly:
 
 - `qualification.evidence` is the committed doctor-v1 `PASS` artifact required for every post-declaration state;
 - `qualification.project_evidence` is an additional committed project-quality `PASS` artifact required only for `PROJECT_QUALIFIED`.
 
-The v1 runtime does not trust these fields merely because they are non-empty. Before a query it resolves evidence inside the adopter repository, requires tracked clean files, validates the expected evidence schema and `PASS` result, and verifies exact capability/provider/source/mode bindings. Project-quality evidence must also bind the same capability-evidence path.
+The v1 runtime does not trust these fields merely because they are non-empty. Before a query it resolves evidence inside the adopter repository, requires tracked clean files, validates the expected evidence schema and `PASS` result, and verifies exact capability/provider/source/mode bindings plus `source_id` and a deterministic adoption fingerprint covering schema/capability/provider/source/retrieval policy, including budgets and smoke queries. Project-quality evidence must bind the same fingerprint and capability-evidence path.
 
-State transitions are explicit; a successful command does not mutate the adopter manifest automatically. Advancing the adopter repository does not move the qualified source revision automatically either: change `source.revision`, re-run the applicable evidence, and promote explicitly.
+State transitions are explicit; a successful command does not mutate the adopter manifest automatically. Advancing the adopter repository does not move the qualified source revision automatically either: change `source.revision`, re-run the applicable evidence, and promote explicitly. Changing `source_id`, retrieval budgets, smoke queries, or another fingerprinted adoption-policy field likewise invalidates prior evidence and requires fresh evidence for the new identity.
 
 ## Minimum adopter surface
 
@@ -86,7 +86,7 @@ python -m akc.repository_consumer doctor \
 
 The adopter checkout does not have to be detached at `source.revision`; the runtime uses the manifest's exact source commit. The commit must exist in that repository checkout/object database and must belong to the declared repository identity.
 
-A green doctor is evidence that may support an explicit promotion from `ADOPTION_DECLARED` to `CAPABILITY_AVAILABLE`; it does not perform that promotion itself. Commit the doctor JSON inside the adopter repository, reference it through `qualification.evidence`, and then make the explicit promotion. Project qualification requires a separate committed retrieval-quality evidence record referenced through `qualification.project_evidence` and tied to the same exact provider/source revisions and doctor artifact.
+A green doctor is evidence that may support an explicit promotion from `ADOPTION_DECLARED` to `CAPABILITY_AVAILABLE`; it does not perform that promotion itself. Commit the doctor JSON inside the adopter repository, reference it through `qualification.evidence`, and then make the explicit promotion. Project qualification requires a separate committed retrieval-quality evidence record referenced through `qualification.project_evidence` and tied to the same exact provider/source identity, `source_id`, deterministic adoption fingerprint, and doctor artifact.
 
 ## Index custody
 
@@ -94,4 +94,4 @@ Do not commit generated SQLite indexes, vectors, embeddings, or corpus chunk pac
 
 ## Reference adopter
 
-Dopis is the intended first v1 adopter because AKC already has historical empirical retrieval qualification evidence over a Dopis holdout. That historical evidence does not automatically qualify a new Dopis revision. The adopter must bind an explicit `source.revision`, validate that exact commit, and repeat the required evidence whenever it chooses to repin.
+Dopis is the intended first v1 adopter because AKC already has historical empirical retrieval qualification evidence over a Dopis holdout. That historical evidence does not automatically qualify a new Dopis revision. The adopter must bind an explicit `source.revision`, validate that exact commit, and repeat the required evidence whenever it chooses to repin or otherwise changes the fingerprinted adoption identity.
