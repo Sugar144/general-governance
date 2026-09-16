@@ -79,9 +79,13 @@ The CLI `query` command emits `akc-repository-retrieval-query-result/1.0.0`, not
 - retrieval mode and deterministic adoption fingerprint;
 - lifecycle qualification status;
 - capability-evidence path and SHA-256;
-- project-evidence path and SHA-256 when project-qualified.
+- project-evidence path and SHA-256 when project-qualified;
+- the exact executed `ContextQuery`, including intent, exact terms, path/authority filters, requested evidence classes, source identity/revision and budget;
+- `query_fingerprint`, a deterministic SHA-256 over every serialized `ContextQuery` field.
 
-This makes an archived or handed-off retrieval result attributable to the exact transformation and evidence that authorized it. Consumers must not strip that provenance when persisting or passing query output across agents.
+The runtime builds this provenance from the same `ContextQuery` object passed into lexical discovery and evidence admission, rather than reconstructing query metadata afterwards. Reusing a `query_id` with different intent, exact terms, path filters, authority filters, source fields or budget therefore produces distinguishable query provenance.
+
+This makes an archived or handed-off retrieval result attributable to the exact transformation, query and evidence that authorized it. Consumers must not strip that provenance when persisting or passing query output across agents.
 
 ## Provider-free baseline
 
