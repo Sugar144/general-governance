@@ -5,19 +5,19 @@ This is a non-normative operational scaffold for projects that choose to consume
 Authority boundaries:
 
 - AKC owns the runtime retrieval contract and implementation.
-- The adopter owns its repository scope, budgets, smoke/qualification fixtures, and qualification disposition.
+- The adopter owns its repository scope, exact source revision, budgets, smoke/qualification fixtures, and qualification disposition.
 - General Governance provides the reusable adoption shape only; it does not duplicate the AKC runtime schema and does not grant retrieval/model/provider/product authority.
 - Indexes are rebuildable discovery state and must not be treated as canonical source authority.
 
 ## Adoption states
 
-`ADOPTION_DECLARED` means the project has created an adopter manifest and pinned an exact AKC revision, but the capability has not yet been proven usable against that exact project revision. This is the template's initial state.
+`ADOPTION_DECLARED` means the project has created an adopter manifest and pinned both an exact AKC provider revision and an exact adopter source revision, but the capability has not yet been proven usable against that exact pair. This is the template's initial state.
 
-`CAPABILITY_AVAILABLE` requires provider-free doctor evidence bound to the exact pinned AKC revision and adopter revision. It proves the consumer can execute its configured smoke checks; it does **not** mean retrieval quality is qualified for ordinary project work.
+`CAPABILITY_AVAILABLE` requires provider-free doctor evidence bound to the exact pinned AKC revision and exact pinned adopter source revision. It proves the consumer can execute its configured smoke checks; it does **not** mean retrieval quality is qualified for ordinary project work.
 
-`PROJECT_QUALIFIED` requires separate adopter-specific retrieval-quality evidence. A project must not promote itself to this state merely because another repository qualified the same AKC revision.
+`PROJECT_QUALIFIED` requires separate adopter-specific retrieval-quality evidence bound to that exact provider/source revision pair. A project must not promote itself to this state merely because another repository or another revision qualified the same AKC runtime.
 
-Both `CAPABILITY_AVAILABLE` and `PROJECT_QUALIFIED` must reference non-empty evidence in the adopter manifest. State transitions are explicit; a successful command does not mutate the adopter manifest automatically.
+Both `CAPABILITY_AVAILABLE` and `PROJECT_QUALIFIED` must reference non-empty evidence in the adopter manifest. State transitions are explicit; a successful command does not mutate the adopter manifest automatically. Advancing the adopter repository does not move the qualified source revision automatically either: change `source.revision`, re-run the applicable evidence, and promote explicitly.
 
 ## Minimum adopter surface
 
@@ -27,13 +27,31 @@ Recommended path:
 .governance/capabilities/akc-retrieval.json
 ```
 
-The manifest should pin an exact AKC Git revision and use the runtime schema owned by that revision:
+The manifest must pin two independent Git identities:
+
+- `provider.revision`: the exact AKC commit that owns and executes the runtime contract;
+- `source.revision`: the exact adopter commit whose canonical bytes may be discovered and materialized.
+
+The reusable template uses forty zeroes only as an obvious placeholder. Replace both placeholder revisions with real 40-hex Git commit SHAs before running `doctor`; a template placeholder is never qualification evidence.
+
+The source binding uses:
+
+```json
+{
+  "revision": "<exact-adopter-commit>",
+  "revision_policy": "PINNED_EXACT_REVISION"
+}
+```
+
+The runtime schema is owned by the pinned AKC revision:
 
 ```text
 contracts/repository-retrieval-adoption-v1.json
 ```
 
-The v1 runtime is expected to execute from that exact Git-backed AKC checkout; it verifies both provider repository identity and provider HEAD before retrieval.
+The v1 runtime is expected to execute from the exact Git-backed AKC checkout declared by `provider.revision`; it verifies provider repository identity and provider HEAD before retrieval. It separately verifies the adopter repository identity and that `source.revision` exists. Retrieval then builds and re-materializes evidence from that pinned source commit, not from whichever commit happens to be checked out later.
+
+This distinction is deliberate. If an adopter is qualified at source commit A and its working checkout advances to B, evidence remains bound to A until governance explicitly repins to B and produces the required evidence for B.
 
 ## Context policy
 
@@ -43,13 +61,13 @@ Consumers should use the following order:
 2. AKC bounded retrieval when relevant evidence must be discovered in a large repository corpus and the adopter has the required qualification for that use;
 3. full-file or full-corpus inspection only when the task explicitly requires completeness.
 
-Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact Git revision before admission. An `ADOPTION_DECLARED` or `CAPABILITY_AVAILABLE` adopter may run bounded doctor/qualification work, but ordinary governed work must not make AKC retrieval mandatory until the adopter reaches the qualification state required by its local policy.
+Do not preload large canonical documents merely because they are authoritative. Retrieval must return bounded evidence and canonical bytes must be re-materialized from the exact pinned `source.revision` before admission. An `ADOPTION_DECLARED` adopter may run `doctor`, but the v1 query interface remains fail-closed until the adopter has reached a post-declaration state. A `CAPABILITY_AVAILABLE` adopter may use the bounded capability only within the scope permitted by its local policy; ordinary governed work must not make AKC retrieval mandatory until the adopter reaches the qualification state required by that policy.
 
 ## Provider-free baseline
 
 The v1 baseline is `lexical_v1`, using AKC BM25/FTS discovery plus exact Git re-materialization. `hybrid_v1` is a separately qualified capability because embedding/model identity and project-specific retrieval quality must be explicit.
 
-Recommended conformance command from an AKC checkout pinned to the manifest revision:
+Recommended conformance command from an AKC checkout pinned to `provider.revision`:
 
 ```bash
 CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
@@ -59,7 +77,9 @@ python -m akc.repository_consumer doctor \
   --workspace "$CACHE_ROOT/akc/<project>/doctor"
 ```
 
-A green doctor is evidence that may support an explicit promotion from `ADOPTION_DECLARED` to `CAPABILITY_AVAILABLE`; it does not perform that promotion itself. Project qualification requires a separate retrieval-quality fixture and evidence record.
+The adopter checkout does not have to be detached at `source.revision`; the runtime uses the manifest's exact source commit. The commit must exist in that repository checkout/object database and must belong to the declared repository identity.
+
+A green doctor is evidence that may support an explicit promotion from `ADOPTION_DECLARED` to `CAPABILITY_AVAILABLE`; it does not perform that promotion itself. Project qualification requires a separate retrieval-quality fixture and evidence record tied to the same exact provider/source revisions.
 
 ## Index custody
 
@@ -67,4 +87,4 @@ Do not commit generated SQLite indexes, vectors, embeddings, or corpus chunk pac
 
 ## Reference adopter
 
-Dopis is the intended first v1 adopter because AKC already has historical empirical retrieval qualification evidence over a Dopis holdout. That historical evidence does not automatically qualify a new Dopis revision; the adopter must bind and validate its own current revision.
+Dopis is the intended first v1 adopter because AKC already has historical empirical retrieval qualification evidence over a Dopis holdout. That historical evidence does not automatically qualify a new Dopis revision. The adopter must bind an explicit `source.revision`, validate that exact commit, and repeat the required evidence whenever it chooses to repin.
