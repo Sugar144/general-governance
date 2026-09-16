@@ -1,0 +1,38 @@
+{
+  "schema_version": "akc-repository-retrieval-adoption/1.0.0",
+  "capability": "akc-repository-retrieval",
+  "provider": {
+    "repository": "Sugar144/ai-knowledge-compiler",
+    "revision": "0000000000000000000000000000000000000000"
+  },
+  "source": {
+    "source_id": "REPLACE_PROJECT_SOURCE_ID",
+    "repository_id": "REPLACE_OWNER_REPOSITORY",
+    "revision": "0000000000000000000000000000000000000000",
+    "revision_policy": "PINNED_EXACT_REVISION"
+  },
+  "retrieval": {
+    "mode": "lexical_v1",
+    "max_chunk_bytes": 4096,
+    "max_file_bytes": 524288,
+    "max_candidates": 12,
+    "max_evidence_items": 6,
+    "max_bytes": 20000,
+    "smoke_queries": [
+      {
+        "query_id": "REPLACE_SMOKE_QUERY_ID",
+        "intent": "REPLACE_WITH_EXACT_OR_STABLE_PROJECT_TERM",
+        "exact_terms": ["REPLACE_TERM"],
+        "path_filters": ["REPLACE_PATH"],
+        "expected_path": "REPLACE_PATH"
+      }
+    ]
+  },
+  "qualification": {
+    "status": "ADOPTION_DECLARED",
+    "evidence": null,
+    "evidence_sha256": null,
+    "project_evidence": null,
+    "project_evidence_sha256": null
+  }
+}
