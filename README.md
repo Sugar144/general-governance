@@ -1,5 +1,11 @@
 # General Governance Framework
 
+## Capabilities
+
+For a plain-language explanation of what this repository can do, the problem each capability solves, practical examples, limits, and technical references, see [`CAPABILITIES.md`](CAPABILITIES.md).
+
+`CAPABILITIES.md` is the standard capability guide for this repository. Exact current release/adoption status and normative semantics remain controlled by the canonical framework surfaces.
+
 Authoritative repository for reusable GOV-GEN framework releases and immutable
 release candidates.
 
