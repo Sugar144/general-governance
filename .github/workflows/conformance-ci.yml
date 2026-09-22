@@ -6,19 +6,31 @@ on:
 
 jobs:
   consumer-contract:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, factory-ci]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+
+      - name: Verify preprovisioned Python baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v python3.12 >/dev/null
+          python3.12 -c 'import sys; assert sys.version_info[:2] == (3, 12), sys.version'
+
+      - name: Create isolated validation environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3.12 -m venv "$RUNNER_TEMP/general-governance-ci"
+          echo "$RUNNER_TEMP/general-governance-ci/bin" >> "$GITHUB_PATH"
+
       - name: Install validation dependencies
-        run: python3 -m pip install pyyaml jsonschema
+        run: python -m pip install pyyaml jsonschema
       - name: Validate contract schemas
         run: |
-          python3 - <<'PY'
+          python - <<'PY'
           import json
           from pathlib import Path
           from jsonschema import Draft202012Validator
@@ -28,23 +40,23 @@ jobs:
           PY
       - name: Validate deterministic validator syntax
         run: >-
-          python3 -m py_compile
+          python -m py_compile
           tools/release_payload.py
           tools/validate_consumer.py
           tools/validate_capability_stack.py
           tools/validate_work_packet.py
           tools/validate_hierarchical_work_graph.py
       - name: Verify prospective extraction evolution
-        run: python3 tools/verify_evolution.py
+        run: python tools/verify_evolution.py
       - name: Run HWG contract regressions
-        run: python3 -m unittest -v tests/test_hierarchical_work_graph.py
+        run: python -m unittest -v tests/test_hierarchical_work_graph.py
       - name: Run release payload identity regressions
-        run: python3 -m unittest -v tests/test_release_payload_identity.py
+        run: python -m unittest -v tests/test_release_payload_identity.py
       - name: Run release payload projection regressions
-        run: python3 -m unittest -v tests/test_release_payload_projection.py
+        run: python -m unittest -v tests/test_release_payload_projection.py
       - name: Report prospective release identity
         run: |
-          python3 - <<'PY'
+          python - <<'PY'
           from pathlib import Path
           from tools.release_payload import release_content_digest
           print(f"PROSPECTIVE_RELEASE_CONTENT_SHA256={release_content_digest(Path('.').resolve())}")
@@ -53,7 +65,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          METHOD="$(python3 - <<'PY'
+          METHOD="$(python - <<'PY'
           from pathlib import Path
           from tools.release_payload import identity_method, load_release_manifest
           print(identity_method(load_release_manifest(Path('.').resolve())))
@@ -65,11 +77,11 @@ jobs:
           fi
           PROJECTION="$RUNNER_TEMP/gg-release-payload"
           rm -rf "$PROJECTION"
-          python3 tools/release_payload.py project . "$PROJECTION"
-          python3 tools/release_payload.py verify-projection "$PROJECTION"
+          python tools/release_payload.py project . "$PROJECTION"
+          python tools/release_payload.py verify-projection "$PROJECTION"
           cd "$PROJECTION"
           export PYTHONDONTWRITEBYTECODE=1
-          python3 - <<'PY'
+          python - <<'PY'
           import json
           from pathlib import Path
           from jsonschema import Draft202012Validator
@@ -77,12 +89,12 @@ jobs:
               Draft202012Validator.check_schema(json.loads(path.read_text()))
               print(f"PASS isolated schema {path}")
           PY
-          python3 -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py tools/validate_hierarchical_work_graph.py framework/core/l6/*.py
-          python3 tools/verify_evolution.py
-          python3 -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py tests/test_work_packet_designer_hardening.py tests/test_hierarchical_work_graph.py
+          python -m py_compile tools/release_payload.py tools/validate_consumer.py tools/validate_capability_stack.py tools/validate_work_packet.py tools/validate_hierarchical_work_graph.py framework/core/l6/*.py
+          python tools/verify_evolution.py
+          python -m unittest -v tests/test_release_payload_projection.py tests/test_work_packet_control_declarations.py tests/test_work_packet_designer_hardening.py tests/test_hierarchical_work_graph.py
       - name: Gate A — reproduce current checkout release identity
         run: |
-          python3 - <<'PY'
+          python - <<'PY'
           from pathlib import Path
           from tools.release_payload import load_release_manifest, release_content_digest
           root = Path('.').resolve()
@@ -95,10 +107,10 @@ jobs:
           PY
       - name: Run WPDC contract regressions
         run: >-
-          python3 -m unittest -v
+          python -m unittest -v
           tests/test_work_packet_contract.py
           tests/test_work_packet_control_declarations.py
           tests/test_work_packet_evidence_contexts.py
           tests/test_work_packet_designer_hardening.py
       - name: Run consumer conformance tests
-        run: python3 -m unittest -v tests/test_consumer_contract.py
+        run: python -m unittest -v tests/test_consumer_contract.py

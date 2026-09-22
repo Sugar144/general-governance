@@ -1,0 +1,47 @@
+# factory-runner-policy: 0.1.0
+name: Factory Runner Conformance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conformance:
+    runs-on: [self-hosted, linux, x64, factory-ci]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce self-hosted-only Factory runner policy
+        shell: bash
+        run: |
+          python3.12 - <<'PY'
+          from pathlib import Path
+          import re
+          failures=[]
+          forbidden=("ubuntu-latest","windows-latest","macos-latest","actions/setup-python","actions/setup-node","actions/setup-java","actions/setup-go","dtolnay/rust-toolchain","actions-rust-lang/setup-rust-toolchain")
+          install_patterns=(re.compile(r"\bpyenv\s+install\b"),re.compile(r"\bnvm\s+install\b"),re.compile(r"\brustup\s+(?:toolchain\s+)?install\b"),re.compile(r"\bapt(?:-get)?\s+install\b[^\n]*(?:python[0-9.]?|nodejs|npm|openjdk|golang|rustc|cargo)"))
+          gate=Path('.github/workflows/factory-runner-conformance.yml')
+          for path in sorted(Path('.github/workflows').glob('*.y*ml')):
+              if path == gate: continue
+              text=path.read_text(encoding='utf-8'); low=text.lower()
+              for token in forbidden:
+                  if token in low: failures.append(f"{path}: forbidden {token}")
+              for pattern in install_patterns:
+                  if pattern.search(low): failures.append(f"{path}: runtime install {pattern.pattern}")
+              for n,line in enumerate(text.splitlines(),1):
+                  if 'runs-on:' in line and not ('factory-ci' in line or 'factory-regression' in line):
+                      failures.append(f"{path}:{n}: unapproved runner: {line.strip()}")
+          if failures:
+              print('\n'.join(f'VIOLATION {x}' for x in failures))
+              raise SystemExit(1)
+          print('FACTORY_RUNNER_CONFORMANCE=PASS')
+          PY
